@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f4f7fb" />
+  <title>블록체인은 왜 블록체인일까? · 강의 화면</title>
+  <meta name="description" content="원본 강의자료 21페이지를 25개 화면으로 재구성한 강의 진행용 HTML 화면. Hash / Block / Chain / PoW 체험도구와 바로 왕복할 수 있습니다." />
+  <meta name="robots" content="noindex, nofollow" />
+
+  <link rel="stylesheet" href="../shared.css" />
+  <link rel="stylesheet" href="./lecture.css" />
+</head>
+<body class="lecture-body">
+  <a class="skip-link" href="#screen">본문으로 건너뛰기</a>
+
+  <!-- ============================================================
+       상단 — 개념 진행 표시기 (LectureProgress)
+       원본 하단에 반복되던 개념열을 웹에서는 상단 진행 표시기로 쓴다.
+       ============================================================ -->
+  <header class="lecture-header">
+    <div class="lecture-header-inner">
+      <a class="lecture-brand" href="../index.html" title="강의 홈">BLOCKCHAIN<span class="brand-dim"> LECTURE</span></a>
+
+      <nav id="progress" class="progress" aria-label="강의 개념 진행"></nav>
+
+      <button id="tocButton" class="icon-button" type="button" aria-expanded="false" aria-controls="toc">
+        <span class="icon-lines" aria-hidden="true"></span>
+        <span class="icon-label">목차</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       본문 — 화면 하나 (LectureFrame)
+       ============================================================ -->
+  <main id="screen" class="lecture-main" tabindex="-1">
+    <article id="stage" class="stage" aria-live="polite"></article>
+  </main>
+
+  <!-- ============================================================
+       하단 — 진행 Navigation (LectureNav)
+       ============================================================ -->
+  <nav class="lecture-nav" aria-label="화면 이동">
+    <div class="lecture-nav-inner">
+      <button id="prevButton" class="nav-button" type="button">
+        <span aria-hidden="true">←</span><span class="nav-label">이전</span>
+      </button>
+
+      <button id="tocButtonBottom" class="nav-counter" type="button" aria-expanded="false" aria-controls="toc">
+        <span id="counter">1 / 25</span>
+        <span class="nav-counter-hint">목차</span>
+      </button>
+
+      <button id="nextButton" class="nav-button" type="button">
+        <span class="nav-label">다음</span><span aria-hidden="true">→</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ============================================================
+       목차 Drawer (TableOfContentsDrawer)
+       25개를 한 번에 나열하지 않고 7개 Section 을 먼저 보여준다.
+       ============================================================ -->
+  <div id="tocBackdrop" class="toc-backdrop" hidden></div>
+  <aside id="toc" class="toc" hidden aria-label="목차">
+    <div class="toc-head">
+      <p class="toc-title">목차</p>
+      <button id="tocClose" class="toc-close" type="button" aria-label="목차 닫기">✕</button>
+    </div>
+    <div id="tocList" class="toc-list"></div>
+    <div class="toc-foot">
+      <!-- PDF 는 백업/보조 기능이다. Secondary Action 으로만 둔다. -->
+      <a class="toc-secondary" href="../materials/lecture.pdf" target="_blank" rel="noopener">전체 강의자료 PDF 보기</a>
+      <a class="toc-secondary" href="../experience/index.html">체험도구 열기</a>
+      <a class="toc-secondary" href="../index.html">강의 홈</a>
+    </div>
+  </aside>
+
+  <script src="./screens.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

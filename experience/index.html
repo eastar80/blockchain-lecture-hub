@@ -9,6 +9,23 @@
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
+  <!-- ============================================================
+       ReturnToLecture — 강의 화면에서 진입했을 때만 보이는 상단바.
+       ?return=L06 이 있을 때만 표시하고, 체험도구에 직접 접속한 경우에는
+       숨긴 상태를 유지한다. (app.js setupReturnBar)
+       ============================================================ -->
+  <div id="returnBar" class="return-bar" hidden>
+    <div class="return-bar-inner">
+      <a id="returnBack" class="return-back" href="../lecture/index.html">
+        <span aria-hidden="true">&larr;</span> 강의로 돌아가기
+      </a>
+      <span class="return-tag">강의 중 체험</span>
+      <a id="returnNext" class="return-next" href="../lecture/index.html">
+        강의 계속하기 <span aria-hidden="true">&rarr;</span>
+      </a>
+    </div>
+  </div>
+
   <main class="page-shell">
     <a class="home-link" href="../index.html">
       <span aria-hidden="true">←</span> 강의 홈

@@ -1250,3 +1250,77 @@ textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37, 99
   .manual-target-row { align-items: flex-start; flex-direction: column; gap: 4px; }
   .manual-data-summary { align-items: flex-start; flex-direction: column; }
 }
+
+/* ============================================================
+   ReturnToLecture — 강의에서 진입했을 때만 보이는 상단바
+   (?return=L06 이 있을 때 app.js 가 hidden 을 해제한다)
+   ============================================================ */
+
+.return-bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  border-bottom: 1px solid #bfd3f8;
+  background: rgba(234, 241, 255, .94);
+  backdrop-filter: saturate(150%) blur(8px);
+}
+.return-bar[hidden] { display: none; }
+
+.return-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: min(1120px, calc(100% - 28px));
+  margin: 0 auto;
+  padding: 9px 0;
+}
+
+.return-back,
+.return-next {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 42px;
+  padding: 9px 15px;
+  border-radius: 11px;
+  font-size: .88rem;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+}
+
+.return-back {
+  border: 1px solid transparent;
+  color: var(--primary-deep);
+}
+.return-back:hover { background: rgba(255, 255, 255, .8); }
+
+/* 기본 흐름은 ‘강의 계속하기’다. 되돌아가기보다 시각적으로 앞에 둔다. */
+.return-next {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, .22);
+}
+.return-next:hover { background: var(--primary-deep); }
+
+.return-tag {
+  flex: 0 1 auto;
+  color: #6b7c99;
+  font-size: .74rem;
+  font-weight: 900;
+  letter-spacing: .1em;
+  white-space: nowrap;
+}
+
+/* 상단바가 보이면 기존 ‘강의 홈’ 링크는 중복이므로 감춘다. */
+.has-return-bar .home-link { display: none; }
+.has-return-bar .page-shell { padding-top: 20px; }
+
+@media (max-width: 560px) {
+  .return-tag { display: none; }
+  .return-bar-inner { gap: 8px; }
+  .return-back,
+  .return-next { padding: 9px 12px; font-size: .84rem; }
+}

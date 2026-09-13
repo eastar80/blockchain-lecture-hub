@@ -8,10 +8,11 @@
 ```
 /
 ├─ index.html      강의 허브 Home
-├─ shared.css      공통 디자인 토큰 (Home / Experience 공용)
+├─ shared.css      공통 디자인 토큰 (Home / Lecture / Experience 공용)
 ├─ home.css        Home 전용 레이아웃
+├─ lecture/        강의 화면 — 원본 21페이지를 25개 화면으로 재구성
 ├─ experience/     체험도구 — HASH → BLOCK → CHAIN → PoW
-└─ materials/      강의자료 PDF
+└─ materials/      강의자료 PDF (백업/보조)
 ```
 
 ## 로컬에서 보기
@@ -27,5 +28,8 @@ GitHub Pages로 `main` 브랜치 루트를 그대로 서빙합니다.
 
 - 내부 링크는 모두 상대경로입니다. 도메인이나 경로가 바뀌어도 그대로 동작합니다.
 - 체험 단계는 URL 해시로 직접 열 수 있습니다: `experience/index.html#block`
+- 강의 화면도 같은 방식으로 직접 열 수 있습니다: `lecture/index.html#/L13`
+- 강의 화면 ↔ 체험도구 왕복 규칙과 원본 대응표는 `lecture/README.md` 에 있습니다.
+- `lecture/qr/*.svg` 는 배포 도메인(`blockchain.mrdion.kim`)이 박힌 QR입니다. 도메인이 바뀌면 다시 만들어야 합니다.
 - 검색엔진 노출을 막기 위해 `index.html`에 `noindex`가 걸려 있습니다.
   공개하려면 해당 `<meta name="robots">` 한 줄을 지우면 됩니다.
