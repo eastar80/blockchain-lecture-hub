@@ -1,0 +1,164 @@
+/* ============================================================
+   home.css — 강의 허브 Home 전용
+   Home은 체험 페이지보다 정보 밀도를 낮추되, 첫 화면(Hero + 세 질문)이
+   스크롤 없이 한 화면에 들어오는 것을 우선한다.
+
+   세로 여백은 고정값 대신 clamp(최소, vh, 최대)로 잡는다.
+   → 노트북처럼 낮은 화면에서는 알아서 좁아지고,
+     프로젝터처럼 높은 화면에서는 설계안이 요구한 여백을 그대로 확보한다.
+   ============================================================ */
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.home-main { flex: 1 0 auto; }
+
+/* ------------------------------------------------------------
+   Hero
+   ------------------------------------------------------------ */
+
+.hero {
+  padding: clamp(18px, 4vh, 56px) 0 clamp(16px, 3.4vh, 46px);
+  max-width: 900px;
+}
+
+.hero-title {
+  margin: 10px 0 0;
+  font-size: clamp(2.05rem, 4.4vw, 3.25rem);
+  line-height: 1.1;
+  letter-spacing: -.055em;
+}
+
+/* 강의의 두 축을 색으로만 구분한다. 따옴표도 띄어쓰기도 쓰지 않는다.
+   Block = Primary Blue, Chain = Warm Orange.
+   Chain은 --warning(#c26a11) 계열을 쓰되, 어둡게 가라앉히는 대신
+   채도를 올려 밝게 보이도록 한다. 큰 제목에만 쓰므로 캔버스 대비 약 3.7:1로
+   큰 글자 기준(3:1)을 넘긴다.
+   <em>의 기본 기울임은 한글에 맞지 않으므로 해제한다. */
+.accent-block,
+.accent-chain { font-style: normal; }
+
+.accent-block { color: var(--primary); }
+.accent-chain { color: #c96200; }
+
+.hero-copy {
+  max-width: 620px;
+  margin: clamp(9px, 1.5vh, 18px) 0 0;
+  color: var(--muted);
+  font-size: clamp(1.02rem, 1.7vw, 1.25rem);
+  line-height: 1.65;
+}
+
+/* CTA — 모바일에서는 세로 배치, 터치 영역을 넓게 쓴다. */
+.hero-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: clamp(15px, 2.7vh, 30px);
+}
+
+.hero-actions .btn { width: 100%; }
+
+@media (min-width: 600px) {
+  .hero-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 13px;
+  }
+  .hero-actions .btn { width: auto; }
+  .hero-actions .btn-primary { min-height: 58px; padding: 16px 30px; font-size: 1.08rem; }
+}
+
+/* ------------------------------------------------------------
+   오늘의 핵심 질문
+   클릭 메뉴가 아니라 강의 전체를 관통하는 질문으로 보이게 한다.
+   ------------------------------------------------------------ */
+
+.questions {
+  padding-top: clamp(18px, 3.4vh, 40px);
+  padding-bottom: clamp(18px, 3.4vh, 44px);
+  border-top: 1px solid rgba(220, 227, 238, .9);
+}
+
+.questions-title {
+  margin: 6px 0 0;
+  font-size: clamp(1.3rem, 2.2vw, 1.75rem);
+  letter-spacing: -.03em;
+}
+
+.question-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: clamp(12px, 2.2vh, 24px);
+  list-style: none;
+  padding: 0;
+}
+
+.question-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, .72);
+}
+
+.question-number {
+  flex: 0 0 auto;
+  color: var(--primary);
+  font-size: .86rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+  line-height: 1.5;
+}
+
+.question-text {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 750;
+  line-height: 1.5;
+  letter-spacing: -.02em;
+}
+
+@media (min-width: 720px) {
+  .question-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+  /* PC에서는 번호를 위로 올리고 카드 높이를 맞춰 정돈된 인상을 유지한다. */
+  .question-card {
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    min-height: clamp(96px, 14.5vh, 146px);
+    padding: clamp(16px, 2.2vh, 28px) 24px;
+  }
+  .question-number { font-size: .78rem; }
+  .question-text { font-size: clamp(1.05rem, 1.5vw, 1.22rem); }
+}
+
+/* 화면이 낮은 노트북에서는 제목과 버튼까지 한 단계 줄여
+   Hero + 세 질문이 스크롤 없이 들어오게 한다.
+   높은 화면(데스크톱 모니터·프로젝터)에는 적용되지 않으므로
+   설계안이 요구한 큰 제목은 그대로 유지된다. */
+@media (max-height: 700px) {
+  .hero {
+    padding-bottom: clamp(12px, 2.8vh, 46px);
+  }
+  .hero-title {
+    font-size: clamp(1.9rem, 3.6vw, 2.85rem);
+    line-height: 1.06;
+  }
+  .btn { min-height: 50px; }
+  .hero-actions .btn-primary { min-height: 54px; padding: 14px 28px; }
+  .questions { padding-bottom: clamp(14px, 2.6vh, 44px); }
+  .question-card { min-height: 88px; }
+  /* Footer는 강의 제목을 한 번 더 적어둔 것뿐이라,
+     더 압축해서 화면을 답답하게 만드는 대신 감춘다. */
+  .site-footer { display: none; }
+}

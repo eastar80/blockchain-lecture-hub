@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>블록체인 체험 · Hash, Block, Chain, Proof of Work</title>
+  <meta name="description" content="SHA-256 Hash, Block, Chain, Proof of Work를 직접 조작하며 블록체인의 핵심 개념을 체험하는 강의용 도구" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="page-shell">
+    <a class="home-link" href="../index.html">
+      <span aria-hidden="true">←</span> 강의 홈
+    </a>
+
+    <header class="hero">
+      <div id="heroEyebrow" class="eyebrow">BLOCKCHAIN EXPERIENCE · STEP 2</div>
+      <h1 id="heroTitle">Block 체험</h1>
+      <p id="heroCopy" class="hero-copy">여러 기록을 하나의 Block으로 묶어봅니다. 거래 한 건만 바꿔도 Block Hash 전체가 달라집니다.</p>
+
+      <nav class="learning-path" aria-label="블록체인 체험 단계">
+        <button class="step available" type="button" data-step="hash" aria-label="1단계 Hash 체험으로 이동">
+          <span>1</span><strong>HASH</strong>
+        </button>
+        <button class="step active available" type="button" data-step="block" aria-current="step" aria-label="2단계 Block 체험">
+          <span>2</span><strong>BLOCK</strong>
+        </button>
+        <button class="step available" type="button" data-step="chain" aria-label="3단계 Chain 체험으로 이동"><span>3</span><strong>CHAIN</strong></button>
+        <button class="step available" type="button" data-step="pow" aria-label="4단계 Proof of Work 체험으로 이동"><span>4</span><strong>PoW</strong></button>
+      </nav>
+    </header>
+
+    <section id="hashExperience" class="experience hidden" aria-hidden="true">
+      <section class="tool-card" aria-labelledby="hash-tool-title">
+        <div class="tool-toolbar">
+          <div>
+            <p class="section-kicker">직접 입력해 보세요</p>
+            <h2 id="hash-tool-title">입력 → SHA-256 → Hash</h2>
+          </div>
+          <label class="mode-toggle">
+            <input id="compareToggle" type="checkbox" />
+            <span class="toggle-ui" aria-hidden="true"></span>
+            <span>비교 모드</span>
+          </label>
+        </div>
+
+        <div id="singleMode" class="mode-panel">
+          <article class="hash-panel">
+            <div class="field-heading">
+              <label for="inputA">입력</label>
+              <button id="changeOneChar" class="text-button" type="button">한 글자 바꿔보기</button>
+            </div>
+            <textarea id="inputA" rows="3" spellcheck="false" autocomplete="off">안녕하세요</textarea>
+
+            <div class="flow-arrow" aria-hidden="true">↓ <span>SHA-256</span> ↓</div>
+
+            <div class="hash-heading">
+              <div>
+                <span class="label">Hash</span>
+                <span class="length-badge">64자리 · 256bit</span>
+              </div>
+              <button class="copy-button" type="button" data-copy-target="hashA" aria-label="Hash 복사하기">복사</button>
+            </div>
+            <output id="hashA" class="hash-output" aria-live="polite"></output>
+          </article>
+        </div>
+
+        <div id="compareMode" class="mode-panel hidden" aria-hidden="true">
+          <div class="compare-grid">
+            <article class="hash-panel compact-panel">
+              <div class="field-heading"><label for="inputCompareA">입력 A</label></div>
+              <textarea id="inputCompareA" rows="2" spellcheck="false" autocomplete="off">안녕하세요</textarea>
+              <div class="hash-heading">
+                <span class="label">Hash A</span>
+                <button class="copy-button small" type="button" data-copy-target="hashCompareA">복사</button>
+              </div>
+              <output id="hashCompareA" class="hash-output small-output" aria-live="polite"></output>
+            </article>
+
+            <article class="hash-panel compact-panel">
+              <div class="field-heading"><label for="inputCompareB">입력 B</label></div>
+              <textarea id="inputCompareB" rows="2" spellcheck="false" autocomplete="off">안녕하세요!</textarea>
+              <div class="hash-heading">
+                <span class="label">Hash B</span>
+                <button class="copy-button small" type="button" data-copy-target="hashCompareB">복사</button>
+              </div>
+              <output id="hashCompareB" class="hash-output small-output" aria-live="polite"></output>
+            </article>
+          </div>
+
+          <div class="comparison-summary" aria-live="polite">
+            <div class="summary-icon">≠</div>
+            <div>
+              <strong id="differenceTitle">Hash가 크게 달라졌습니다.</strong>
+              <p id="differenceText">64자리 중 몇 자리가 달라졌는지 계산하고 있습니다.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-grid" aria-label="Hash 핵심 포인트">
+        <article>
+          <span class="lesson-number">01</span>
+          <h3>같은 입력 → 같은 Hash</h3>
+          <p>입력값이 같으면 언제 계산해도 같은 SHA-256 결과가 나옵니다.</p>
+        </article>
+        <article>
+          <span class="lesson-number">02</span>
+          <h3>한 글자만 바꿔도 크게 변화</h3>
+          <p>작은 입력 변화가 Hash 전체에 큰 변화를 만듭니다.</p>
+        </article>
+        <article>
+          <span class="lesson-number">03</span>
+          <h3>항상 256bit</h3>
+          <p>화면에서는 64자리 16진수 문자열로 표시됩니다.</p>
+        </article>
+      </section>
+
+      <div class="next-step-row">
+        <button class="primary-button" type="button" data-step="block">다음: Block 체험 <span aria-hidden="true">→</span></button>
+      </div>
+    </section>
+
+    <section id="blockExperience" class="experience" aria-hidden="false">
+      <section class="tool-card block-tool" aria-labelledby="block-tool-title">
+        <div class="tool-toolbar block-toolbar">
+          <div>
+            <p class="section-kicker">여러 기록이 하나의 묶음이 되는 것을 확인하세요</p>
+            <h2 id="block-tool-title">여러 거래 기록 + Block 정보 → Block Hash</h2>
+          </div>
+          <button id="resetBlock" class="secondary-button" type="button">초기화</button>
+        </div>
+
+        <div class="block-layout">
+          <article id="blockCard" class="block-card">
+            <div class="block-card-header">
+              <div>
+                <span class="block-label">BLOCK</span>
+                <h3>Block #1</h3>
+              </div>
+              <div id="blockChangeBadge" class="state-badge stable" aria-live="polite">현재 상태</div>
+            </div>
+
+            <div class="block-definition">
+              <strong>이 네모 전체가 하나의 Block입니다.</strong>
+              <span>여러 기록과 Block 정보가 한 묶음으로 들어 있습니다.</span>
+            </div>
+
+            <div class="block-section-heading">
+              <div>
+                <span class="block-section-kicker">DATA</span>
+                <h4>이 Block에 포함된 거래 3건</h4>
+              </div>
+              <button id="changeAmount" class="text-button" type="button">3번 거래 1원 바꿔보기</button>
+            </div>
+
+            <div class="transaction-list" aria-label="Block에 포함된 거래 기록">
+              <div class="transaction-row" data-transaction="1">
+                <span class="transaction-index">01</span>
+                <div class="transaction-route"><strong>철수</strong><span aria-hidden="true">→</span><strong>영희</strong></div>
+                <label class="amount-field"><span class="sr-only">1번 거래 금액</span><input id="amount1" type="number" inputmode="numeric" min="0" step="1" value="10000" /><span>원</span></label>
+              </div>
+              <div class="transaction-row" data-transaction="2">
+                <span class="transaction-index">02</span>
+                <div class="transaction-route"><strong>영희</strong><span aria-hidden="true">→</span><strong>민수</strong></div>
+                <label class="amount-field"><span class="sr-only">2번 거래 금액</span><input id="amount2" type="number" inputmode="numeric" min="0" step="1" value="3000" /><span>원</span></label>
+              </div>
+              <div class="transaction-row focus-transaction" data-transaction="3">
+                <span class="transaction-index">03</span>
+                <div class="transaction-route"><strong>민수</strong><span aria-hidden="true">→</span><strong>철수</strong></div>
+                <label class="amount-field"><span class="sr-only">3번 거래 금액</span><input id="amount3" type="number" inputmode="numeric" min="0" step="1" value="5000" /><span>원</span></label>
+              </div>
+            </div>
+
+            <div class="block-divider"><span>Block 정보</span></div>
+
+            <div class="block-meta-grid">
+              <div class="block-field">
+                <span class="block-field-label">Previous Hash</span>
+                <code id="previousHash" class="block-value mono">0000000000000000000000000000000000000000000000000000000000000000</code>
+                <span class="field-help">첫 번째 Block이므로 실습에서는 0으로 표시합니다.</span>
+              </div>
+              <div class="block-field nonce-field">
+                <span class="block-field-label">Nonce</span>
+                <code id="blockNonce" class="block-value">0</code>
+                <span class="field-help">지금은 0. PoW 단계에서 직접 바꿉니다.</span>
+              </div>
+            </div>
+          </article>
+
+          <div class="block-hash-side">
+            <div class="block-flow" aria-hidden="true">
+              <span class="flow-line"></span>
+              <span class="flow-chip">SHA-256</span>
+              <span class="flow-arrow-right">→</span>
+            </div>
+
+            <article class="result-card">
+              <div class="hash-heading">
+                <div>
+                  <span class="label">Block Hash</span>
+                  <span class="length-badge">64자리 · 256bit</span>
+                </div>
+                <button class="copy-button" type="button" data-copy-target="blockHash">복사</button>
+              </div>
+              <output id="blockHash" class="hash-output block-hash-output" aria-live="polite"></output>
+
+              <div id="blockInsight" class="block-insight" aria-live="polite">
+                <div class="insight-icon">✓</div>
+                <div>
+                  <strong>세 거래를 포함한 Block 전체의 지문입니다.</strong>
+                  <p>거래 하나의 금액만 바꿔도 이 값이 즉시 달라집니다.</p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-grid block-lessons" aria-label="Block 핵심 포인트">
+        <article>
+          <span class="lesson-number">01</span>
+          <h3>여러 기록을 하나로 묶는다</h3>
+          <p>하나의 Block에는 한 건이 아니라 여러 거래 기록이 함께 들어갈 수 있습니다.</p>
+        </article>
+        <article>
+          <span class="lesson-number">02</span>
+          <h3>묶음 전체에 하나의 Hash</h3>
+          <p>거래 기록들과 Previous Hash, Nonce를 함께 묶어 하나의 Block Hash를 계산합니다.</p>
+        </article>
+        <article>
+          <span class="lesson-number">03</span>
+          <h3>한 건만 바뀌어도 전체가 변화</h3>
+          <p>3번 거래를 5,000원에서 5,001원으로 바꾸면 Block Hash 전체가 달라집니다.</p>
+        </article>
+      </section>
+
+      <aside class="bridge-note bridge-action">
+        <div class="bridge-icon" aria-hidden="true">↗</div>
+        <div>
+          <strong>다음 Block이 이 Hash를 기억하면?</strong>
+          <p>Block과 Block이 연결되어 Chain이 됩니다.</p>
+        </div>
+        <button class="primary-button" type="button" data-step="chain">다음: Chain 체험 →</button>
+      </aside>
+    </section>
+
+    <section id="chainExperience" class="experience hidden" aria-hidden="true">
+      <section class="tool-card chain-tool" aria-labelledby="chain-tool-title">
+        <div class="tool-toolbar chain-toolbar">
+          <div>
+            <p class="section-kicker">Hash가 Block과 Block을 연결하는 모습을 확인하세요</p>
+            <h2 id="chain-tool-title">Block Hash → 다음 Block의 Previous Hash</h2>
+          </div>
+          <button id="resetChain" class="secondary-button" type="button">초기화</button>
+        </div>
+
+        <div id="chainStatus" class="chain-status valid" aria-live="polite">
+          <div class="chain-status-icon">✓</div>
+          <div>
+            <strong>정상 Chain입니다.</strong>
+            <p>각 Block이 바로 앞 Block의 Hash를 정확히 기억하고 있습니다.</p>
+          </div>
+        </div>
+
+        <div class="chain-formula" aria-label="Chain 연결 원리">
+          <span>Block 1 Hash</span><b>=</b><span>Block 2 Previous Hash</span>
+          <i>그리고</i>
+          <span>Block 2 Hash</span><b>=</b><span>Block 3 Previous Hash</span>
+        </div>
+
+        <div class="chain-grid">
+          <article id="chainBlock1" class="chain-block">
+            <div class="chain-block-head">
+              <div><span class="block-label">BLOCK</span><h3>Block #1</h3></div>
+              <span id="chainBadge1" class="chain-badge ok">정상</span>
+            </div>
+            <div class="chain-data-title">거래 기록 <button id="changeChainAmount" class="text-button" type="button">1원 바꿔보기</button></div>
+            <div class="chain-transactions">
+              <div><span>철수 → 영희</span><strong>10,000원</strong></div>
+              <div><span>영희 → 민수</span><strong>3,000원</strong></div>
+              <div class="editable-chain-tx"><span>민수 → 철수</span><label><input id="chainAmount1" type="number" inputmode="numeric" min="0" step="1" value="5000" /><span>원</span></label></div>
+            </div>
+            <div class="chain-hash-field previous">
+              <span>Previous Hash</span><code id="chainPrev1"></code>
+            </div>
+            <div class="chain-hash-field current">
+              <span>Block Hash</span><code id="chainHash1"></code>
+            </div>
+          </article>
+
+          <div id="chainLink12" class="chain-link ok" aria-live="polite">
+            <span class="link-arrow">→</span>
+            <strong>Hash를 기억</strong>
+            <small id="chainLink12Text">일치</small>
+          </div>
+
+          <article id="chainBlock2" class="chain-block">
+            <div class="chain-block-head">
+              <div><span class="block-label">BLOCK</span><h3>Block #2</h3></div>
+              <span id="chainBadge2" class="chain-badge ok">정상</span>
+            </div>
+            <div class="chain-data-title">거래 기록</div>
+            <div class="chain-transactions">
+              <div><span>영희 → 지수</span><strong>7,000원</strong></div>
+              <div><span>준호 → 민수</span><strong>12,000원</strong></div>
+              <div><span>철수 → 준호</span><strong>2,500원</strong></div>
+            </div>
+            <div class="chain-hash-field previous">
+              <span>Previous Hash</span><code id="chainPrev2"></code>
+            </div>
+            <div class="chain-hash-field current">
+              <span>Block Hash</span><code id="chainHash2"></code>
+            </div>
+          </article>
+
+          <div id="chainLink23" class="chain-link ok" aria-live="polite">
+            <span class="link-arrow">→</span>
+            <strong>Hash를 기억</strong>
+            <small id="chainLink23Text">일치</small>
+          </div>
+
+          <article id="chainBlock3" class="chain-block">
+            <div class="chain-block-head">
+              <div><span class="block-label">BLOCK</span><h3>Block #3</h3></div>
+              <span id="chainBadge3" class="chain-badge ok">정상</span>
+            </div>
+            <div class="chain-data-title">거래 기록</div>
+            <div class="chain-transactions">
+              <div><span>지수 → 철수</span><strong>4,000원</strong></div>
+              <div><span>민수 → 영희</span><strong>6,500원</strong></div>
+              <div><span>준호 → 지수</span><strong>8,000원</strong></div>
+            </div>
+            <div class="chain-hash-field previous">
+              <span>Previous Hash</span><code id="chainPrev3"></code>
+            </div>
+            <div class="chain-hash-field current">
+              <span>Block Hash</span><code id="chainHash3"></code>
+            </div>
+          </article>
+        </div>
+
+        <div class="chain-instruction">
+          <span class="instruction-number">1</span>
+          <p><strong>Block #1의 거래를 1원만 바꿔보세요.</strong> Block #1의 Hash는 즉시 달라지지만, Block #2가 기억하고 있는 Previous Hash는 예전 값 그대로입니다.</p>
+        </div>
+      </section>
+
+      <section class="lesson-grid" aria-label="Chain 핵심 포인트">
+        <article><span class="lesson-number">01</span><h3>앞 Block의 Hash를 기억</h3><p>다음 Block의 Previous Hash가 바로 앞 Block의 Hash를 가리킵니다.</p></article>
+        <article><span class="lesson-number">02</span><h3>앞의 기록이 바뀌면 연결이 깨짐</h3><p>Block #1의 Hash가 달라지면 Block #2가 기억하던 값과 더 이상 일치하지 않습니다.</p></article>
+        <article><span class="lesson-number">03</span><h3>그래서 Block + Chain</h3><p>Block들이 Hash를 이용해 앞뒤로 연결되어 있기 때문에 Blockchain이라고 부릅니다.</p></article>
+      </section>
+
+      <aside class="bridge-note bridge-action">
+        <div class="bridge-icon" aria-hidden="true">↗</div>
+        <div>
+          <strong>이번에는 아무 Hash나 인정하지 않는다고 해봅시다.</strong>
+          <p>정해진 조건을 만족하는 Hash를 찾을 때까지 Nonce를 바꾸며 계산하면 Proof of Work의 핵심을 체험할 수 있습니다.</p>
+        </div>
+        <button class="primary-button" type="button" data-step="pow">다음: PoW 체험 <span aria-hidden="true">→</span></button>
+      </aside>
+    </section>
+
+    <section id="powExperience" class="experience hidden" aria-hidden="true">
+      <section class="tool-card pow-tool" aria-labelledby="pow-tool-title">
+        <div class="tool-toolbar pow-toolbar">
+          <div>
+            <p class="section-kicker">Nonce를 바꾸며 조건에 맞는 Hash를 찾아보세요</p>
+            <h2 id="pow-tool-title">새 Block #4를 Mining</h2>
+          </div>
+          <button id="resetPow" class="secondary-button" type="button">초기화</button>
+        </div>
+
+        <section class="manual-mining" aria-labelledby="manual-mining-title">
+          <div class="manual-mining-head">
+            <div>
+              <span class="substep-badge">STEP 4-A · 사람이 직접</span>
+              <h3 id="manual-mining-title">Nonce를 직접 넣어 Hash를 찾아보세요</h3>
+              <p>0~10,000 사이의 원하는 숫자를 입력해 보세요. 입력하는 순간 Hash가 바로 다시 계산됩니다.</p>
+            </div>
+          </div>
+
+          <fieldset class="manual-difficulty-control">
+            <legend>수동 Mining 난이도</legend>
+            <label><input type="radio" name="manualDifficulty" value="1" checked><span><b>먼저 해보기</b><code>0</code></span></label>
+            <label><input type="radio" name="manualDifficulty" value="2"><span><b>난이도 올리기</b><code>00</code></span></label>
+            <p><strong>너무 쉽게 찾았다면 00으로 올려보세요.</strong> 앞의 0이 하나 늘면 평균적으로 약 16배 더 찾기 어려워집니다.</p>
+          </fieldset>
+
+          <div class="manual-mining-grid">
+            <article id="manualPowBlockCard" class="manual-pow-card">
+              <div class="chain-block-head">
+                <div><span class="block-label">NEW BLOCK</span><h4>Block #4</h4></div>
+                <span id="manualPowBadge" class="chain-badge changed">찾는 중</span>
+              </div>
+              <div class="manual-data-summary">
+                <span>거래 기록은 그대로</span>
+                <strong>Nonce만 바꿉니다</strong>
+              </div>
+              <div class="chain-transactions pow-transactions">
+                <div><span>철수 → 지수</span><strong>9,000원</strong></div>
+                <div><span>영희 → 준호</span><strong>4,500원</strong></div>
+                <div><span>민수 → 철수</span><strong>3,000원</strong></div>
+              </div>
+              <div class="pow-field">
+                <span>Previous Hash <small>Block #3의 Hash</small></span>
+                <code id="manualPowPreviousHash"></code>
+              </div>
+            </article>
+
+            <section class="manual-pow-result" aria-label="수동 Mining 결과">
+              <div class="manual-target-row">
+                <span>목표</span>
+                <strong>Hash가 <code id="manualPowTarget">0…</code>으로 시작</strong>
+              </div>
+              <label class="manual-nonce-field" for="manualNonce">
+                <span>Nonce를 직접 입력하세요</span>
+                <input id="manualNonce" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="5" value="0" autocomplete="off" aria-describedby="manualNonceHelp" />
+                <small id="manualNonceHelp">정답 공식은 없습니다. 0~10,000 사이에서 마음에 드는 숫자를 직접 입력해 보세요.</small>
+              </label>
+              <div class="hash-heading pow-hash-heading">
+                <div>
+                  <span class="label">현재 Block Hash</span>
+                  <span id="manualPowHashState" class="length-badge pending">조건 불충족</span>
+                </div>
+              </div>
+              <output id="manualPowHash" class="hash-output pow-hash-output" aria-live="polite"></output>
+              <div id="manualPowStatus" class="manual-pow-status idle" aria-live="polite">
+                <span class="manual-status-icon">?</span>
+                <div><strong>다른 Nonce도 넣어보세요.</strong><p>Hash의 첫 글자가 목표와 같은지 확인합니다.</p></div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <div class="manual-to-auto">
+          <span aria-hidden="true">↓</span>
+          <div><strong>방금 여러분이 한 일을 컴퓨터에게 시켜봅시다.</strong><p>컴퓨터는 Nonce를 0, 1, 2, 3… 자동으로 바꾸면서 훨씬 빠르게 반복 계산합니다.</p></div>
+        </div>
+
+        <section class="auto-mining" aria-labelledby="auto-mining-title">
+          <div class="auto-mining-head">
+            <span class="substep-badge">STEP 4-B · 컴퓨터가 자동으로</span>
+            <h3 id="auto-mining-title">자동 Mining</h3>
+          </div>
+
+          <div class="pow-goal">
+            <div class="pow-goal-icon" aria-hidden="true">◎</div>
+            <div>
+              <span>이번 실습의 목표</span>
+              <strong>Block Hash가 <code id="powGoalPrefix">000</code>으로 시작하게 만들기</strong>
+            </div>
+          </div>
+
+          <fieldset class="difficulty-control">
+            <legend>자동 Mining 난이도</legend>
+            <label><input type="radio" name="powDifficulty" value="2"><span><b>쉬움</b><code>00</code></span></label>
+            <label><input type="radio" name="powDifficulty" value="3" checked><span><b>기본</b><code>000</code></span></label>
+            <label><input type="radio" name="powDifficulty" value="4"><span><b>어려움</b><code>0000</code></span></label>
+            <p>앞의 0이 하나 늘면, 정답을 찾기까지 필요한 계산은 <strong>평균적으로 약 16배</strong> 늘어납니다.</p>
+          </fieldset>
+
+          <div class="pow-layout">
+          <article id="powBlockCard" class="pow-block-card">
+            <div class="chain-block-head">
+              <div><span class="block-label">NEW BLOCK</span><h3>Block #4</h3></div>
+              <span id="powBlockBadge" class="chain-badge changed">아직 미완성</span>
+            </div>
+
+            <div class="chain-data-title">거래 기록</div>
+            <div class="chain-transactions pow-transactions">
+              <div><span>철수 → 지수</span><strong>9,000원</strong></div>
+              <div><span>영희 → 준호</span><strong>4,500원</strong></div>
+              <div><span>민수 → 철수</span><strong>3,000원</strong></div>
+            </div>
+
+            <div class="pow-block-fields">
+              <div class="pow-field">
+                <span>Previous Hash <small>Block #3의 Hash</small></span>
+                <code id="powPreviousHash"></code>
+              </div>
+              <div class="pow-field nonce-live">
+                <span>Nonce</span>
+                <output id="powNonce">0</output>
+                <small>0 → 1 → 2 → 3 → …</small>
+              </div>
+            </div>
+          </article>
+
+          <section class="pow-result" aria-label="Mining 결과">
+            <div class="pow-target-row">
+              <span>찾아야 할 Hash</span>
+              <code id="powTarget">000…</code>
+            </div>
+
+            <div class="hash-heading pow-hash-heading">
+              <div>
+                <span class="label">현재 Block Hash</span>
+                <span id="powHashState" class="length-badge pending">조건 확인 중</span>
+              </div>
+              <button class="copy-button" type="button" data-copy-target="powHash">복사</button>
+            </div>
+            <output id="powHash" class="hash-output pow-hash-output" aria-live="polite"></output>
+
+            <div class="pow-stats" aria-live="polite">
+              <div><span>시도 횟수</span><strong id="powAttempts">0</strong></div>
+              <div><span>소요 시간</span><strong id="powElapsed">0.00초</strong></div>
+            </div>
+
+            <button id="mineButton" class="mine-button" type="button">Mining 시작</button>
+            <div id="powStatus" class="pow-status idle" aria-live="polite">
+              <span class="pow-status-icon">→</span>
+              <div><strong>아직 Mining을 시작하지 않았습니다.</strong><p>버튼을 누르면 Nonce를 하나씩 바꾸며 SHA-256을 반복 계산합니다.</p></div>
+            </div>
+          </section>
+        </div>
+        </section>
+      </section>
+
+      <section class="lesson-grid" aria-label="Proof of Work 핵심 포인트">
+        <article><span class="lesson-number">01</span><h3>Nonce를 계속 바꿔 계산</h3><p>데이터는 그대로 두고 Nonce만 0, 1, 2… 바꾸면서 새로운 Hash를 만들어 봅니다.</p></article>
+        <article><span class="lesson-number">02</span><h3>조건을 만족할 때까지 반복</h3><p>Hash가 우연히 목표 조건으로 시작할 때까지 여러 번 계산해야 합니다.</p></article>
+        <article><span class="lesson-number">03</span><h3>어려울수록 더 많은 계산</h3><p>조건이 어려워지면 평균 시도 횟수가 급격히 늘어 PoW에서 컴퓨팅 파워가 중요해집니다.</p></article>
+      </section>
+
+      <aside class="completion-note">
+        <span aria-hidden="true">✓</span>
+        <div><strong>HASH → BLOCK → CHAIN → Proof of Work</strong><p>이제 네 단계를 직접 조작하며 블록체인의 핵심 구조를 한 흐름으로 체험했습니다.</p></div>
+      </aside>
+    </section>
+
+    <footer class="privacy-note">
+      <span aria-hidden="true">●</span>
+      입력한 내용은 외부 서버로 전송되지 않고 이 브라우저 안에서만 Hash 계산에 사용됩니다.
+    </footer>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite">Hash를 복사했습니다.</div>
+  <script src="./app.js"></script>
+</body>
+</html>

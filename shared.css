@@ -1,0 +1,243 @@
+/* ============================================================
+   shared.css — 강의 허브 공통 디자인 토큰 / 공통 컴포넌트
+   기존 체험도구(lecture-02-체험/styles.css)의 :root 토큰을 그대로 재사용한다.
+   Home과 Experience가 같은 사이트로 느껴지도록 여기 값만 단일 출처로 관리한다.
+   ============================================================ */
+
+:root {
+  color-scheme: light;
+  --ink: #0b1220;
+  --muted: #5e6a7d;
+  --line: #dce3ee;
+  --panel: #ffffff;
+  --canvas: #f4f7fb;
+  --primary: #2563eb;
+  --primary-deep: #1d4ed8;
+  --primary-soft: #eaf1ff;
+  --success: #0f9f72;
+  --success-soft: #e8f8f2;
+  --warning: #c26a11;
+  --warning-soft: #fff5e8;
+  --shadow: 0 20px 55px rgba(11, 18, 32, 0.10);
+  --radius-xl: 28px;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background:
+    radial-gradient(circle at 15% -5%, rgba(37, 99, 235, .12), transparent 28rem),
+    var(--canvas);
+  color: var(--ink);
+  font-family: Inter, Pretendard, "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button, input, textarea, select { font: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+
+/* Focus 상태는 기존 체험도구와 동일한 강도를 유지한다. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, .25);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ------------------------------------------------------------
+   Layout
+   ------------------------------------------------------------ */
+
+/* PC/프로젝터 최대 폭 1120px, 모바일 좌우 여백 14px 수준 */
+.shell {
+  width: min(1120px, calc(100% - 28px));
+  margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+  .shell { width: min(1120px, calc(100% - 40px)); }
+}
+
+/* ------------------------------------------------------------
+   Thin Header
+   ------------------------------------------------------------ */
+
+.site-header {
+  border-bottom: 1px solid rgba(220, 227, 238, .8);
+  background: rgba(255, 255, 255, .62);
+  backdrop-filter: saturate(150%) blur(8px);
+}
+
+.site-header .shell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 58px;
+  padding: 10px 0;
+}
+
+.brand {
+  color: var(--ink);
+  font-size: .82rem;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.brand:hover { color: var(--primary); }
+
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.header-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 13px;
+  border-radius: 10px;
+  color: #475569;
+  font-size: .88rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background .15s ease, color .15s ease;
+}
+.header-link:hover { background: var(--primary-soft); color: var(--primary); }
+
+/* 모바일에서는 상단 메뉴를 더 단순하게 — 자료 하나만 남긴다.
+   체험은 Hero의 Primary CTA가 담당하므로 상단에 중복 노출하지 않는다. */
+.header-link.pc-only { display: none; }
+.label-short { display: inline; }
+.label-full { display: none; }
+
+@media (min-width: 720px) {
+  .brand { font-size: .9rem; }
+  .header-link.pc-only { display: inline-flex; }
+  .label-short { display: none; }
+  .label-full { display: inline; }
+}
+
+/* ------------------------------------------------------------
+   Typography 공통
+   ------------------------------------------------------------ */
+
+.eyebrow {
+  color: var(--primary);
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .13em;
+}
+
+/* ------------------------------------------------------------
+   Buttons
+   ------------------------------------------------------------ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 54px;
+  padding: 15px 26px;
+  border: 0;
+  border-radius: 12px;
+  font-size: 1.02rem;
+  font-weight: 800;
+  letter-spacing: -.01em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform .15s ease, background .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.btn:active { transform: translateY(1px); }
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(37, 99, 235, .24);
+}
+.btn-primary:hover { background: var(--primary-deep); }
+
+.btn-secondary {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: #475569;
+}
+.btn-secondary:hover { border-color: #b9c9e4; background: #f8fafd; }
+
+.btn .arrow { font-size: 1.05em; line-height: 1; }
+
+/* ------------------------------------------------------------
+   Footer
+   ------------------------------------------------------------ */
+
+.site-footer {
+  margin-top: auto;
+  border-top: 1px solid rgba(220, 227, 238, .9);
+}
+
+.site-footer .shell {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 14px 0 18px;
+  color: #8792a4;
+  font-size: .78rem;
+}
+
+.site-footer strong {
+  color: #64748b;
+  font-weight: 800;
+  letter-spacing: .04em;
+}
+
+/* ------------------------------------------------------------
+   Utility
+   ------------------------------------------------------------ */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: 14px;
+  top: -60px;
+  z-index: 10;
+  padding: 12px 18px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: #fff;
+  font-size: .88rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: top .15s ease;
+}
+.skip-link:focus { top: 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}

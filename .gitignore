@@ -1,0 +1,17 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 편집기
+.vscode/
+.idea/
+
+# 강의 준비용 내부 문서는 이 저장소에 두지 않는다.
+# (공개 저장소이므로 실수로 커밋되지 않게 막아둔다)
+*.pptx
+*.docx
+강의계획서*
+*_강의_전체흐름.md
+*_PPT_작성가이드.md
+LECTURE-*.md
