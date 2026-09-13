@@ -181,7 +181,11 @@ const els = {
   mineButton: document.querySelector("#mineButton"),
   resetPow: document.querySelector("#resetPow"),
   difficultyInputs: Array.from(document.querySelectorAll('input[name="powDifficulty"]')),
-  toast: document.querySelector("#toast")
+  toast: document.querySelector("#toast"),
+  returnBar: document.querySelector("#returnBar"),
+  returnBack: document.querySelector("#returnBack"),
+  returnNext: document.querySelector("#returnNext"),
+  homeLink: document.querySelector(".home-link")
 };
 
 let renderToken = 0;
@@ -724,6 +728,78 @@ window.addEventListener("hashchange", () => {
   if (["hash", "block", "chain", "pow"].includes(step)) updateStepUI(step);
 });
 
+/* ============================================================
+   ReturnToLecture — 강의 ↔ 체험 왕복
+
+   강의 화면은 다음 형태로 이 도구를 연다.
+     experience/index.html?from=L05&return=L06#hash
+
+     #hash    실행할 체험 종류
+     from     체험 직전 강의 화면  → "← 강의로 돌아가기"
+     return   체험 후 이어서 진행할 강의 화면 → "강의 계속하기 →"
+
+   복귀 위치의 기준값은 URL parameter 다. sessionStorage 는 from 이
+   빠졌을 때를 메우는 보조 수단으로만 쓰고, URL 값을 덮어쓰지 않는다.
+   허용 값은 L01~L25 뿐이며, 그 밖의 값은 무시한다(임의 URL 복귀 금지).
+   ============================================================ */
+
+const LECTURE_SCREEN = /^L(?:0[1-9]|1[0-9]|2[0-5])$/;
+const LECTURE_PATH = "../lecture/index.html";
+const LECTURE_CONTEXT_KEY = "lecture:experience-context";
+
+function validLectureScreen(value) {
+  return typeof value === "string" && LECTURE_SCREEN.test(value) ? value : null;
+}
+
+/** 강의 화면 URL. 잘못된 값이면 기본 강의 화면으로 보낸다. */
+function lectureUrl(screenId) {
+  const id = validLectureScreen(screenId) || "L01";
+  return `${LECTURE_PATH}#/${id}`;
+}
+
+/** L06 → L05. from 이 없을 때 체험 직전 화면을 추정하는 보조 계산. */
+function previousLectureScreen(screenId) {
+  const number = Number(screenId.slice(1));
+  return number > 1 ? `L${String(number - 1).padStart(2, "0")}` : "L01";
+}
+
+function readStoredContext() {
+  try {
+    const raw = sessionStorage.getItem(LECTURE_CONTEXT_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function storeContext(context) {
+  try {
+    sessionStorage.setItem(LECTURE_CONTEXT_KEY, JSON.stringify(context));
+  } catch {
+    /* 저장에 실패해도 URL 만으로 동작해야 하므로 무시한다. */
+  }
+}
+
+function setupReturnBar() {
+  const params = new URLSearchParams(location.search);
+  const returnTo = validLectureScreen(params.get("return"));
+
+  /* 강의를 거치지 않고 직접 들어온 경우에는 상단바를 표시하지 않는다. */
+  if (!returnTo) return;
+
+  const stored = readStoredContext();
+  const from = validLectureScreen(params.get("from"))
+    || (stored && stored.returnTo === returnTo ? validLectureScreen(stored.from) : null)
+    || previousLectureScreen(returnTo);
+
+  storeContext({ from, returnTo });
+
+  els.returnBack.href = lectureUrl(from);
+  els.returnNext.href = lectureUrl(returnTo);
+  els.returnBar.hidden = false;
+  document.body.classList.add("has-return-bar");
+}
+
 async function init() {
   els.previousHash.textContent = BLOCK_DEFAULTS.previousHash;
   els.blockNonce.textContent = String(BLOCK_DEFAULTS.nonce);
@@ -738,6 +814,7 @@ async function init() {
   renderPowIdle();
   const requestedStep = location.hash.replace("#", "");
   navigateToStep(["hash", "block", "chain", "pow"].includes(requestedStep) ? requestedStep : "hash", { updateHash: false });
+  setupReturnBar();
 }
 
 init();
