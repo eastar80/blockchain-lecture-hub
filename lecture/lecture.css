@@ -161,7 +161,7 @@
 .stage-title {
   margin: 0;
   color: var(--ink);
-  font-size: clamp(1.7rem, 3.1vw, 2.9rem);
+  font-size: clamp(1.65rem, min(3.4vw, 5.2vh), 3.15rem);   /* 프로젝터 기준 약 40~50px */
   font-weight: 900;
   letter-spacing: -.025em;
   line-height: 1.24;
@@ -170,7 +170,7 @@
 .stage-kicker {
   margin: -6px 0 0;
   color: var(--muted);
-  font-size: clamp(.95rem, 1.4vw, 1.12rem);
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
   font-weight: 700;
 }
 
@@ -185,7 +185,7 @@
   padding-top: 14px;
   border-top: 1px solid var(--line);
   color: var(--muted);
-  font-size: clamp(.88rem, 1.2vw, 1rem);
+  font-size: clamp(.95rem, 1.3vw, 1.14rem);    /* 보조 설명도 16px 아래로 내려가지 않게 */
   font-weight: 600;
   line-height: 1.6;
 }
@@ -219,7 +219,7 @@
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
   background: var(--primary-soft);
   color: var(--primary-deep);
-  font-size: clamp(1.05rem, 1.9vw, 1.5rem);
+  font-size: clamp(1.12rem, min(2.3vw, 3.7vh), 2.05rem);   /* 핵심 질문/결론 약 28~33px */
   font-weight: 800;
   line-height: 1.45;
 }
@@ -230,7 +230,7 @@
 .s-question {
   margin: 0;
   color: var(--ink);
-  font-size: clamp(1.6rem, 4vw, 3.1rem);
+  font-size: clamp(1.6rem, min(4vw, 6.6vh), 3.1rem);
   font-weight: 900;
   letter-spacing: -.03em;
   line-height: 1.3;
@@ -316,14 +316,14 @@
 .duo-line {
   margin: 0;
   color: #40506b;
-  font-size: clamp(.95rem, 1.3vw, 1.08rem);
+  font-size: clamp(.98rem, 1.45vw, 1.28rem);   /* 도식 라벨 약 19~21px */
   font-weight: 700;
 }
 
 .duo-foot {
   margin: 4px 0 0;
   color: var(--muted);
-  font-size: .86rem;
+  font-size: clamp(.88rem, 1.2vw, 1.05rem);
   font-weight: 700;
 }
 
@@ -396,6 +396,19 @@
 @media (min-width: 760px) {
   .num-item { grid-template-columns: auto 1fr auto; }
   .num-answer { grid-column: auto; }
+}
+
+/* 5개 질문을 좌 → 우 로 늘어놓는 배치 */
+@media (min-width: 1040px) {
+  .num-row { grid-template-columns: repeat(5, 1fr); }
+  .num-row .num-item {
+    grid-template-columns: auto;
+    align-content: start;
+    gap: 8px;
+    padding: 14px;
+  }
+  .num-row .num-question { font-size: clamp(.92rem, 1.15vw, 1.05rem); }
+  .num-row .num-answer { grid-column: 1; font-size: .86rem; }
 }
 
 /* ------------------------------------------------------------
@@ -1214,4 +1227,1263 @@
   .lecture-main,
   .lecture-nav-inner { width: min(1280px, calc(100% - 40px)); }
   .lecture-header-inner { width: min(1360px, calc(100% - 40px)); }
+}
+
+/* ============================================================
+   2차 고도화 — 설명 구조 표현
+
+   원칙
+   - 관계가 중요하면 카드가 아니라 선 / 그룹 / 흐름으로 표현한다.
+   - 원본의 하단 한 줄 결론은 note 가 아니라 본문급 conclusion 으로 올린다.
+   - PC(프로젝터)를 1순위로 크기를 잡고, 모바일에서는 같은 내용을 세로로 잇는다.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   BridgeStrip — 체험 직후 ‘방금 한 일’ 회수
+   RecallStrip — 앞 화면 맥락 회수
+   ------------------------------------------------------------ */
+
+.bridge,
+.recall {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+  margin: 0;
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+}
+
+.bridge {
+  border: 1px solid #bfd3f8;
+  background: var(--primary-soft);
+}
+
+.recall {
+  border: 1px dashed #b9c9e4;
+  background: rgba(255, 255, 255, .7);
+}
+
+.bridge-tag,
+.recall-tag {
+  flex: none;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: .76rem;
+  font-weight: 900;
+  letter-spacing: .04em;
+}
+
+.bridge-tag { background: var(--primary); color: #fff; }
+.recall-tag { background: #e2e8f2; color: #56657f; }
+
+.bridge-text,
+.recall-text {
+  font-size: clamp(.95rem, 1.25vw, 1.12rem);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.bridge-text { color: var(--primary-deep); }
+.recall-text { color: #46556e; }
+.recall-text strong { color: var(--ink); font-weight: 900; }
+
+/* ------------------------------------------------------------
+   ConclusionStrip — 원본 하단 결론을 본문급으로
+   ------------------------------------------------------------ */
+
+.s-conclusion {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 24px;
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--primary);
+  border-radius: 6px var(--radius-lg) var(--radius-lg) 6px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.s-conclusion-tag {
+  flex: none;
+  padding: 4px 11px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: .74rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.s-conclusion-text {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(1.12rem, min(2.3vw, 3.7vh), 2.05rem);
+  font-weight: 900;
+  letter-spacing: -.025em;
+  line-height: 1.4;
+}
+
+/* causal 흐름 안에 들어간 결론은 이미 단계 안이므로 그림자를 뺀다 */
+.causal-stage .s-conclusion { box-shadow: none; border-color: transparent; background: transparent; padding: 2px 0 2px 16px; }
+
+/* ------------------------------------------------------------
+   NextHint — 다음 화면 질문 예고
+   ------------------------------------------------------------ */
+
+.next-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 18px;
+  border-top: 1px dashed var(--line);
+  color: var(--primary-deep);
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
+  font-weight: 800;
+}
+
+.next-hint span {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #eef2f8;
+  color: #64748b;
+  font-size: .74rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+/* ------------------------------------------------------------
+   Converge — 두 갈래가 하나의 결과로 모인다
+   ------------------------------------------------------------ */
+
+.converge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 두 카드에서 내려와 가운데로 모이는 괄호 */
+.converge-arms {
+  position: relative;
+  width: 52%;                            /* duo 두 카드의 중심과 맞춘다 */
+  height: 18px;
+}
+.converge-arms::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 14px;
+  border: 2px solid var(--primary);
+  border-top: 0;
+  border-radius: 0 0 14px 14px;
+}
+.converge-arms::after {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  height: 6px;
+  border-left: 2px solid var(--primary);
+}
+
+.converge-question {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(1.08rem, min(1.9vw, 3vh), 1.5rem);
+  font-weight: 900;
+  letter-spacing: -.02em;
+  text-align: center;
+}
+
+.converge-via {
+  margin: 0;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary-deep);
+  font-size: clamp(1rem, 1.4vw, 1.2rem);
+  font-weight: 900;
+}
+
+.converge-drop { margin: 0; color: var(--primary); font-size: 1.2rem; font-weight: 900; line-height: 1; }
+
+.converge-result {
+  margin: 0;
+  padding: 14px 26px;
+  border: 1px solid #b6e3d2;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, #fff, var(--success-soft));
+  color: var(--ink);
+  font-size: clamp(1.08rem, 1.8vw, 1.45rem);
+  font-weight: 900;
+  letter-spacing: -.02em;
+  text-align: center;
+}
+
+/* ------------------------------------------------------------
+   LoopFlow — 조건을 만족할 때까지 되돌아가는 반복
+   되돌아가는 선을 실제로 그려 ‘반복’이 눈에 보이게 한다.
+   ------------------------------------------------------------ */
+
+.loop {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 26px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-width: 720px;
+}
+
+/* 마지막 행(성공)을 제외한 구간만 덮는다 — 아니오는 조건 확인에서 되돌아간다 */
+.loop-back {
+  position: relative;
+  grid-column: 1;
+  border: 2px solid var(--primary);
+  border-right: 0;
+  border-radius: 16px 0 0 16px;
+}
+.loop-back::after {                       /* 숫자 변경으로 되돌아가는 화살촉 */
+  content: '';
+  position: absolute;
+  top: -7px;
+  right: -1px;
+  border: 6px solid transparent;
+  border-left-color: var(--primary);
+}
+
+.loop-back-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* 한글은 세로쓰기에서 글자가 바로 선 채 위→아래로 읽힌다.
+     회전을 주면 글자가 뒤집히므로 writing-mode 만 쓴다. */
+  writing-mode: vertical-rl;
+  padding: 6px 2px;
+  background: var(--canvas);
+  color: var(--primary);
+  font-size: .8rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.loop-step,
+.loop-yes {
+  position: relative;
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 15px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel);
+  color: var(--ink);
+  font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+  font-weight: 900;
+  letter-spacing: -.02em;
+}
+
+/* 단계 사이 아래 방향 화살표 */
+.loop-step::after {
+  content: '↓';
+  position: absolute;
+  top: 100%;
+  left: 26px;
+  height: 26px;
+  color: var(--primary);
+  font-size: 1.1rem;
+  font-weight: 900;
+  line-height: 26px;
+}
+
+.loop-decide {
+  border-color: #bfd3f8;
+  background: linear-gradient(180deg, #fff, var(--primary-soft));
+}
+.loop-decide-q { color: var(--primary-deep); }
+.loop-decide-desc { color: var(--muted); font-size: .9rem; font-weight: 700; }
+
+.loop-yes {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  border-color: #b6e3d2;
+  background: linear-gradient(180deg, #fff, var(--success-soft));
+}
+
+.loop-yes-tag {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--success);
+  color: #fff;
+  font-size: .8rem;
+  font-weight: 900;
+}
+
+/* ------------------------------------------------------------
+   CausalFlow — 입력 → 검사 → 결과
+   ------------------------------------------------------------ */
+
+.causal {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.causal-arrow {
+  align-self: center;
+  color: var(--primary);
+  font-size: 1.3rem;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.causal-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+}
+.causal-stage.tone-check { border-color: #bfd3f8; background: linear-gradient(180deg, #fff, var(--primary-soft)); }
+.causal-stage.tone-out { border-color: #b6e3d2; background: linear-gradient(180deg, #fff, var(--success-soft)); }
+
+.causal-tag {
+  margin: 0;
+  color: var(--muted);
+  font-size: .82rem;
+  font-weight: 900;
+  letter-spacing: .07em;
+}
+.causal-stage.tone-check .causal-tag { color: var(--primary); }
+.causal-stage.tone-out .causal-tag { color: var(--success); }
+
+/* 단계 안에서는 도식 여백을 줄여 한 화면에 함께 들어가게 한다 */
+.causal-stage .blk-row,
+.causal-stage .node-row { margin: 0; }
+
+/* ------------------------------------------------------------
+   CheckList — ‘검사한다’는 동작이 보이는 점검 항목
+   ------------------------------------------------------------ */
+
+.check-list {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.check-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, .75);
+  color: var(--ink);
+  font-size: clamp(1rem, 1.4vw, 1.18rem);
+  font-weight: 800;
+}
+
+.check-box {
+  flex: none;
+  width: 19px;
+  height: 19px;
+  border: 2px solid var(--primary);
+  border-radius: 5px;
+}
+
+@media (min-width: 860px) {
+  .check-list { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ------------------------------------------------------------
+   LedgerCopies — 같은 Block 이 각자의 장부에 들어간다
+   ------------------------------------------------------------ */
+
+.ledgers {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ledger {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel);
+}
+
+.ledger-name {
+  margin: 0;
+  color: var(--ink);
+  font-size: .95rem;
+  font-weight: 900;
+  letter-spacing: .03em;
+}
+
+.ledger-old {
+  margin: 0;
+  padding: 7px 10px;
+  border-radius: 7px;
+  background: #f1f5fa;
+  color: #9aa7ba;
+  font-size: .84rem;
+  font-weight: 700;
+}
+
+.ledger-add {
+  margin: 0;
+  padding: 9px 10px;
+  border: 1px solid #b6e3d2;
+  border-radius: 7px;
+  background: var(--success-soft);
+  color: #0b7a58;
+  font-size: .92rem;
+  font-weight: 900;
+}
+
+@media (min-width: 760px) {
+  .ledgers { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ------------------------------------------------------------
+   RouteWithRoles — 개념을 노선으로 잇고 역할을 함께 둔다
+   ------------------------------------------------------------ */
+
+.route-roles {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+  list-style: none;
+}
+
+.route-roles-stop {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 4px 0;
+}
+
+.route-roles-dot {
+  grid-row: 1 / span 2;
+  width: 14px;
+  height: 14px;
+  border: 3px solid var(--primary);
+  border-radius: 50%;
+  background: var(--panel);
+}
+
+.route-roles-name {
+  color: var(--primary-deep);
+  font-size: clamp(1rem, 1.4vw, 1.18rem);
+  font-weight: 900;
+  letter-spacing: -.01em;
+}
+
+.route-roles-role {
+  color: var(--muted);
+  font-size: clamp(.88rem, 1.15vw, 1.02rem);
+  font-weight: 700;
+}
+
+/* 역과 역을 잇는 선 */
+.route-roles-link {
+  width: 0;
+  height: 18px;
+  margin-left: 6px;
+  border-left: 3px solid var(--primary-soft);
+}
+
+@media (min-width: 900px) {
+  .route-roles { flex-direction: row; align-items: flex-start; }
+  .route-roles-stop {
+    flex: 0 1 auto;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    padding: 0;
+  }
+  .route-roles-dot { grid-row: auto; }
+  .route-roles-link {
+    flex: 1 1 auto;
+    width: auto;
+    height: 0;
+    margin: 7px -2px 0;
+    border-left: 0;
+    border-top: 3px solid var(--primary-soft);
+  }
+}
+
+/* ------------------------------------------------------------
+   NetworkCompare — 중앙 트리 vs 분산 네트워크
+   ------------------------------------------------------------ */
+
+.org-compare {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.org-vs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  font-size: clamp(1.2rem, 2vw, 1.7rem);
+  font-weight: 900;
+}
+
+.org {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.org-tag {
+  margin: 0;
+  align-self: flex-start;
+  color: var(--muted);
+  font-size: .82rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+}
+.org-mesh .org-tag { color: var(--primary); }
+
+.org-foot {
+  margin: auto 0 0;
+  padding-top: 10px;
+  color: var(--muted);
+  font-size: clamp(.9rem, 1.2vw, 1.05rem);
+  font-weight: 800;
+  text-align: center;
+}
+
+/* 중앙 관리 트리 */
+.tree-root {
+  position: relative;
+  margin: 0 0 16px;
+  padding: 11px 26px;
+  border: 1px solid #b9c9e4;
+  border-radius: var(--radius-md);
+  background: #f7faff;
+  color: var(--ink);
+  font-size: clamp(1.02rem, 1.5vw, 1.22rem);
+  font-weight: 900;
+}
+.tree-root::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  height: 16px;
+  border-left: 2px solid var(--line);
+}
+
+.tree-leaves {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tree-leaves::before {                    /* 자식 수에 맞춰 가로 연결선 */
+  content: '';
+  position: absolute;
+  top: -16px;
+  left: calc(50% / var(--n));
+  right: calc(50% / var(--n));
+  border-top: 2px solid var(--line);
+}
+
+.tree-leaves li {
+  position: relative;
+  flex: 1 1 0;
+  padding: 10px 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #fff;
+  color: #40506b;
+  font-size: clamp(.88rem, 1.2vw, 1.02rem);
+  font-weight: 800;
+  text-align: center;
+}
+.tree-leaves li::before {
+  content: '';
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  height: 16px;
+  border-left: 2px solid var(--line);
+}
+
+/* 분산 네트워크 */
+.mesh {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 1 / .78;
+  color: var(--primary);
+}
+
+.mesh-links {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.mesh-links line {
+  stroke: currentColor;
+  stroke-width: 1.1;
+  opacity: .42;
+  vector-effect: non-scaling-stroke;
+}
+
+/* 셀 중심이 25% / 75% 에 오도록 두 줄을 균등하게 나눈다.
+   그래야 SVG 연결선이 노드 중심에서 노드 중심으로 이어진다. */
+.mesh-grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mesh-node {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 84px;
+  padding: 10px 12px;
+  border: 1px solid #bfd3f8;
+  border-radius: var(--radius-md);
+  background: #fff;
+  color: var(--primary-deep);
+  font-size: clamp(.88rem, 1.2vw, 1.02rem);
+  font-weight: 900;
+  text-align: center;
+}
+
+@media (min-width: 860px) {
+  .org-compare { grid-template-columns: 1fr auto 1fr; gap: 16px; }
+}
+
+/* ------------------------------------------------------------
+   Gather — 흩어진 거래가 Block 안으로 들어간다
+   ------------------------------------------------------------ */
+
+.gather {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.gather-loose { display: flex; flex-direction: column; gap: 8px; }
+
+.gather-tag,
+.gather-block-name {
+  margin: 0;
+  font-size: .82rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+}
+.gather-tag { color: var(--muted); }
+.gather-block-name { color: var(--primary); }
+
+.gather-tickets,
+.gather-inside {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gather-tickets li {
+  padding: 11px 15px;
+  border: 1px dashed #c3cede;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, .75);
+  color: #5b6a82;
+  font-size: clamp(.95rem, 1.3vw, 1.1rem);
+  font-weight: 700;
+}
+/* 흩어져 있다는 상태를 아주 약한 기울기로만 표현한다 */
+.gather-tickets li:nth-child(1) { transform: rotate(-.8deg); }
+.gather-tickets li:nth-child(2) { transform: rotate(.6deg) translateX(6px); }
+.gather-tickets li:nth-child(3) { transform: rotate(-.4deg) translateX(-4px); }
+.gather-tickets li:nth-child(4) { transform: rotate(.9deg); }
+
+.gather-action {
+  margin: 0;
+  color: var(--primary);
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
+  font-weight: 900;
+  text-align: center;
+}
+
+.gather-block {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 18px;
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, #fff, var(--primary-soft));
+  box-shadow: var(--shadow);
+}
+
+.gather-inside li {
+  padding: 9px 14px;
+  border: 1px solid #cfdcf5;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--ink);
+  font-size: clamp(.95rem, 1.3vw, 1.1rem);
+  font-weight: 800;
+}
+
+.gather-hash {
+  margin: 0;
+  padding-top: 7px;
+  border-top: 1px dashed #bfd3f8;
+  color: var(--primary-deep);
+  font-size: clamp(.92rem, 1.25vw, 1.05rem);
+  font-weight: 900;
+}
+
+@media (min-width: 860px) {
+  .gather { grid-template-columns: .92fr auto 1.08fr; gap: 18px; }
+}
+
+/* ------------------------------------------------------------
+   BranchTree — 상위 개념에서 하위 방식으로
+   ------------------------------------------------------------ */
+
+.branch { display: flex; flex-direction: column; }
+
+.branch-root {
+  align-self: flex-start;
+  margin: 0 0 0 0;
+  padding: 12px 26px;
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, #fff, var(--primary-soft));
+  color: var(--primary-deep);
+  font-size: clamp(1.1rem, 1.7vw, 1.4rem);
+  font-weight: 900;
+  letter-spacing: -.02em;
+}
+
+.branch-body { display: grid; grid-template-columns: 34px minmax(0, 1fr); }
+
+.branch-spine {
+  margin-left: 24px;
+  border-left: 2px solid var(--line);
+}
+
+.branch-list { display: grid; gap: 9px; margin: 0; padding: 14px 0 0; list-style: none; }
+
+.branch-item {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel);
+}
+.branch-item::before {                    /* 척추에서 뻗어 나오는 가지 */
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -12px;
+  width: 12px;
+  border-top: 2px solid var(--line);
+}
+.branch-item.accent {
+  border-color: var(--primary);
+  background: linear-gradient(180deg, #fff, var(--primary-soft));
+}
+.branch-item.accent::before { border-color: var(--primary); }
+
+.branch-owner {
+  color: var(--muted);
+  font-size: clamp(.92rem, 1.25vw, 1.05rem);
+  font-weight: 900;
+}
+.branch-item.accent .branch-owner { color: var(--primary); }
+
+.branch-arrow { color: #b4c0d2; font-weight: 900; }
+
+.branch-name {
+  color: var(--ink);
+  font-size: clamp(1.02rem, 1.5vw, 1.25rem);
+  font-weight: 900;
+  letter-spacing: -.02em;
+}
+
+.branch-flag {
+  margin-left: auto;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+  font-size: .8rem;
+  font-weight: 900;
+}
+
+/* ------------------------------------------------------------
+   SharedNodes — 여러 노드가 같은 것을 공유한다
+   ------------------------------------------------------------ */
+
+.shared {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+}
+
+.shared-row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shared-node {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px 16px;
+  border: 1px solid #bfd3f8;
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+
+.shared-name { color: var(--ink); font-size: clamp(.98rem, 1.3vw, 1.12rem); font-weight: 900; }
+
+.shared-chip {
+  padding: 4px 13px;
+  border-radius: 7px;
+  background: var(--primary-soft);
+  color: var(--primary-deep);
+  font-size: .88rem;
+  font-weight: 900;
+  letter-spacing: .05em;
+}
+
+/* 노드 사이를 잇는 선 — PC 는 가로, 모바일은 세로 */
+.shared-link {
+  align-self: center;
+  width: 0;
+  height: 16px;
+  border-left: 2px dashed var(--primary);
+}
+
+.shared.tone-ask .shared-node { border-color: var(--line); }
+.shared.tone-ask .shared-chip { background: var(--warning-soft); color: var(--warning); }
+.shared.tone-ask .shared-link { border-color: #c3cede; }
+.shared.tone-ask .shared-label { background: #eef2f8; color: #56657f; }
+
+.shared-label {
+  margin: 0;
+  align-self: center;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary-deep);
+  font-size: clamp(.92rem, 1.25vw, 1.08rem);
+  font-weight: 900;
+}
+
+@media (min-width: 760px) {
+  .shared-row { flex-direction: row; align-items: center; }
+  .shared-node { flex: 1 1 0; flex-direction: column; gap: 7px; text-align: center; }
+  .shared-link { width: auto; flex: 0 1 34px; height: 0; border-left: 0; border-top: 2px dashed var(--primary); }
+}
+
+/* ------------------------------------------------------------
+   ChangeTrail — 변경이 어디까지 번지는가
+   ------------------------------------------------------------ */
+
+.trail {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trail-step {
+  flex: 1 1 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px 12px;
+  align-items: center;
+  padding: 13px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel);
+}
+.trail-step.tone-warn { border-color: #f2d7b3; background: linear-gradient(180deg, #fff, var(--warning-soft)); }
+.trail-step.tone-bad { border-color: #edc6c6; background: linear-gradient(180deg, #fff, #fdf1f1); }
+
+.trail-order {
+  grid-row: 1 / span 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: #eef2f8;
+  color: #64748b;
+  font-size: .85rem;
+  font-weight: 900;
+}
+.trail-step.tone-warn .trail-order { background: #fbe7cd; color: var(--warning); }
+.trail-step.tone-bad .trail-order { background: #fbdada; color: #c0392b; }
+
+.trail-text { color: var(--ink); font-size: clamp(.98rem, 1.35vw, 1.15rem); font-weight: 900; }
+.trail-value { color: var(--muted); font-size: clamp(.88rem, 1.2vw, 1.02rem); font-weight: 800; }
+.trail-step.tone-bad .trail-value { color: #c0392b; }
+
+.trail-arrow {
+  align-self: center;
+  color: var(--primary);
+  font-size: 1.15rem;
+  font-weight: 900;
+  transform: rotate(90deg);
+}
+
+@media (min-width: 900px) {
+  .trail { flex-direction: row; align-items: stretch; }
+  .trail-arrow { transform: none; }
+}
+
+/* ------------------------------------------------------------
+   SubwayMap — 마지막 기억점
+   ------------------------------------------------------------ */
+
+.subway {
+  padding: 22px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+  overflow-x: auto;
+}
+
+.subway-line {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-width: max-content;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.subway-stop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  padding: 0 clamp(8px, 1.4vw, 20px);
+}
+.subway-stop::before {                    /* 역과 역을 잇는 선로 — 점 한가운데를 지난다 */
+  content: '';
+  position: absolute;
+  top: 7px;
+  left: -50%;
+  right: 50%;
+  border-top: 4px solid #cfe0ff;
+}
+.subway-stop:first-child::before { display: none; }
+
+.subway-dot {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border: 4px solid var(--primary);
+  border-radius: 50%;
+  background: var(--panel);
+}
+
+.subway-name {
+  color: var(--primary-deep);
+  font-size: clamp(.85rem, 1.15vw, 1.02rem);
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------
+   MiniFlow — 본 도식을 보조하는 작은 흐름
+   ------------------------------------------------------------ */
+
+.mini-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 14px 16px;
+  border: 1px dashed #c3cede;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, .6);
+}
+
+.mini-tag { margin: 0; color: var(--muted); font-size: .82rem; font-weight: 900; letter-spacing: .06em; }
+
+.mini-wrap .flow-step { padding: 10px 14px; box-shadow: none; }
+.mini-wrap .flow-text { font-size: clamp(.92rem, 1.2vw, 1.05rem); }
+
+/* ------------------------------------------------------------
+   프로젝터 밀도 조정
+
+   1366×768 / 1280×720 같은 강의실 프로젝터에서도 한 화면 안에서
+   강의가 끝나도록 여백만 줄인다. 콘텐츠는 줄이지 않는다.
+   ------------------------------------------------------------ */
+
+@media (min-width: 900px) and (max-height: 900px) {
+  .lecture-main { padding: 16px 0 20px; }
+  .stage-inner { gap: 12px; }
+  .stage-body { gap: 12px; }
+  .stage-note { padding-top: 10px; }
+
+  .bridge, .recall { padding: 9px 16px; }
+  .s-conclusion { padding: 13px 20px; }
+  .next-hint { padding: 8px 16px; }
+
+  .duo-card { padding: 15px 18px; gap: 6px; }
+  .converge { gap: 6px; }
+  .converge-result { padding: 11px 22px; }
+
+  .loop { gap: 20px 12px; }
+  .loop-step, .loop-yes { padding: 11px 18px; }
+  .loop-step::after { height: 20px; line-height: 20px; }
+
+  .causal { gap: 4px; }
+  .causal-stage { padding: 13px 18px; gap: 9px; }
+  .check-list li { padding: 10px 14px; }
+
+  .ledger { padding: 11px 14px; gap: 4px; }
+  .org { padding: 15px 16px; gap: 9px; }
+  .mesh { max-width: 280px; }
+  .route-roles { padding: 14px 16px; }
+  .shared { padding: 15px 16px; gap: 9px; }
+  .subway { padding: 16px; }
+  .gather-block { padding: 14px; }
+  .gather-tickets li, .gather-inside li { padding: 8px 13px; }
+  .branch-root { padding: 10px 22px; }
+  .branch-item { padding: 11px 16px; }
+  .trail-step { padding: 11px 14px; }
+  .blk { padding: 11px 14px; }
+  .num-item { padding: 11px 15px; }
+  .mini-wrap { padding: 11px 14px; gap: 7px; }
+
+  /* 체험 진입 화면 — QR 과 CTA 가 차지하는 높이를 줄인다 */
+  .cta-zone { padding: 14px 18px; gap: 14px; }
+  .qr-image { width: 108px; height: 108px; }
+  .qr-panel figcaption { margin-top: 5px; }
+}
+
+/* causal 단계 안의 Block 도식은 이미 단계 카드 안이므로 테두리를 겹치지 않는다 */
+.causal-stage .blk {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* 더 낮은 프로젝터(1280×720)에서 한 단계 더 조인다 */
+@media (min-width: 900px) and (max-height: 800px) {
+  .lecture-main { padding: 12px 0 16px; }
+  .stage-inner, .stage-body { gap: 10px; }
+
+  .causal-stage { padding: 11px 16px; gap: 7px; }
+  .causal-stage .s-conclusion { padding: 0 0 0 14px; }
+  .check-list { gap: 7px; }
+  .check-list li { padding: 8px 13px; }
+  .node { padding: 9px 12px; }
+
+  .gather { gap: 12px; }
+  .gather-tickets, .gather-inside { gap: 5px; }
+  .gather-tickets li, .gather-inside li { padding: 7px 12px; }
+  .gather-block { padding: 12px; gap: 6px; }
+
+  .hash-row { padding: 11px 16px; }
+  .trail-step { padding: 9px 13px; }
+  .loop { gap: 17px 12px; }
+  .loop-step, .loop-yes { padding: 9px 16px; }
+  .loop-step::after { height: 17px; line-height: 17px; }
+
+  .mini-wrap { padding: 9px 13px; gap: 5px; }
+  .mini-wrap .flow-step { padding: 7px 12px; }
+  .route-roles { padding: 11px 14px; }
+  .shared { padding: 12px 14px; gap: 7px; }
+  .num-row .num-item { padding: 11px 12px; }
+  .converge-result { padding: 9px 20px; }
+  .cta-zone { padding: 12px 16px; }
+  .qr-image { width: 96px; height: 96px; }
+
+  .bridge, .recall { padding: 7px 14px; }
+  .s-conclusion { padding: 11px 18px; }
+  .duo-card { padding: 12px 16px; }
+  .stage-note { padding-top: 8px; }
+  .next-hint { padding: 6px 14px; }
+}
+
+/* 낮은 화면에서는 머리말/하단 바 자체도 조금 얇게 — 본문에 높이를 넘긴다 */
+@media (min-width: 900px) and (max-height: 800px) {
+  .lecture-header-inner { min-height: 46px; padding: 5px 0; }
+  .lecture-nav-inner { padding: 6px 0; }
+  .nav-button { min-height: 40px; }
+  .nav-counter { min-height: 40px; }
+  .lecture-main { padding-bottom: 10px; }
+}
+
+/* 흩어진 거래는 폭도 조금씩 달라야 ‘흩어져 있다’로 읽힌다 */
+.gather-tickets li:nth-child(1) { width: 93%; }
+.gather-tickets li:nth-child(2) { width: 87%; margin-left: 9%; }
+.gather-tickets li:nth-child(3) { width: 91%; }
+.gather-tickets li:nth-child(4) { width: 85%; margin-left: 6%; }
+
+/* ------------------------------------------------------------
+   MapCompare — 실제 지도 ↔ 지하철 노선도 (L02)
+   ------------------------------------------------------------ */
+
+.map-compare {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  align-items: start;
+}
+
+.map-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+.map-panel.is-schematic { border-color: #bfd3f8; }
+
+.map-tag {
+  color: var(--muted);
+  font-size: .82rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+}
+.map-panel.is-schematic .map-tag { color: var(--primary); }
+
+.map-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+}
+
+/* SVG 안의 글자는 viewBox 단위라 화면 크기에 따라 같이 커진다 */
+.map-label {
+  fill: #3b4657;
+  font-family: inherit;
+  font-size: 3.4px;
+  font-weight: 800;
+}
+.map-label-strong { fill: var(--ink); font-size: 3.8px; font-weight: 900; }
+.map-caption { fill: #8aa5c2; font-family: inherit; font-size: 3.2px; font-weight: 800; }
+
+.map-title {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(1.02rem, 1.5vw, 1.25rem);
+  font-weight: 900;
+  letter-spacing: -.02em;
+}
+
+.map-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: clamp(.88rem, 1.2vw, 1.05rem);
+  font-weight: 700;
+}
+
+.map-arrow {
+  margin: 0;
+  align-self: center;
+  justify-self: center;
+  color: var(--primary);
+  font-size: clamp(1.2rem, 2vw, 1.7rem);
+  font-weight: 900;
+}
+
+@media (min-width: 860px) {
+  .map-compare { grid-template-columns: 1fr auto 1fr; gap: 14px; }
+  .map-arrow { transform: none; }
+}
+
+/* 세로로 쌓일 때는 화살표도 세로 흐름으로 */
+@media (max-width: 859px) {
+  .map-arrow { transform: rotate(90deg); }
+}
+
+@media (min-width: 900px) and (max-height: 900px) {
+  .map-panel { padding: 11px 14px; gap: 6px; }
+}
+
+/* 아주 낮은 화면에서는 지도 높이를 한 번 더 제한한다 */
+@media (min-width: 900px) and (max-height: 800px) {
+  .map-svg { max-height: 33vh; }
 }

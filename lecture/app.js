@@ -120,6 +120,16 @@ function renderProgress(screen) {
 function renderStage(screen) {
   const parts = [];
 
+  /* BridgeStrip — 체험 직후 복귀 화면에서 ‘방금 한 일’을 먼저 회수한다.
+     원본 문구를 대체하지 않고 체험과 설명을 잇는 보조 설명이다. */
+  if (screen.bridge) {
+    parts.push(`
+      <p class="bridge">
+        <span class="bridge-tag">${screen.bridge.tag}</span>
+        <span class="bridge-text">${screen.bridge.text}</span>
+      </p>`);
+  }
+
   if (screen.eyebrow) parts.push(`<p class="eyebrow stage-eyebrow">${screen.eyebrow}</p>`);
   if (screen.title) parts.push(`<h1 class="stage-title">${screen.title}</h1>`);
   if (screen.kicker) parts.push(`<p class="stage-kicker">${screen.kicker}</p>`);
