@@ -165,6 +165,7 @@
   font-weight: 900;
   letter-spacing: -.025em;
   line-height: 1.24;
+  text-wrap: balance;                     /* 줄바꿈을 억지로 넣지 않아도 양쪽이 고르게 나뉜다 */
 }
 
 .stage-kicker {
@@ -174,9 +175,13 @@
   font-weight: 700;
 }
 
+/* 본문이 남는 세로 공간을 받아 가운데에 놓인다.
+   제목은 위, 결론/보조 설명은 아래에 두고 도식이 화면 가운데를 차지한다. */
 .stage-body {
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 18px;
 }
 
@@ -193,8 +198,10 @@
 /* 화면 유형별 강조 차이 */
 .type-title .stage-inner,
 .type-question .stage-inner { justify-content: center; text-align: center; align-items: center; }
+/* 가운데 정렬 화면에서도 도식은 화면 폭을 그대로 쓴다.
+   (align-items:center 는 카드를 글자 너비로 쪼그라뜨린다) */
 .type-title .stage-body,
-.type-question .stage-body { width: 100%; align-items: center; }
+.type-question .stage-body { width: 100%; align-items: stretch; }
 
 .type-title .stage-title { font-size: clamp(2.2rem, 5.2vw, 4rem); }
 .type-title .stage-note,
@@ -214,9 +221,9 @@
 
 .s-key {
   margin: 0;
-  padding: 14px 20px;
-  border-left: 4px solid var(--primary);
-  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: 17px 24px;
+  border-left: 6px solid var(--primary);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
   background: var(--primary-soft);
   color: var(--primary-deep);
   font-size: clamp(1.12rem, min(2.3vw, 3.7vh), 2.05rem);   /* 핵심 질문/결론 약 28~33px */
@@ -409,60 +416,6 @@
   }
   .num-row .num-question { font-size: clamp(.92rem, 1.15vw, 1.05rem); }
   .num-row .num-answer { grid-column: 1; font-size: .86rem; }
-}
-
-/* ------------------------------------------------------------
-   카드 그리드
-   ------------------------------------------------------------ */
-
-.card-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.card-item {
-  padding: 18px 20px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--panel);
-}
-.card-item.accent {
-  border-color: #bfd3f8;
-  background: linear-gradient(180deg, #fff, var(--primary-soft));
-}
-
-.card-tag {
-  margin: 0 0 6px;
-  color: var(--primary);
-  font-size: .76rem;
-  font-weight: 900;
-  letter-spacing: .08em;
-  min-height: 1em;
-}
-
-.card-title {
-  margin: 0;
-  color: var(--ink);
-  font-size: clamp(1.02rem, 1.5vw, 1.22rem);
-  font-weight: 900;
-  letter-spacing: -.02em;
-}
-
-.card-desc {
-  margin: 6px 0 0;
-  color: var(--muted);
-  font-size: .9rem;
-  font-weight: 700;
-}
-
-@media (min-width: 720px) {
-  .card-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
-  .card-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
-  .card-grid.cols-6 { grid-template-columns: repeat(3, 1fr); }
 }
 
 /* ------------------------------------------------------------
@@ -659,24 +612,6 @@
 @media (min-width: 720px) {
   .node-row { grid-template-columns: repeat(4, 1fr); }
 }
-
-/* ------------------------------------------------------------
-   점검 항목
-   ------------------------------------------------------------ */
-
-.bullet-list {
-  display: grid;
-  gap: 8px;
-  margin: 0;
-  padding: 16px 20px 16px 36px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--panel);
-  color: var(--ink);
-  font-size: clamp(.98rem, 1.4vw, 1.14rem);
-  font-weight: 800;
-}
-.bullet-list li::marker { color: var(--primary); }
 
 /* ------------------------------------------------------------
    3단 구조 (DApp / Smart Contract / 실행 기반)
@@ -896,16 +831,18 @@
 }
 
 /* ------------------------------------------------------------
-   체험 진입 CTA + QR
-   QR 은 체험 진입 화면에서만 노출하고 모바일에서는 감춘다.
+   체험 진입 CTA
+
+   강의 화면에서 버튼을 눌러 바로 체험으로 들어간다.
+   QR 은 쓰지 않는다. (SVG 는 lecture/qr/ 에 남아 있다)
    ------------------------------------------------------------ */
 
 .cta-zone {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 18px;
-  padding: 20px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: clamp(14px, 2.2vh, 20px);
   border: 1px solid #bfd3f8;
   border-radius: var(--radius-lg);
   background: linear-gradient(180deg, #fff, var(--primary-soft));
@@ -913,50 +850,18 @@
 
 .cta-zone-simple { justify-content: center; background: none; border: 0; padding: 0; }
 
-.qr-panel {
-  display: none;
-  margin: 0;
-  text-align: center;
-}
-
-.qr-image {
-  display: block;
-  width: 132px;
-  height: 132px;
-  padding: 8px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  background: #fff;
-}
-
-.qr-panel figcaption {
-  margin-top: 7px;
-  color: var(--muted);
-  font-size: .78rem;
-  font-weight: 800;
-  line-height: 1.4;
-}
-
-.cta-main {
-  flex: 1 1 260px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: flex-start;
-}
-
 .cta-button { width: 100%; }
 
 .cta-hint {
   margin: 0;
   color: var(--muted);
-  font-size: .86rem;
+  font-size: clamp(.88rem, 1.15vw, 1rem);
   font-weight: 700;
 }
 .cta-hint strong { color: var(--primary); }
 
 @media (min-width: 720px) {
-  .qr-panel { display: block; }
+  .cta-zone { flex-direction: row; align-items: center; gap: 22px; }
   .cta-button { width: auto; }
 }
 
@@ -1292,16 +1197,18 @@
    ConclusionStrip — 원본 하단 결론을 본문급으로
    ------------------------------------------------------------ */
 
+/* 원본 하단의 결론은 화면에서 가장 또렷해야 한다.
+   색을 새로 들이지 않고 기존 Primary 계열의 농도만 올린다. */
 .s-conclusion {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 18px 24px;
-  border: 1px solid var(--line);
-  border-left: 6px solid var(--primary);
+  padding: 20px 26px;
+  border: 1px solid #bfd3f8;
+  border-left: 8px solid var(--primary);
   border-radius: 6px var(--radius-lg) var(--radius-lg) 6px;
-  background: var(--panel);
-  box-shadow: var(--shadow);
+  background: linear-gradient(180deg, #fff, var(--primary-soft));
+  box-shadow: 0 14px 34px rgba(37, 99, 235, .12);
 }
 
 .s-conclusion-tag {
@@ -1317,8 +1224,8 @@
 
 .s-conclusion-text {
   margin: 0;
-  color: var(--ink);
-  font-size: clamp(1.12rem, min(2.3vw, 3.7vh), 2.05rem);
+  color: var(--primary-deep);
+  font-size: clamp(1.18rem, min(2.5vw, 4vh), 2.25rem);
   font-weight: 900;
   letter-spacing: -.025em;
   line-height: 1.4;
@@ -2003,13 +1910,13 @@
 
 .branch-root {
   align-self: flex-start;
-  margin: 0 0 0 0;
-  padding: 12px 26px;
+  margin: 0;
+  padding: clamp(14px, 2.2vh, 22px) clamp(26px, 2.4vw, 38px);
   border: 2px solid var(--primary);
   border-radius: var(--radius-md);
   background: linear-gradient(180deg, #fff, var(--primary-soft));
   color: var(--primary-deep);
-  font-size: clamp(1.1rem, 1.7vw, 1.4rem);
+  font-size: clamp(1.25rem, min(2.1vw, 3.4vh), 1.8rem);
   font-weight: 900;
   letter-spacing: -.02em;
 }
@@ -2021,15 +1928,15 @@
   border-left: 2px solid var(--line);
 }
 
-.branch-list { display: grid; gap: 9px; margin: 0; padding: 14px 0 0; list-style: none; }
+.branch-list { display: grid; gap: clamp(9px, 1.4vh, 14px); margin: 0; padding: clamp(14px, 2vh, 20px) 0 0; list-style: none; }
 
 .branch-item {
   position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 12px;
-  padding: 14px 18px;
+  gap: 6px 14px;
+  padding: clamp(14px, 2.2vh, 22px) clamp(18px, 1.8vw, 26px);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--panel);
@@ -2050,7 +1957,7 @@
 
 .branch-owner {
   color: var(--muted);
-  font-size: clamp(.92rem, 1.25vw, 1.05rem);
+  font-size: clamp(.98rem, 1.35vw, 1.18rem);
   font-weight: 900;
 }
 .branch-item.accent .branch-owner { color: var(--primary); }
@@ -2059,7 +1966,7 @@
 
 .branch-name {
   color: var(--ink);
-  font-size: clamp(1.02rem, 1.5vw, 1.25rem);
+  font-size: clamp(1.1rem, min(1.8vw, 2.9vh), 1.5rem);
   font-weight: 900;
   letter-spacing: -.02em;
 }
@@ -2215,7 +2122,7 @@
    ------------------------------------------------------------ */
 
 .subway {
-  padding: 22px 18px;
+  padding: clamp(20px, 3.4vh, 34px) 18px;
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   background: var(--panel);
@@ -2252,8 +2159,9 @@
 
 .subway-dot {
   position: relative;
-  width: 18px;
-  height: 18px;
+  z-index: 1;                             /* 선로가 역 표시를 가리지 않게 */
+  width: clamp(18px, 2.4vh, 22px);
+  height: clamp(18px, 2.4vh, 22px);
   border: 4px solid var(--primary);
   border-radius: 50%;
   background: var(--panel);
@@ -2261,29 +2169,10 @@
 
 .subway-name {
   color: var(--primary-deep);
-  font-size: clamp(.85rem, 1.15vw, 1.02rem);
+  font-size: clamp(.9rem, min(1.3vw, 2.1vh), 1.15rem);
   font-weight: 900;
   white-space: nowrap;
 }
-
-/* ------------------------------------------------------------
-   MiniFlow — 본 도식을 보조하는 작은 흐름
-   ------------------------------------------------------------ */
-
-.mini-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-  padding: 14px 16px;
-  border: 1px dashed #c3cede;
-  border-radius: var(--radius-lg);
-  background: rgba(255, 255, 255, .6);
-}
-
-.mini-tag { margin: 0; color: var(--muted); font-size: .82rem; font-weight: 900; letter-spacing: .06em; }
-
-.mini-wrap .flow-step { padding: 10px 14px; box-shadow: none; }
-.mini-wrap .flow-text { font-size: clamp(.92rem, 1.2vw, 1.05rem); }
 
 /* ------------------------------------------------------------
    프로젝터 밀도 조정
@@ -2327,12 +2216,10 @@
   .trail-step { padding: 11px 14px; }
   .blk { padding: 11px 14px; }
   .num-item { padding: 11px 15px; }
-  .mini-wrap { padding: 11px 14px; gap: 7px; }
+  .simplify { padding: 11px 18px; }
+  .closing-message { padding: 14px 18px; }
 
-  /* 체험 진입 화면 — QR 과 CTA 가 차지하는 높이를 줄인다 */
-  .cta-zone { padding: 14px 18px; gap: 14px; }
-  .qr-image { width: 108px; height: 108px; }
-  .qr-panel figcaption { margin-top: 5px; }
+  .cta-zone { padding: 12px 18px; gap: 16px; }
 }
 
 /* causal 단계 안의 Block 도식은 이미 단계 카드 안이므로 테두리를 겹치지 않는다 */
@@ -2365,20 +2252,19 @@
   .loop-step, .loop-yes { padding: 9px 16px; }
   .loop-step::after { height: 17px; line-height: 17px; }
 
-  .mini-wrap { padding: 9px 13px; gap: 5px; }
-  .mini-wrap .flow-step { padding: 7px 12px; }
   .route-roles { padding: 11px 14px; }
   .shared { padding: 12px 14px; gap: 7px; }
   .num-row .num-item { padding: 11px 12px; }
   .converge-result { padding: 9px 20px; }
-  .cta-zone { padding: 12px 16px; }
-  .qr-image { width: 96px; height: 96px; }
+  .cta-zone { padding: 10px 16px; }
 
   .bridge, .recall { padding: 7px 14px; }
   .s-conclusion { padding: 11px 18px; }
   .duo-card { padding: 12px 16px; }
   .stage-note { padding-top: 8px; }
   .next-hint { padding: 6px 14px; }
+  .simplify { padding: 9px 16px; }
+  .closing-message { padding: 12px 16px; }
 }
 
 /* 낮은 화면에서는 머리말/하단 바 자체도 조금 얇게 — 본문에 높이를 넘긴다 */
@@ -2486,4 +2372,156 @@
 /* 아주 낮은 화면에서는 지도 높이를 한 번 더 제한한다 */
 @media (min-width: 900px) and (max-height: 800px) {
   .map-svg { max-height: 33vh; }
+}
+
+/* ------------------------------------------------------------
+   화면별 변형
+
+   같은 표현 요소라도 화면이 비어 보이면 크게, 빽빽하면 작게 쓴다.
+   ------------------------------------------------------------ */
+
+/* 장부 형태 — 은행 장부 / 내 노트, A의 장부 / B의 장부 */
+.duo-ledger .duo-card {
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.duo-ledger .duo-tag {
+  padding: 13px 22px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, .7);
+  color: var(--ink);
+  font-size: clamp(.92rem, 1.25vw, 1.08rem);
+}
+.duo-ledger .duo-card.tone-primary .duo-tag { border-color: #cfdcf5; }
+.duo-ledger .duo-card.tone-warn .duo-tag { border-color: #f0dfc4; }
+
+.duo-ledger .duo-title {
+  padding: clamp(16px, 2.6vh, 30px) 22px 0;
+  color: var(--muted);
+  font-size: clamp(.92rem, 1.25vw, 1.08rem);
+  font-weight: 800;
+}
+
+.duo-ledger .duo-line {
+  padding: 4px 22px clamp(18px, 3vh, 34px);
+  color: var(--ink);
+  font-size: clamp(1.3rem, min(2.4vw, 4vh), 2.15rem);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.02em;
+}
+
+/* 크게 쓰는 Block / Chain 도식 */
+.blk-lg .blk { padding: clamp(16px, 2.4vh, 26px) clamp(18px, 1.6vw, 24px); gap: 7px; }
+.blk-lg .blk-name { font-size: clamp(.95rem, 1.3vw, 1.12rem); }
+.blk-lg .blk-tx { font-size: clamp(1rem, 1.4vw, 1.18rem); }
+.blk-lg .blk-prev,
+.blk-lg .blk-hash { font-size: clamp(.9rem, 1.2vw, 1.05rem); }
+.blk-lg .blk-link { font-size: 1.6rem; }
+.blk-framed.blk-lg { padding: clamp(16px, 2.6vh, 28px); }
+
+/* 크게 쓰는 3단 계층 */
+.stack-lg .stack { gap: 10px; }
+.stack-lg .stack-layer { padding: clamp(18px, 3vh, 34px) clamp(20px, 2vw, 30px); }
+.stack-lg .stack-title { font-size: clamp(1.2rem, min(2vw, 3.2vh), 1.7rem); }
+.stack-lg .stack-desc { font-size: clamp(1rem, 1.4vw, 1.2rem); }
+
+/* ------------------------------------------------------------
+   단순화의 예 (L02)
+   ------------------------------------------------------------ */
+
+.simplify {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  gap: 4px 20px;
+  padding: clamp(14px, 2.4vh, 26px) clamp(18px, 2vw, 28px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+}
+
+.simplify-tag {
+  margin: 0;
+  color: var(--muted);
+  font-size: .82rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+}
+
+.simplify-statement {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(1.25rem, min(2.4vw, 3.8vh), 2rem);
+  font-weight: 900;
+  letter-spacing: -.025em;
+}
+
+.simplify-ask {
+  margin: 0;
+  color: var(--primary);
+  font-size: clamp(1.35rem, min(2.6vw, 4.2vh), 2.2rem);
+  font-weight: 900;
+  letter-spacing: -.02em;
+}
+
+@media (min-width: 760px) {
+  /* 문장과 되묻는 질문이 떨어지지 않게 한 덩어리로 가운데에 둔다 */
+  .simplify {
+    grid-template-columns: auto auto auto;
+    justify-content: center;
+    gap: 4px 26px;
+  }
+  .simplify-tag { grid-row: 1; }
+}
+
+/* ------------------------------------------------------------
+   중앙 관리 트리 보강 (L10)
+   ------------------------------------------------------------ */
+
+.tree-root {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.tree-root-name { font-size: clamp(1.05rem, 1.6vw, 1.3rem); font-weight: 900; }
+.tree-root-note { color: var(--muted); font-size: .82rem; font-weight: 800; }
+
+.tree-leaves li {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.tree-leaf-name { font-size: clamp(.9rem, 1.2vw, 1.05rem); font-weight: 800; }
+.tree-leaf-note { color: #9aa7ba; font-size: .76rem; font-weight: 800; }
+
+/* ------------------------------------------------------------
+   마무리 메시지 (L25)
+   키워드 나열과 당부가 한 문장처럼 이어져 읽히게 한다.
+   ------------------------------------------------------------ */
+
+.closing-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(10px, 1.8vh, 20px);
+  padding: clamp(16px, 2.6vh, 30px) clamp(18px, 2vw, 30px);
+  border: 1px solid #bfd3f8;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, #fff, var(--primary-soft));
+  box-shadow: 0 14px 34px rgba(37, 99, 235, .12);
+}
+
+.closing-text {
+  margin: 0;
+  color: var(--primary-deep);
+  font-size: clamp(1.12rem, min(2.2vw, 3.6vh), 1.9rem);
+  font-weight: 900;
+  letter-spacing: -.025em;
+  line-height: 1.45;
+  text-align: center;
+  text-wrap: balance;
 }

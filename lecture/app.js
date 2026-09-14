@@ -135,21 +135,16 @@ function renderStage(screen) {
   if (screen.kicker) parts.push(`<p class="stage-kicker">${screen.kicker}</p>`);
   if (screen.body) parts.push(`<div class="stage-body">${screen.body}</div>`);
 
-  /* 체험 진입 — QR 은 이 화면에서만 크게 노출한다(모바일에서는 숨김) */
+  /* 체험 진입 — 강의 화면에서 버튼을 눌러 바로 들어간다.
+     QR 은 쓰지 않는다(SVG 는 lecture/qr/ 에 남겨 뒀다). */
   if (screen.experience) {
     const url = experienceUrl(screen);
     parts.push(`
       <div class="cta-zone">
-        <figure class="qr-panel">
-          <img class="qr-image" src="./qr/${screen.experience.kind}.svg" alt="" width="132" height="132" />
-          <figcaption>스마트폰으로<br />체험하기</figcaption>
-        </figure>
-        <div class="cta-main">
-          <a class="btn btn-primary cta-button" href="${url}">
-            ${screen.experience.label} <span class="arrow" aria-hidden="true">→</span>
-          </a>
-          <p class="cta-hint">체험을 마치면 <strong>강의 계속하기 →</strong> 로 ${screen.experience.returnTo} 화면에서 이어집니다.</p>
-        </div>
+        <a class="btn btn-primary cta-button" href="${url}">
+          ${screen.experience.label} <span class="arrow" aria-hidden="true">→</span>
+        </a>
+        <p class="cta-hint">체험을 마치면 <strong>강의 계속하기 →</strong> 로 ${screen.experience.returnTo} 화면에서 이어집니다.</p>
       </div>`);
   }
 
