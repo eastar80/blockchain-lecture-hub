@@ -145,6 +145,7 @@ experience/index.html?from=L05&return=L06#hash
 | `branchTree` | L12 | 상위 개념 → 하위 방식 |
 | `sharedNodes` | L04 · L21 | 노드들이 같은 것을 공유 |
 | `changeTrail` | L08 | 변경이 어디까지 번지는가 |
+| `mapCompare` | L02 | 같은 역을 실제 지도 ↔ 노선도로 두 번 그려 대비 |
 | `subwayMap` | L25 | 마지막 기억점 |
 
 ## 화면 크기

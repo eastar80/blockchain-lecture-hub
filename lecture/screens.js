@@ -432,6 +432,112 @@ const changeTrail = steps => `
       </li>`).join('')}
   </ol>`;
 
+/* ------------------------------------------------------------
+   MapCompare — 실제 지도 ↔ 지하철 노선도
+
+   같은 역(망원·합정·상수·광흥창·대흥·공덕 / 홍대입구·신촌·이대·충정로)을
+   두 번 그린다. 왼쪽은 실제 위치대로 구부러지게, 오른쪽은 직선과 45°로.
+   역이 같다는 것을 보여야 ‘무엇을 버렸는가’가 드러난다.
+   외부 이미지를 쓰지 않고 SVG 로 그려 정적 사이트에서 그대로 동작한다.
+   ------------------------------------------------------------ */
+
+const LINE_GREEN = '#3aa14a';   /* 2호선 */
+const LINE_BROWN = '#9a5b28';   /* 6호선 */
+
+/** 역 표시 + 이름 */
+function mapStop(x, y, name, color, place) {
+  const pos = {
+    up:    { dx: 0,   dy: -3.4, anchor: 'middle' },
+    down:  { dx: 0,   dy: 5.4,  anchor: 'middle' },
+    left:  { dx: -3,  dy: 1.2,  anchor: 'end' },
+    right: { dx: 3,   dy: 1.2,  anchor: 'start' }
+  }[place];
+  return `
+    <circle cx="${x}" cy="${y}" r="1.7" fill="#fff" stroke="${color}" stroke-width="1.2" />
+    <text x="${x + pos.dx}" y="${y + pos.dy}" text-anchor="${pos.anchor}" class="map-label">${name}</text>`;
+}
+
+/** 환승역 — 두 색 점을 가진 흰 캡슐 */
+function mapTransfer(x, y, name, place) {
+  const pos = place === 'left'
+    ? { dx: -6, dy: 1.2, anchor: 'end' }
+    : { dx: 0, dy: 7, anchor: 'middle' };
+  return `
+    <rect x="${x - 4.6}" y="${y - 2.6}" width="9.2" height="5.2" rx="2.6"
+          fill="#fff" stroke="#1f2937" stroke-width="0.9" />
+    <circle cx="${x - 1.9}" cy="${y}" r="1.05" fill="${LINE_GREEN}" />
+    <circle cx="${x + 1.9}" cy="${y}" r="1.05" fill="${LINE_BROWN}" />
+    <text x="${x + pos.dx}" y="${y + pos.dy}" text-anchor="${pos.anchor}" class="map-label map-label-strong">${name}</text>`;
+}
+
+/** 왼쪽 — 실제 지도. 강과 길이 있고 노선이 구부러진다. */
+const realMapSvg = () => `
+  <svg class="map-svg" viewBox="0 0 100 54" role="img"
+       aria-label="실제 지도: 한강과 도로 위에 망원·합정·상수·광흥창·대흥·공덕, 홍대입구·신촌·이대·충정로가 실제 위치대로 구부러진 선으로 이어져 있다">
+    <rect width="100" height="54" fill="#fbfaf7" />
+    <path d="M -2 37 Q 18 42 34 48.6 Q 48 54 64 56.3 L 64 60 L -2 60 Z" fill="#dbe7f3" />
+    <g stroke="#e7e3dc" stroke-width="1.3" fill="none" stroke-linecap="round">
+      <path d="M 0 23 Q 26 18.5 44 24 T 100 21" />
+      <path d="M 22 0 Q 26 15.4 20 30.8 T 26 54" />
+      <path d="M 60 0 Q 56 17 64 29.3 T 58 54" />
+      <path d="M 0 44.7 Q 30 38.6 52 43.2 T 100 35.5" />
+      <path d="M 84 0 Q 80 20 88 33.9" />
+    </g>
+    <path d="M 16 29.3 Q 22 17 33 9.3 Q 43 9.3 52 17 Q 60 18.5 67 13.9 Q 78 12.3 88 7.7"
+          fill="none" stroke="${LINE_GREEN}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 6 15.4 Q 10 23 16 29.3 Q 22 33.2 29 33.9 Q 36 36.2 43 36.2 Q 50 36.2 57 35.5 Q 66 36.2 72 40.1"
+          fill="none" stroke="${LINE_BROWN}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+    ${mapStop(6, 15.4, '망원', LINE_BROWN, 'up')}
+    ${mapStop(29, 33.9, '상수', LINE_BROWN, 'down')}
+    ${mapStop(43, 36.2, '광흥창', LINE_BROWN, 'down')}
+    ${mapStop(57, 35.5, '대흥', LINE_BROWN, 'down')}
+    ${mapStop(72, 40.1, '공덕', LINE_BROWN, 'down')}
+    ${mapStop(33, 9.3, '홍대입구', LINE_GREEN, 'up')}
+    ${mapStop(52, 17, '신촌', LINE_GREEN, 'down')}
+    ${mapStop(67, 13.9, '이대', LINE_GREEN, 'up')}
+    ${mapStop(88, 7.7, '충정로', LINE_GREEN, 'up')}
+    ${mapTransfer(16, 29.3, '합정', 'left')}
+    <text x="8" y="50.9" class="map-caption">한강</text>
+  </svg>`;
+
+/** 오른쪽 — 지하철 노선도. 지형을 버리고 직선과 등간격만 남긴다. */
+const schematicMapSvg = () => `
+  <svg class="map-svg" viewBox="0 0 100 54" role="img"
+       aria-label="지하철 노선도: 같은 역들이 직선과 등간격으로 정리되어, 합정에서 갈아탈 수 있다는 연결만 남아 있다">
+    <rect width="100" height="54" fill="#ffffff" />
+    <path d="M 20 40.1 L 20 20 Q 20 13.9 26 13.9 L 88 13.9"
+          fill="none" stroke="${LINE_GREEN}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 8 40.1 L 76 40.1"
+          fill="none" stroke="${LINE_BROWN}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+    ${mapStop(8, 40.1, '망원', LINE_BROWN, 'down')}
+    ${mapStop(34, 40.1, '상수', LINE_BROWN, 'down')}
+    ${mapStop(48, 40.1, '광흥창', LINE_BROWN, 'down')}
+    ${mapStop(62, 40.1, '대흥', LINE_BROWN, 'down')}
+    ${mapStop(76, 40.1, '공덕', LINE_BROWN, 'down')}
+    ${mapStop(20, 27.8, '홍대입구', LINE_GREEN, 'right')}
+    ${mapStop(40, 13.9, '신촌', LINE_GREEN, 'up')}
+    ${mapStop(58, 13.9, '이대', LINE_GREEN, 'up')}
+    ${mapStop(84, 13.9, '충정로', LINE_GREEN, 'up')}
+    ${mapTransfer(20, 40.1, '합정', 'down')}
+  </svg>`;
+
+const mapCompare = (left, right) => `
+  <div class="map-compare">
+    <figure class="map-panel">
+      <figcaption class="map-tag">${left.tag}</figcaption>
+      ${realMapSvg()}
+      <p class="map-title">${left.title}</p>
+      <p class="map-note">${left.note}</p>
+    </figure>
+    <p class="map-arrow" aria-hidden="true">→</p>
+    <figure class="map-panel is-schematic">
+      <figcaption class="map-tag">${right.tag}</figcaption>
+      ${schematicMapSvg()}
+      <p class="map-title">${right.title}</p>
+      <p class="map-note">${right.note}</p>
+    </figure>
+  </div>`;
+
 /** 다음 화면으로 넘어갈 질문을 미리 걸어둔다 — 분할된 화면 사이의 연결 */
 const nextHint = text => `<p class="next-hint"><span>다음 화면</span> ${text}</p>`;
 
@@ -483,10 +589,10 @@ const SCREENS = [
     body: [
       /* 물 예시는 ‘단순화란 무엇인가’를 여는 짧은 예시다. 주 도식보다 앞서지 않게 둔다 */
       recall('단순화의 예', '물은 100℃ 에서 끓는다 &nbsp; <span class="quote-strong">“항상?”</span>'),
-      duo(
-        { tag: '실제 지도', title: '있는 그대로', lines: ['모든 것이 정확하다'], foot: '그래서 복잡하다', tone: 'neutral' },
-        { tag: '지하철 노선도', title: '단순하게', lines: ['필요한 연결만 남긴다'], foot: '그래도 목적지에는 도착한다', tone: 'primary' },
-        '→'
+      /* 같은 역을 두 번 그려 ‘무엇을 버렸는가’를 보이게 한다 */
+      mapCompare(
+        { tag: '실제 지도', title: '있는 그대로', note: '모든 것이 정확하다 · 그래서 복잡하다' },
+        { tag: '지하철 노선도', title: '단순하게', note: '필요한 연결만 남긴다 · 그래도 목적지에는 도착한다' }
       ),
       conclusion('오늘의 목표는 위성사진이 아니라 ‘블록체인 지하철 노선도’를 만드는 것입니다.')
     ].join('')

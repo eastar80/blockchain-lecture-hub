@@ -2395,3 +2395,95 @@
 .gather-tickets li:nth-child(2) { width: 87%; margin-left: 9%; }
 .gather-tickets li:nth-child(3) { width: 91%; }
 .gather-tickets li:nth-child(4) { width: 85%; margin-left: 6%; }
+
+/* ------------------------------------------------------------
+   MapCompare — 실제 지도 ↔ 지하철 노선도 (L02)
+   ------------------------------------------------------------ */
+
+.map-compare {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  align-items: start;
+}
+
+.map-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+.map-panel.is-schematic { border-color: #bfd3f8; }
+
+.map-tag {
+  color: var(--muted);
+  font-size: .82rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+}
+.map-panel.is-schematic .map-tag { color: var(--primary); }
+
+.map-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+}
+
+/* SVG 안의 글자는 viewBox 단위라 화면 크기에 따라 같이 커진다 */
+.map-label {
+  fill: #3b4657;
+  font-family: inherit;
+  font-size: 3.4px;
+  font-weight: 800;
+}
+.map-label-strong { fill: var(--ink); font-size: 3.8px; font-weight: 900; }
+.map-caption { fill: #8aa5c2; font-family: inherit; font-size: 3.2px; font-weight: 800; }
+
+.map-title {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(1.02rem, 1.5vw, 1.25rem);
+  font-weight: 900;
+  letter-spacing: -.02em;
+}
+
+.map-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: clamp(.88rem, 1.2vw, 1.05rem);
+  font-weight: 700;
+}
+
+.map-arrow {
+  margin: 0;
+  align-self: center;
+  justify-self: center;
+  color: var(--primary);
+  font-size: clamp(1.2rem, 2vw, 1.7rem);
+  font-weight: 900;
+}
+
+@media (min-width: 860px) {
+  .map-compare { grid-template-columns: 1fr auto 1fr; gap: 14px; }
+  .map-arrow { transform: none; }
+}
+
+/* 세로로 쌓일 때는 화살표도 세로 흐름으로 */
+@media (max-width: 859px) {
+  .map-arrow { transform: rotate(90deg); }
+}
+
+@media (min-width: 900px) and (max-height: 900px) {
+  .map-panel { padding: 11px 14px; gap: 6px; }
+}
+
+/* 아주 낮은 화면에서는 지도 높이를 한 번 더 제한한다 */
+@media (min-width: 900px) and (max-height: 800px) {
+  .map-svg { max-height: 33vh; }
+}
