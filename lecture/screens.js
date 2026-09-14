@@ -70,7 +70,7 @@ const sub = text => `<p class="s-sub">${text}</p>`;
  * 2열 대비 구조. 모바일에서는 세로로 쌓인다.
  * side: { tag, title, lines[], tone: 'neutral'|'primary'|'warn'|'ok' }
  */
-function duo(left, right, middle) {
+function duo(left, right, middle, variant) {
   const side = (s, pos) => `
     <div class="duo-card duo-${pos} tone-${s.tone || 'neutral'}">
       ${s.tag ? `<p class="duo-tag">${s.tag}</p>` : ''}
@@ -79,7 +79,7 @@ function duo(left, right, middle) {
       ${s.foot ? `<p class="duo-foot">${s.foot}</p>` : ''}
     </div>`;
   return `
-    <div class="duo">
+    <div class="duo${variant ? ' duo-' + variant : ''}">
       ${side(left, 'left')}
       ${middle ? `<div class="duo-mid" aria-hidden="true">${middle}</div>` : '<div class="duo-mid duo-mid-plain" aria-hidden="true">vs</div>'}
       ${side(right, 'right')}
@@ -97,19 +97,6 @@ function numberedCards(items, layout) {
           <span class="num-answer">${i.answer}</span>
         </li>`).join('')}
     </ol>`;
-}
-
-/** 일반 카드 그리드 */
-function cards(items, cols) {
-  return `
-    <ul class="card-grid cols-${cols || items.length}">
-      ${items.map(i => `
-        <li class="card-item${i.accent ? ' accent' : ''}">
-          ${i.tag ? `<p class="card-tag">${i.tag}</p>` : ''}
-          <p class="card-title">${i.title}</p>
-          ${i.desc ? `<p class="card-desc">${i.desc}</p>` : ''}
-        </li>`).join('')}
-    </ul>`;
 }
 
 /**
@@ -130,7 +117,7 @@ function chainDiagram(blocks, options) {
       ${b.altHash ? `<p class="blk-hash blk-hash-alt">Hash = <strong>${b.altHash}</strong></p>` : ''}
       ${b.badge ? `<p class="blk-badge">${b.badge}</p>` : ''}
     </div>`;
-  return `<div class="blk-row ${opt.frame ? 'blk-framed' : ''}">
+  return `<div class="blk-row ${opt.frame ? 'blk-framed' : ''} ${opt.size === 'lg' ? 'blk-lg' : ''}">
     ${opt.frame ? `<p class="blk-frame-label">${opt.frame}</p>` : ''}
     <div class="blk-track">${blocks.map(one).join('')}</div>
   </div>`;
@@ -160,11 +147,6 @@ function nodes(items) {
           <span class="node-state">${n.state}</span>
         </li>`).join('')}
     </ul>`;
-}
-
-/** 점검 항목 */
-function bullets(items) {
-  return `<ul class="bullet-list">${items.map(t => `<li>${t}</li>`).join('')}</ul>`;
 }
 
 /** 층으로 쌓이는 구조 — DApp / Smart Contract / 실행 기반 */
@@ -204,8 +186,6 @@ function routeMap(activeKeys) {
     </ol>`;
 }
 
-/** 키워드 나열 */
-const tagCloud = items => `<ul class="tag-cloud">${items.map(t => `<li>${t}</li>`).join('')}</ul>`;
 
 /* ------------------------------------------------------------
    2차 고도화 helper
@@ -326,12 +306,19 @@ const routeWithRoles = items => `
  * TreeOrg — 중앙 관리 구조(한 주체 → 여러 서버)
  * children 수에 맞춰 가로 연결선이 자동으로 맞춰진다.
  */
-const treeOrg = ({ tag, root, children, foot }) => `
+const treeOrg = ({ tag, root, rootNote, children, foot }) => `
   <div class="org org-tree">
     ${tag ? `<p class="org-tag">${tag}</p>` : ''}
-    <p class="tree-root">${root}</p>
+    <p class="tree-root">
+      <span class="tree-root-name">${root}</span>
+      ${rootNote ? `<span class="tree-root-note">${rootNote}</span>` : ''}
+    </p>
     <ul class="tree-leaves" style="--n:${children.length}">
-      ${children.map(c => `<li>${c}</li>`).join('')}
+      ${children.map(c => `
+        <li>
+          <span class="tree-leaf-name">${c.name}</span>
+          ${c.note ? `<span class="tree-leaf-note">${c.note}</span>` : ''}
+        </li>`).join('')}
     </ul>
     ${foot ? `<p class="org-foot">${foot}</p>` : ''}
   </div>`;
@@ -538,15 +525,29 @@ const mapCompare = (left, right) => `
     </figure>
   </div>`;
 
+/**
+ * SimplifyExample — ‘단순화란 무엇인가’를 여는 예시.
+ * 원본에서 한 줄로 지나가지만 강의에서는 질문을 던지는 자리라 크게 잡는다.
+ */
+const simplifyExample = (tag, statement, ask) => `
+  <div class="simplify">
+    <p class="simplify-tag">${tag}</p>
+    <p class="simplify-statement">${statement}</p>
+    <p class="simplify-ask">${ask}</p>
+  </div>`;
+
+/**
+ * ClosingMessage — 마지막 화면의 키워드와 당부를 한 흐름으로 읽히게 한다.
+ * 키워드 나열과 문장이 따로 놓이면 연결이 끊긴다.
+ */
+const closingMessage = (items, text) => `
+  <div class="closing-message">
+    <ul class="tag-cloud">${items.map(t => `<li>${t}</li>`).join('')}</ul>
+    <p class="closing-text">${text}</p>
+  </div>`;
+
 /** 다음 화면으로 넘어갈 질문을 미리 걸어둔다 — 분할된 화면 사이의 연결 */
 const nextHint = text => `<p class="next-hint"><span>다음 화면</span> ${text}</p>`;
-
-/** 본 도식을 보조하는 작은 흐름 */
-const miniFlow = (tag, steps) => `
-  <div class="mini-wrap">
-    <p class="mini-tag">${tag}</p>
-    ${flow(steps)}
-  </div>`;
 
 /**
  * SubwayMap — 마지막 화면의 기억점.
@@ -578,17 +579,18 @@ const SCREENS = [
         { name: 'PREV ✓',  hash: '93B1…' },
         { name: 'PREV ✓',  hash: 'E04C…' }
       ]),
-      `<p class="s-title-sub">왜 Block 인가? &nbsp; 왜 Chain 인가? &nbsp; 왜 Distributed 인가?</p>`,
-      `<p class="s-presenter">김동규 · 서강대학교 블록체인 과정 이전 기수 강의</p>`
-    ].join('')
+      `<p class="s-title-sub">왜 Block 인가? &nbsp; 왜 Chain 인가? &nbsp; 왜 Distributed 인가?</p>`
+    ].join(''),
+    /* 발표자 표기는 강의 내용이 아니므로 화면 맨 아래로 내린다 */
+    note: '김동규 · 서강대학교 블록체인 과정 이전 기수 강의'
   },
   {
     id: 'L02', sourcePage: 2, section: 'A', type: 'concept', concept: 'intro',
     eyebrow: 'INTRO',
     title: '오늘은 조금 단순하게 설명하겠습니다',
     body: [
-      /* 물 예시는 ‘단순화란 무엇인가’를 여는 짧은 예시다. 주 도식보다 앞서지 않게 둔다 */
-      recall('단순화의 예', '물은 100℃ 에서 끓는다 &nbsp; <span class="quote-strong">“항상?”</span>'),
+      /* 물 예시는 ‘단순화란 무엇인가’를 여는 질문이다. 한 줄로 흘리지 않고 자리를 준다 */
+      simplifyExample('단순화의 예', '물은 100℃ 에서 끓는다', '“항상?”'),
       /* 같은 역을 두 번 그려 ‘무엇을 버렸는가’를 보이게 한다 */
       mapCompare(
         { tag: '실제 지도', title: '있는 그대로', note: '모든 것이 정확하다 · 그래서 복잡하다' },
@@ -606,27 +608,22 @@ const SCREENS = [
     kicker: '왜 은행 장부의 100만원은 믿을까?',
     body: [
       duo(
-        { tag: '은행 장부', title: '잔액 1,000,000 원', lines: [], tone: 'primary' },
-        { tag: '내 노트',   title: '잔액 2,000,000 원', lines: [], tone: 'warn' },
-        '?'
+        { tag: '은행 장부', title: '잔액', lines: ['1,000,000 원'], tone: 'primary' },
+        { tag: '내 노트',   title: '잔액', lines: ['2,000,000 원'], tone: 'warn' },
+        '?',
+        'ledger'
       ),
-      key('왜 왼쪽은 믿고<br />오른쪽은 믿지 않을까?')
-    ].join(''),
-    note: '중앙화된 장부 = 공식 장부를 관리하고 최종 판단하는 주체가 있다'
+      key('왜 왼쪽은 믿고 오른쪽은 믿지 않을까?'),
+      /* 이 화면의 결론이다. 작은 note 로 두지 않는다 */
+      conclusion('중앙화된 장부 = 공식 장부를 관리하고 최종 판단하는 주체가 있다')
+    ].join('')
   },
   {
     id: 'L04', sourcePage: 4, section: 'B', type: 'concept', concept: 'intro',
     eyebrow: 'ROADMAP',
-    title: '“이게 공식 장부입니다”라고<br />한 사람이 말할 수 없다면?',
-    kicker: '은행 A · B · C · D',
+    title: '“이게 공식 장부입니다”라고 말할 수 있는 신뢰있는 존재가 없다면?',
     body: [
-      /* 공식 장부를 선언할 주체가 없는 상태를 먼저 보여준다 */
-      sharedNodes({
-        items: ['은행 A', '은행 B', '은행 C', '은행 D'],
-        chip: '?',
-        label: '누구도 “이게 공식 장부입니다”라고 혼자 말할 수 없다',
-        tone: 'ask'
-      }),
+      lead('아래 다섯 가지 질문에 대한 답이 필요합니다'),
       numberedCards([
         { num: 1, question: '기록이 바뀌지는 않았는가?',                  answer: 'Hash' },
         { num: 2, question: '기록을 어떻게 묶을까?',                      answer: 'Block' },
@@ -660,7 +657,7 @@ const SCREENS = [
       key('숫자 하나만 바꾸면?'),
       lead('Hash = 데이터의 디지털 지문')
     ].join(''),
-    note: '“오늘은 이렇게 이해하겠습니다.” · 암호화(숨기기)가 아니라 변경 확인용 지문',
+    note: 'Hash는 암호화(숨기기)가 아니라 변경을 쉽게 확인하기 위한 도구',
     experience: { kind: 'hash', returnTo: 'L06', label: 'Hash 직접 체험하기' }
   },
   {
@@ -693,8 +690,8 @@ const SCREENS = [
         { name: 'BLOCK 1', txs: ['A → B : 10만원', 'C → D : 5만원'], hash: 'A72F…' },
         { name: 'BLOCK 2', prev: 'A72F…', txs: ['E → F : 20만원'],   hash: '93B1…' },
         { name: 'BLOCK 3', prev: '93B1…', txs: ['G → H : 3만원'],    hash: 'E04C…' }
-      ]),
-      key('같은 값 → 앞뒤가 연결된다')
+      ], { size: 'lg' }),
+      conclusion('같은 값 → 앞뒤가 연결된다')
     ].join(''),
     note: '다음 Block이 이전 Block의 Hash를 기억한다'
   },
@@ -736,7 +733,7 @@ const SCREENS = [
         { name: 'BLOCK 1', hash: 'A72F…' },
         { name: 'BLOCK 2', hash: '93B1…' },
         { name: 'BLOCK 3', hash: 'E04C…' }
-      ], { frame: '은행 서버' }),
+      ], { frame: '은행 서버', size: 'lg' }),
       bigQuestion('“이것도 은행 서버에서<br />만들 수 있지 않을까?”')
     ].join(''),
     note: '다시 질문: 누가 이 장부를 가지고, 누가 공식 기록을 결정하는가?'
@@ -753,7 +750,12 @@ const SCREENS = [
         treeOrg({
           tag: '분산된 서버',
           root: '은행',
-          children: ['서울 서버', '부산 서버', '백업 서버'],
+          rootNote: '한 주체가 결정한다',
+          children: [
+            { name: '서울 서버', note: '같은 장부' },
+            { name: '부산 서버', note: '같은 장부' },
+            { name: '백업 서버', note: '같은 장부' }
+          ],
           foot: '관리자 = 은행'
         }),
         meshOrg({
@@ -772,11 +774,12 @@ const SCREENS = [
     title: '장부가 서로 다르면?',
     body: [
       duo(
-        { tag: 'A', title: 'A의 장부', lines: ['철수 → 영희 &nbsp; 1만원'], tone: 'neutral' },
-        { tag: 'B', title: 'B의 장부', lines: ['철수 → 영희 &nbsp; 2만원'], tone: 'warn' },
-        '누가 맞을까?'
+        { tag: 'A의 장부', title: '철수 → 영희', lines: ['1만원'], tone: 'neutral' },
+        { tag: 'B의 장부', title: '철수 → 영희', lines: ['2만원'], tone: 'warn' },
+        '누가 맞을까?',
+        'ledger'
       ),
-      key('Consensus')
+      conclusion('Consensus')
     ].join(''),
     note: '한 참여자가 단독으로 정답을 선언하지 않는다면, 공통 규칙이 필요하다'
   },
@@ -794,10 +797,8 @@ const SCREENS = [
           { owner: '그 밖의 방식', name: '…' }
         ]
       }),
-      key('📱 이제 다시 스마트폰을 꺼내주세요.')
-    ].join(''),
-    /* 6.5 — L12 는 예고, 실제 체험 진입은 L13 */
-    advance: { to: 'L13', label: 'PoW 체험 시작' }
+      conclusion('오늘 체험할 것은 Bitcoin 의 Proof of Work 입니다')
+    ].join('')
   },
 
   /* ===== Section E. Proof of Work ===== */
@@ -831,13 +832,7 @@ const SCREENS = [
         question: '누가 먼저 찾을 가능성이 높을까?',
         via: '더 많은 Hash 시도',
         result: '조건을 먼저 만족할 가능성이 높아진다'
-      }),
-      miniFlow('두 사람이 반복하고 있는 한 번의 시도', [
-        { text: '숫자 변경' },
-        { text: 'Hash 계산' },
-        { text: '조건 확인' },
-        { text: '다시 시도' }
-      ])
+      })
     ].join(''),
     note: '컴퓨팅 파워는 어려운 공식을 푸는 힘이 아니라, 같은 계산을 더 많이 반복하는 능력이다.'
   },
@@ -948,16 +943,14 @@ const SCREENS = [
         { name: 'Consensus',          role: '무엇을 인정할 것인가' },
         { name: 'PoW',                role: 'Bitcoin의 합의 메커니즘' }
       ]),
-      conclusion('여섯 가지는 따로 있는 개념이 아니라, 한 장부를 믿을 수 있게 만들기 위해 차례로 이어진 하나의 노선이다.'),
-      nextHint('“이 장부에는 송금 기록만 적어야 할까?”')
+      conclusion('여섯 가지는 따로 있는 개념이 아니라, 한 장부를 믿을 수 있게 만들기 위해 차례로 이어진 하나의 노선이다.')
     ].join('')
   },
   {
     id: 'L20', sourcePage: 17, section: 'F', type: 'question', concept: 'ethereum',
     eyebrow: 'TRANSITION',
     title: '',
-    body: bigQuestion('“이 장부에는<br />송금 기록만 적어야 할까?”'),
-    note: '여기에서 Ethereum 이야기가 시작됩니다.'
+    body: bigQuestion('“이 장부에는<br />송금 기록만 적어야 할까?”')
   },
   {
     id: 'L21', sourcePage: 18, section: 'F', type: 'concept', concept: 'ethereum',
@@ -975,20 +968,21 @@ const SCREENS = [
         chip: 'IF',
         label: '동일한 프로그램 + 동일한 상태'
       }),
-      conclusion('여러 노드가 동일한 프로그램과 상태를 공유 → World Computer')
-    ].join(''),
-    note: '“한 대의 거대한 컴퓨터라는 뜻은 아니다.”'
+      conclusion('여러 노드가 동일한 프로그램과 상태를 공유 → World Computer'),
+      /* 결론이 아니라 바로 위 World Computer 라는 표현에 붙는 단서다 */
+      sub('“한 대의 거대한 컴퓨터라는 뜻은 아니다.”')
+    ].join('')
   },
   {
     id: 'L22', sourcePage: 19, section: 'F', type: 'concept', concept: ['contract', 'dapp'],
     eyebrow: 'SMART CONTRACT · DAPP',
     title: 'Smart Contract 와 DApp',
     body: [
-      stack([
+      `<div class="stack-lg">${stack([
         { title: 'DApp',                   desc: '사용자가 그 프로그램을 이용하는 애플리케이션', tone: 'primary' },
         { title: 'Smart Contract',         desc: '블록체인 위에서 실행되는 프로그램' },
         { title: 'Ethereum / Blockchain',  desc: '프로그램이 실행되는 기반' }
-      ]),
+      ])}</div>`,
       sub('사용자 ↓ 화면·앱 &nbsp;/&nbsp; 프로그램 ↓ 실행 기반')
     ].join('')
   },
@@ -1030,8 +1024,10 @@ const SCREENS = [
     body: [
       /* 마지막 기억점 — 오늘 지나온 9개 역을 실제 노선 모양으로 되돌려준다 */
       subwayMap(),
-      tagCloud(['Bitcoin', 'Ethereum', 'Stablecoin', 'NFT', 'STO', 'RWA', 'DeFi', 'CBDC', 'Web3', '…']),
-      conclusion('오늘 만든 노선도의 어디에 있는 이야기인지 먼저 생각해 보세요')
+      closingMessage(
+        ['Bitcoin', 'Ethereum', 'Stablecoin', 'NFT', 'STO', 'RWA', 'DeFi', 'CBDC', 'Web3', '…'],
+        '새로운 개념이 나오면, 오늘 만든 노선도의 어디에 있는 이야기인지 먼저 생각해 보세요.'
+      )
     ].join(''),
     closing: true
   }

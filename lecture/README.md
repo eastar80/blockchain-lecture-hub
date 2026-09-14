@@ -11,7 +11,7 @@ lecture/
 ├─ screens.js    25개 화면 콘텐츠 — 원본 문구의 단일 출처
 ├─ lecture.css   강의 화면 전용 레이아웃 (토큰은 ../shared.css 재사용)
 ├─ app.js        Router / Renderer / Navigation
-└─ qr/           체험 진입 화면에 띄우는 QR (사전 생성한 SVG)
+└─ qr/           체험 진입용 QR (현재 화면에서는 쓰지 않음)
 ```
 
 ## 라우팅
@@ -55,7 +55,9 @@ experience/index.html?from=L05&return=L06#hash
 | L08 하나를 바꾸면? | `chain` | L09 그런데 여기까지만이라면? |
 | L13 ‘00’ 을 먼저 찾아라 | `pow` | L14 방금 ‘어려운 수학문제’를 풀었을까? |
 
-`lecture/qr/*.svg` 는 위 URL 을 그대로 담은 QR 입니다. 배포 도메인이 바뀌면 다시 만들어야 합니다.
+체험 진입은 화면의 버튼 하나로 합니다. QR 은 쓰지 않습니다.
+`lecture/qr/*.svg` 에 사전 생성한 QR 이 남아 있으니 다시 쓰려면 `app.js` 의 체험 CTA 에 되살리면 됩니다.
+(배포 도메인이 바뀌면 QR 은 다시 만들어야 합니다.)
 
 ## 조작
 
@@ -74,7 +76,7 @@ experience/index.html?from=L05&return=L06#hash
 | L01 | p1 | 도입 | 블록체인은 왜 ‘블록체인’일까? | title |  | 다음 |
 | L02 | p2 | 도입 | 오늘은 조금 단순하게 설명하겠습니다 | concept |  | 다음 |
 | L03 | p3 | 장부에 대한 믿음 | 장부에 대한 믿음은 어디에서 오는가? | question |  | 다음 |
-| L04 | p4 | 장부에 대한 믿음 | “이게 공식 장부입니다”라고 한 사람이 말할 수 없다면? | concept |  | 다음 |
+| L04 | p4 | 장부에 대한 믿음 | “이게 공식 장부입니다”라고 말할 수 있는 신뢰있는 존재가 없다면? | concept |  | 다음 |
 | L05 | p5 | Hash → Block → Chain | Hash — 기록의 지문 | experience-entry |  | **hash 체험** → L06 복귀 |
 | L06 | p6 | Hash → Block → Chain | 왜 Block 일까? | experience-entry | ○ | **block 체험** → L07 복귀 |
 | L07 | p7 | Hash → Block → Chain | 왜 Chain 일까? | concept | ○ | 다음 |
@@ -82,7 +84,7 @@ experience/index.html?from=L05&return=L06#hash
 | L09 | p9 | Hash → Block → Chain | 그런데 여기까지만이라면? | question | ○ | 다음 |
 | L10 | p10 | Distributed Ledger → Consensus | 서버가 여러 대면 분산원장일까? | concept |  | 다음 |
 | L11 | p11 | Distributed Ledger → Consensus | 장부가 서로 다르면? | question |  | 다음 |
-| L12 | p12 | Distributed Ledger → Consensus | Consensus 에는 여러 방법이 있습니다 | concept |  | **PoW 체험 시작** → L13 |
+| L12 | p12 | Distributed Ledger → Consensus | Consensus 에는 여러 방법이 있습니다 | concept |  | 다음 |
 | L13 | p13 | Proof of Work | ‘00’ 을 먼저 찾아라 | experience-entry |  | **pow 체험** → L14 복귀 |
 | L14 | p14 | Proof of Work | 방금 ‘어려운 수학문제’를 풀었을까? | concept | ○ | 다음 |
 | L15 | p14 | Proof of Work | 조건을 만족할 때까지 반복해서 시도한다 | concept |  | 다음 |
@@ -146,6 +148,8 @@ experience/index.html?from=L05&return=L06#hash
 | `sharedNodes` | L04 · L21 | 노드들이 같은 것을 공유 |
 | `changeTrail` | L08 | 변경이 어디까지 번지는가 |
 | `mapCompare` | L02 | 같은 역을 실제 지도 ↔ 노선도로 두 번 그려 대비 |
+| `simplifyExample` | L02 | ‘단순화란 무엇인가’를 여는 예시와 되묻는 질문 |
+| `closingMessage` | L25 | 키워드 나열과 당부를 한 흐름으로 |
 | `subwayMap` | L25 | 마지막 기억점 |
 
 ## 화면 크기
@@ -157,7 +161,7 @@ experience/index.html?from=L05&return=L06#hash
 |---|---|
 | 1920×1080 | 0개 |
 | 1366×768 | 0개 |
-| 1280×720 | 3개 (L04 · L06 · L14, 최대 34px) |
+| 1280×720 | 0개 |
 
 ## 콘텐츠를 고칠 때
 
