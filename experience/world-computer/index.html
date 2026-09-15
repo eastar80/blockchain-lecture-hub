@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>Ethereum · World Computer 체험</title>
+  <meta name="description" content="Input을 보내고 Program이 State를 읽어 State Transition을 만드는 과정을 직접 체험합니다." />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="page-shell">
+    <header class="hero">
+      <div class="hero-topline">
+        <div>
+          <div class="eyebrow">ETHEREUM · WORLD COMPUTER EXPERIENCE</div>
+          <h1>프로그램이 State를 바꾸는 순간</h1>
+          <p class="hero-copy">결제금액을 Input으로 보내고, Program이 현재 State를 읽어 어떤 결과를 만드는지 직접 확인해보세요.</p>
+        </div>
+        <button id="returnLectureTop" class="ghost-button" type="button">강의로 돌아가기</button>
+      </div>
+    </header>
+
+    <section id="introPanel" class="intro-card" aria-labelledby="intro-title">
+      <div class="intro-badge">DIGITAL TICKET MACHINE</div>
+      <h2 id="intro-title">기록을 추가하는 것과<br />프로그램을 실행하는 것은 무엇이 다를까요?</h2>
+      <p>초기 State는 <strong>가격 1,000원 · 남은 티켓 2장 · 판매량 0장</strong>입니다. 네 번의 실행을 통해 직접 확인합니다.</p>
+      <div class="mini-flow" aria-label="체험 흐름">
+        <span>INPUT</span><b>→</b><span>PROGRAM</span><b>→</b><span>STATE</span>
+      </div>
+      <button id="startButton" class="primary-button intro-start" type="button">체험 시작 <span aria-hidden="true">→</span></button>
+    </section>
+
+    <section id="experiencePanel" class="experience hidden" aria-hidden="true">
+      <section class="tool-card" aria-labelledby="tool-title">
+        <div class="tool-toolbar">
+          <div>
+            <p class="section-kicker">현재 State + Input → Program → 새로운 State</p>
+            <h2 id="tool-title">디지털 티켓 판매기</h2>
+          </div>
+          <div class="toolbar-actions">
+            <div id="progressBadge" class="progress-badge" aria-live="polite">1 / 4</div>
+            <button id="resetButton" class="secondary-button" type="button">처음부터</button>
+          </div>
+        </div>
+
+        <div id="guideBanner" class="guide-banner" aria-live="polite">
+          <span id="guideNumber" class="guide-number">1</span>
+          <div>
+            <strong id="guideTitle">먼저 500원을 보내보세요.</strong>
+            <p id="guideText">결제금액이 부족하면 Program이 어디에서 실행을 멈추는지 확인합니다.</p>
+          </div>
+        </div>
+
+        <div class="execution-layout" aria-label="Input Program State 실행 흐름">
+          <article id="inputCard" class="execution-card input-card">
+            <div class="card-head">
+              <span class="card-eyebrow">INPUT</span>
+              <span id="inputStatus" class="card-status idle">입력 준비</span>
+            </div>
+            <h3>보낼 결제금액</h3>
+            <label class="payment-field" for="paymentInput">
+              <input id="paymentInput" type="number" inputmode="numeric" min="0" step="100" value="500" autocomplete="off" />
+              <span>원</span>
+            </label>
+            <div class="quick-values" aria-label="추천 결제금액">
+              <button class="value-chip active" type="button" data-value="500">500원</button>
+              <button class="value-chip" type="button" data-value="1000">1,000원</button>
+            </div>
+            <div class="call-preview">
+              <span>보낼 Input</span>
+              <code id="callPreview">buy(500)</code>
+            </div>
+            <button id="executeButton" class="execute-button" type="button">buy(500) 실행</button>
+            <p id="inputCoach" class="input-coach" role="status"></p>
+          </article>
+
+          <div class="flow-connector" aria-hidden="true">
+            <span></span><b>→</b>
+          </div>
+
+          <article id="programCard" class="execution-card program-card">
+            <div class="card-head">
+              <span class="card-eyebrow">PROGRAM</span>
+              <span id="programStatus" class="card-status idle">실행 대기</span>
+            </div>
+            <h3>Program이 조건을 확인합니다</h3>
+            <div class="program-rule">
+              <span>IF</span>
+              <p>결제금액 ≥ 가격<br /><b>AND</b> 남은 티켓 &gt; 0</p>
+            </div>
+
+            <div id="conditionPrice" class="condition-row pending">
+              <span class="condition-icon">○</span>
+              <div>
+                <strong>결제금액 ≥ 가격?</strong>
+                <p id="conditionPriceFormula">—</p>
+              </div>
+              <span class="condition-result">대기</span>
+            </div>
+
+            <div id="conditionStock" class="condition-row pending">
+              <span class="condition-icon">○</span>
+              <div>
+                <strong>남은 티켓 &gt; 0?</strong>
+                <p id="conditionStockFormula">—</p>
+              </div>
+              <span class="condition-result">대기</span>
+            </div>
+
+            <div class="program-then">
+              <span>THEN</span>
+              <p>남은 티켓 −1 · 판매량 +1 · 티켓 발급</p>
+            </div>
+          </article>
+
+          <div class="flow-connector" aria-hidden="true">
+            <span></span><b>→</b>
+          </div>
+
+          <article id="stateCard" class="execution-card state-card">
+            <div class="card-head">
+              <span class="card-eyebrow">STATE</span>
+              <span id="stateStatus" class="card-status idle">현재 상태</span>
+            </div>
+            <h3>시스템이 기억하는 현재 State</h3>
+            <div class="state-list">
+              <div id="priceState" class="state-row">
+                <span>가격</span>
+                <strong id="priceValue">1,000원</strong>
+              </div>
+              <div id="ticketState" class="state-row">
+                <span>남은 티켓</span>
+                <strong id="ticketValue">2장</strong>
+              </div>
+              <div id="salesState" class="state-row">
+                <span>판매량</span>
+                <strong id="salesValue">0장</strong>
+              </div>
+            </div>
+            <div id="stateTransition" class="state-transition idle" aria-live="polite">
+              <span class="transition-icon">→</span>
+              <div>
+                <strong>아직 실행 전입니다.</strong>
+                <p>Program이 성공하면 이곳에서 State 변화가 보입니다.</p>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <section id="resultBar" class="result-bar idle" aria-live="polite">
+          <div id="resultIcon" class="result-icon">→</div>
+          <div class="result-copy">
+            <span class="result-label">RESULT</span>
+            <strong id="resultTitle">Input을 보내면 실행 과정이 여기 표시됩니다.</strong>
+            <p id="resultText">조건을 하나씩 확인한 뒤 State가 바뀌는지 살펴보세요.</p>
+          </div>
+          <button id="advanceButton" class="primary-button advance-button hidden" type="button">다음 단계 <span aria-hidden="true">→</span></button>
+        </section>
+      </section>
+
+      <section id="completionPanel" class="completion-panel hidden" aria-hidden="true">
+        <div class="completion-question">
+          <span class="section-kicker">방금 우리는 무엇을 한 걸까요?</span>
+          <h2>장부에 “티켓을 구매했다”는<br />기록 한 줄만 추가했을까요?</h2>
+        </div>
+
+        <div class="aha-flow" aria-label="방금 실행한 구조">
+          <article>
+            <span>INPUT</span>
+            <strong>buy(1000)</strong>
+            <p>실행 요청을 보냄</p>
+          </article>
+          <b aria-hidden="true">→</b>
+          <article>
+            <span>PROGRAM</span>
+            <strong>현재 State 읽기</strong>
+            <p>조건을 하나씩 판단</p>
+          </article>
+          <b aria-hidden="true">→</b>
+          <article>
+            <span>STATE TRANSITION</span>
+            <strong>현재 State → 새로운 State</strong>
+            <p>성공하면 상태 변화</p>
+          </article>
+        </div>
+
+        <aside class="aha-message">
+          <span aria-hidden="true">✓</span>
+          <div>
+            <strong>방금 우리는 기록을 추가한 것이 아니라 프로그램을 실행했고, 그 결과 State가 바뀌었습니다.</strong>
+            <p>그리고 같은 <code>buy(1000)</code>도 현재 State가 다르면 결과가 달랐습니다.</p>
+          </div>
+        </aside>
+
+        <div class="completion-actions">
+          <button id="showBridgeButton" class="primary-button" type="button">다음 질문 보기 <span aria-hidden="true">→</span></button>
+        </div>
+      </section>
+
+      <section id="nodeBridge" class="node-bridge hidden" aria-hidden="true">
+        <div class="bridge-intro">
+          <span class="section-kicker">ONE COMPUTER → ETHEREUM?</span>
+          <h2>그런데 지금은 컴퓨터 한 대에서<br />실행했을 뿐입니다.</h2>
+          <p>이 상태를 여러 컴퓨터가 함께 이어간다면 무엇이 더 필요할까요?</p>
+        </div>
+
+        <div class="nodes-grid" aria-label="여러 노드의 동일한 마지막 State">
+          <article><span>NODE A</span><strong>티켓 0</strong><p>판매량 2</p></article>
+          <article><span>NODE B</span><strong>티켓 0</strong><p>판매량 2</p></article>
+          <article><span>NODE C</span><strong>티켓 0</strong><p>판매량 2</p></article>
+          <article><span>NODE D</span><strong>티켓 0</strong><p>판매량 2</p></article>
+        </div>
+
+        <aside class="bridge-question">
+          <div class="bridge-question-icon">?</div>
+          <div>
+            <strong>여러 컴퓨터는 어떻게 같은 State를 이어갈 수 있을까요?</strong>
+            <p>답은 체험도구에서 미리 설명하지 않습니다. 강의에서 여러 Node, 공통 실행 규칙, State Transition 검증으로 이어갑니다.</p>
+          </div>
+        </aside>
+
+        <div class="bridge-actions">
+          <button id="restartButton" class="secondary-button" type="button">체험 다시하기</button>
+          <button id="continueLectureButton" class="primary-button" type="button">강의에서 계속 보기 <span aria-hidden="true">→</span></button>
+        </div>
+      </section>
+    </section>
+
+    <footer class="privacy-note">
+      <span aria-hidden="true">●</span>
+      이 체험은 브라우저 안에서만 동작하며 실제 Ethereum 네트워크나 지갑에 연결하지 않습니다.
+    </footer>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js"></script>
+</body>
+</html>

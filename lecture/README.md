@@ -1,6 +1,6 @@
 # 강의 화면 (lecture/)
 
-원본 `materials/lecture.pdf` 21페이지를 강의 진행용 **25개 HTML 화면**으로 재구성한 화면입니다.
+최종 강의자료 `블록체인_강의자료_v2.0.pdf` 28페이지를 강의 진행용 **30개 HTML 화면**으로 재구성한 화면입니다.
 PDF 복사본이 아니라 실제 강의를 진행하는 화면이며, 체험도구와 한 번의 조작으로 왕복합니다.
 
 ## 파일
@@ -38,6 +38,7 @@ experience/index.html?from=L05&return=L06#hash
 | parameter | 뜻 |
 |---|---|
 | `#hash` | 실행할 체험 종류 (`hash` / `block` / `chain` / `pow`) |
+| 경로 | Ethereum 체험만 별도 모듈이다 — `experience/world-computer/index.html?from=L22&return=L23` (hash 없음) |
 | `from` | 체험 직전 강의 화면 → 체험도구의 `← 강의로 돌아가기` |
 | `return` | 체험 후 이어서 진행할 강의 화면 → 체험도구의 `강의 계속하기 →` |
 
@@ -54,6 +55,9 @@ experience/index.html?from=L05&return=L06#hash
 | L06 왜 Block 일까? | `block` | L07 왜 Chain 일까? |
 | L08 하나를 바꾸면? | `chain` | L09 그런데 여기까지만이라면? |
 | L13 ‘00’ 을 먼저 찾아라 | `pow` | L14 방금 ‘어려운 수학문제’를 풀었을까? |
+| L22 실습 ③ 디지털 티켓 판매기 | `world-computer` (별도 모듈) | L23 방금 무엇이 실행되었을까? |
+
+Ethereum 체험만 별도 모듈(`experience/world-computer/`)이고 나머지 넷은 한 도구의 STEP 1~4 입니다.
 
 체험 진입은 화면의 버튼 하나로 합니다. QR 은 쓰지 않습니다.
 `lecture/qr/*.svg` 에 사전 생성한 QR 이 남아 있으니 다시 쓰려면 `app.js` 의 체험 CTA 에 되살리면 됩니다.
@@ -71,61 +75,73 @@ experience/index.html?from=L05&return=L06#hash
 
 ## 화면 목록
 
-| 화면 | 원본 | Section | 제목 | 유형 | Bridge | 주요 Action |
+| 화면 | 원본 | Section | 제목 | 노선 | Bridge | 주요 Action |
 |---|---:|---|---|---|:-:|---|
-| L01 | p1 | 도입 | 블록체인은 왜 ‘블록체인’일까? | title |  | 다음 |
-| L02 | p2 | 도입 | 오늘은 조금 단순하게 설명하겠습니다 | concept |  | 다음 |
-| L03 | p3 | 장부에 대한 믿음 | 장부에 대한 믿음은 어디에서 오는가? | question |  | 다음 |
-| L04 | p4 | 장부에 대한 믿음 | “이게 공식 장부입니다”라고 말할 수 있는 신뢰있는 존재가 없다면? | concept |  | 다음 |
-| L05 | p5 | Hash → Block → Chain | Hash — 기록의 지문 | experience-entry |  | **hash 체험** → L06 복귀 |
-| L06 | p6 | Hash → Block → Chain | 왜 Block 일까? | experience-entry | ○ | **block 체험** → L07 복귀 |
-| L07 | p7 | Hash → Block → Chain | 왜 Chain 일까? | concept | ○ | 다음 |
-| L08 | p8 | Hash → Block → Chain | 하나를 바꾸면? | experience-entry |  | **chain 체험** → L09 복귀 |
-| L09 | p9 | Hash → Block → Chain | 그런데 여기까지만이라면? | question | ○ | 다음 |
-| L10 | p10 | Distributed Ledger → Consensus | 서버가 여러 대면 분산원장일까? | concept |  | 다음 |
-| L11 | p11 | Distributed Ledger → Consensus | 장부가 서로 다르면? | question |  | 다음 |
-| L12 | p12 | Distributed Ledger → Consensus | Consensus 에는 여러 방법이 있습니다 | concept |  | 다음 |
-| L13 | p13 | Proof of Work | ‘00’ 을 먼저 찾아라 | experience-entry |  | **pow 체험** → L14 복귀 |
-| L14 | p14 | Proof of Work | 방금 ‘어려운 수학문제’를 풀었을까? | concept | ○ | 다음 |
-| L15 | p14 | Proof of Work | 조건을 만족할 때까지 반복해서 시도한다 | concept |  | 다음 |
-| L16 | p15 | Proof of Work | 그래서 먼저 찾으면 무엇을 하나? | concept |  | 다음 |
-| L17 | p16 | Proof of Work | 제안했다고 끝이 아니다 | concept |  | 다음 |
-| L18 | p16 | Proof of Work | 제안 ≠ 인정 | concept |  | 다음 |
-| L19 | p17 | Ethereum → Smart Contract → DApp | 장부에 대한 믿음은 어디에서 올까? | summary |  | 다음 |
-| L20 | p17 | Ethereum → Smart Contract → DApp | “이 장부에는 송금 기록만 적어야 할까?” | question |  | 다음 |
-| L21 | p18 | Ethereum → Smart Contract → DApp | Ethereum 은 왜 World Computer 라고 할까? | concept |  | 다음 |
-| L22 | p19 | Ethereum → Smart Contract → DApp | Smart Contract 와 DApp | concept |  | 다음 |
-| L23 | p20 | 정리 | 오늘 만든 블록체인 노선도 ① | summary |  | 다음 |
-| L24 | p20 | 정리 | 오늘 만든 블록체인 노선도 ② | summary |  | 다음 |
-| L25 | p21 | 정리 | 오늘 만든 것은 블록체인의 ‘지하철 노선도’입니다. | summary |  | 강의 홈 / 처음부터 |
+| L01 | p1 | 도입 | 블록체인은 왜 ‘블록체인’일까? | intro |  | 다음 |
+| L02 | p2 | 도입 | 오늘은 조금 단순하게 설명하겠습니다 | intro |  | 다음 |
+| L03 | p3 | 장부에 대한 믿음 | 장부에 대한 믿음은 어디에서 오는가? | intro |  | 다음 |
+| L04 | p4 | 장부에 대한 믿음 | “이게 공식 장부입니다”라고 말할 수 있는 신뢰있는 존재가 없다면? | intro |  | 다음 |
+| L05 | p5 | Hash → Block → Chain | Hash — 기록의 지문 | 1 |  | **hash 체험** → L06 복귀 |
+| L06 | p6 | Hash → Block → Chain | 왜 Block 일까? | 1 | ○ | **block 체험** → L07 복귀 |
+| L07 | p7 | Hash → Block → Chain | 왜 Chain 일까? | 1 | ○ | 다음 |
+| L08 | p8 | Hash → Block → Chain | 하나를 바꾸면? | 1 |  | **chain 체험** → L09 복귀 |
+| L09 | p9 | Hash → Block → Chain | 그런데 여기까지만이라면? | 1 | ○ | 다음 |
+| L10 | p10 | Distributed Ledger → Consensus | 서버가 여러 대면 분산원장일까? | 1 |  | 다음 |
+| L11 | p11 | Distributed Ledger → Consensus | 장부가 서로 다르면? | 1 |  | 다음 |
+| L12 | p12 | Distributed Ledger → Consensus | Consensus 에는 여러 방법이 있습니다 | 1 |  | 다음 |
+| L13 | p13 | Proof of Work | ‘00’ 을 먼저 찾아라 | 1 |  | **pow 체험** → L14 복귀 |
+| L14 | p14 | Proof of Work | 방금 ‘어려운 수학문제’를 풀었을까? | 1 | ○ | 다음 |
+| L15 | p14 | Proof of Work | 조건을 만족할 때까지 반복해서 시도한다 | 1 |  | 다음 |
+| L16 | p15 | Proof of Work | 그래서 먼저 찾으면 무엇을 하나? | 1 |  | 다음 |
+| L17 | p16 | Proof of Work | 제안했다고 끝이 아니다 | 1 |  | 다음 |
+| L18 | p16 | Proof of Work | 제안 ≠ 인정 | 1 |  | 다음 |
+| L19 | p17 | 첫 번째 노선 회수 · 환승 | 장부에 대한 믿음은 어디에서 올까? | 1 |  | 다음 |
+| L20 | p18 | 첫 번째 노선 회수 · 환승 | 기록만 적어야 할까? | transfer |  | 다음 |
+| L21 | p19 | Ethereum · World Computer | 컴퓨터가 하는 일을 아주 단순하게 보면 | 2 |  | 다음 |
+| L22 | p20 | Ethereum · World Computer | 실습 ③ 디지털 티켓 판매기 | 2 |  | **world-computer 체험** → L23 복귀 |
+| L23 | p21 | Ethereum · World Computer | 방금 무엇이 실행되었을까? | 2 | ○ | 다음 |
+| L24 | p22 | Ethereum · World Computer | 한 컴퓨터에서 여러 노드로 | 2 |  | 다음 |
+| L25 | p23 | Ethereum · World Computer | 그래서 World Computer | 2 |  | 다음 |
+| L26 | p24 | Ethereum · World Computer | EVM 을 30 초만 들여다봅시다 | 2 |  | 다음 |
+| L27 | p25 | Ethereum · World Computer | 방금 본 것이 Smart Contract 입니다 | 2 |  | 다음 |
+| L28 | p26 | Ethereum · World Computer | 그렇다면 DApp 은? | 2 |  | 다음 |
+| L29 | p27 | 두 개의 노선도 | 오늘 만든 두 개의 블록체인 노선도 | both |  | 다음 |
+| L30 | p28 | 두 개의 노선도 | 오늘 만든 것은 하나의 직선이 아니라 서로 다른 질문에 답하는 두 개의 연결된 지하철 노선도입니다. | both |  | 강의 홈 / 처음부터 |
 
 ## 원본 페이지 ↔ 화면 대응
 
 내용을 줄이는 대신 화면을 나눴습니다. 삭제한 콘텐츠는 없습니다.
 
-| 원본 페이지 | 화면 | 처리 |
-|---:|---|---|
-| 1 | L01 | 유지 |
-| 2 | L02 | 유지 |
-| 3 | L03 | 유지 |
-| 4 | L04 | 유지 |
-| 5 | L05 | 유지 |
-| 6 | L06 | 유지 |
-| 7 | L07 | 유지 |
-| 8 | L08 | 유지 |
-| 9 | L09 | 유지 |
-| 10 | L10 | 유지 |
-| 11 | L11 | 유지 |
-| 12 | L12 | 유지 |
-| 13 | L13 | 유지 |
-| 14 | L14, L15 | 2화면 분할 |
-| 15 | L16 | 유지 |
-| 16 | L17, L18 | 2화면 분할 |
-| 17 | L19, L20 | 2화면 분할 |
-| 18 | L21 | 유지 |
-| 19 | L22 | 유지 |
-| 20 | L23, L24 | 2화면 분할 |
-| 21 | L25 | 유지 |
+| 원본 페이지 | 화면 |
+|---:|---|
+| 1 | L01 |
+| 2 | L02 |
+| 3 | L03 |
+| 4 | L04 |
+| 5 | L05 |
+| 6 | L06 |
+| 7 | L07 |
+| 8 | L08 |
+| 9 | L09 |
+| 10 | L10 |
+| 11 | L11 |
+| 12 | L12 |
+| 13 | L13 |
+| 14 | L14, L15 |
+| 15 | L16 |
+| 16 | L17, L18 |
+| 17 | L19 |
+| 18 | L20 |
+| 19 | L21 |
+| 20 | L22 |
+| 21 | L23 |
+| 22 | L24 |
+| 23 | L25 |
+| 24 | L26 |
+| 25 | L27 |
+| 26 | L28 |
+| 27 | L29 |
+| 28 | L30 |
 
 ## 설명 구조 표현 요소
 
@@ -161,7 +177,7 @@ experience/index.html?from=L05&return=L06#hash
 |---|---|
 | 1920×1080 | 0개 |
 | 1366×768 | 0개 |
-| 1280×720 | 0개 |
+| 1280×720 | 1개 (L28, 27px) |
 
 ## 콘텐츠를 고칠 때
 

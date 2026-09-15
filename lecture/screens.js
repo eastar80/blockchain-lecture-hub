@@ -22,19 +22,48 @@
    ============================================================ */
 
 /* ------------------------------------------------------------
-   진행 표시기 개념열 — 원본 하단에 반복되는 개념 목록
+   진행 표시기 — 두 개의 노선
+
+   오늘 강의는 하나의 직선이 아니라 서로 다른 질문에 답하는
+   두 개의 연결된 노선이다. 상단 표시기도 그렇게 보여야
+   'PoW 다음 기술이 Ethereum' 처럼 읽히지 않는다.
+
+   LINE 1  여러 참여자가 어떻게 믿을 수 있는 장부를 만들고 이어갈까?
+   환승     공유된 장부 → 공유된 State
+   LINE 2  그 공유된 시스템에서 Program 까지 실행할 수 있다면?
    ------------------------------------------------------------ */
-const CONCEPTS = [
-  { key: 'hash',      label: 'Hash',             short: 'Hash' },
-  { key: 'block',     label: 'Block',            short: 'Block' },
-  { key: 'chain',     label: 'Chain',            short: 'Chain' },
-  { key: 'ledger',    label: 'Distributed Ledger', short: 'Ledger' },
-  { key: 'consensus', label: 'Consensus',        short: 'Consensus' },
-  { key: 'pow',       label: 'PoW',              short: 'PoW' },
-  { key: 'ethereum',  label: 'Ethereum',         short: 'Ethereum' },
-  { key: 'contract',  label: 'Smart Contract',   short: 'Contract' },
-  { key: 'dapp',      label: 'DApp',             short: 'DApp' }
+const LINES = [
+  {
+    id: 1,
+    label: 'LINE 1 · 공유된 장부',
+    question: '여러 참여자가 어떻게 믿을 수 있는 장부를 만들고 이어갈까?',
+    stops: [
+      { key: 'hash',      label: 'Hash',               short: 'Hash' },
+      { key: 'block',     label: 'Block',              short: 'Block' },
+      { key: 'chain',     label: 'Chain',              short: 'Chain' },
+      { key: 'ledger',    label: 'Distributed Ledger', short: 'Ledger' },
+      { key: 'consensus', label: 'Consensus',          short: 'Consensus' },
+      { key: 'pow',       label: 'PoW',                short: 'PoW' }
+    ]
+  },
+  {
+    id: 2,
+    label: 'LINE 2 · 공유된 State',
+    question: '그 공유된 시스템에서 Program 까지 실행할 수 있다면?',
+    stops: [
+      { key: 'state',      label: 'State',            short: 'State' },
+      { key: 'program',    label: 'Input · Program',  short: 'Program' },
+      { key: 'transition', label: 'State Transition', short: 'Transition' },
+      { key: 'verify',     label: '노드 검증',         short: '검증' },
+      { key: 'world',      label: 'World Computer',   short: 'World' },
+      { key: 'evm',        label: 'EVM',              short: 'EVM' },
+      { key: 'contract',   label: 'Smart Contract',   short: 'Contract' },
+      { key: 'dapp',       label: 'DApp',             short: 'DApp' }
+    ]
+  }
 ];
+
+const TRANSFER_LABEL = '환승 · 공유된 장부 → 공유된 State';
 
 /* ------------------------------------------------------------
    목차 Section — 25개를 한 번에 나열하지 않고 7개 Section 을 먼저 보여준다
@@ -45,8 +74,9 @@ const SECTIONS = [
   { id: 'C', label: 'Hash → Block → Chain',                    from: 'L05', to: 'L09' },
   { id: 'D', label: 'Distributed Ledger → Consensus',          from: 'L10', to: 'L12' },
   { id: 'E', label: 'Proof of Work',                           from: 'L13', to: 'L18' },
-  { id: 'F', label: 'Ethereum → Smart Contract → DApp',        from: 'L19', to: 'L22' },
-  { id: 'G', label: '정리',                                    from: 'L23', to: 'L25' }
+  { id: 'F', label: '첫 번째 노선 회수 · 환승',                from: 'L19', to: 'L20' },
+  { id: 'G', label: 'Ethereum · World Computer',               from: 'L21', to: 'L28' },
+  { id: 'H', label: '두 개의 노선도',                          from: 'L29', to: 'L30' }
 ];
 
 /* ------------------------------------------------------------
@@ -76,6 +106,7 @@ function duo(left, right, middle, variant) {
       ${s.tag ? `<p class="duo-tag">${s.tag}</p>` : ''}
       ${s.title ? `<p class="duo-title">${s.title}</p>` : ''}
       ${(s.lines || []).map(l => `<p class="duo-line">${l}</p>`).join('')}
+      ${s.html || ''}
       ${s.foot ? `<p class="duo-foot">${s.foot}</p>` : ''}
     </div>`;
   return `
@@ -255,9 +286,10 @@ function loopFlow({ steps, decision, noLabel, yes }) {
  * CausalFlow — 입력 → 검사 → 결과를 하나의 세로 흐름으로 연결한다.
  * stage: { tag, tone: 'in'|'check'|'out', html }
  */
-function causalFlow(stages) {
+function causalFlow(stages, options) {
+  const opt = options || {};
   return `
-    <ol class="causal">
+    <ol class="causal${opt.row ? ' causal-row' : ''}">
       ${stages.map((stage, i) => `
         ${i > 0 ? '<li class="causal-arrow" aria-hidden="true">↓</li>' : ''}
         <li class="causal-stage tone-${stage.tone || 'in'}">
@@ -268,10 +300,13 @@ function causalFlow(stages) {
 }
 
 /** 검증 항목 — 체크박스 형태로 ‘검사한다’는 동작을 보이게 한다 */
-const checkList = items => `
-  <ul class="check-list">
-    ${items.map(t => `<li><span class="check-box" aria-hidden="true"></span>${t}</li>`).join('')}
+const checkList = (items, options) => {
+  const done = options && options.done;
+  return `
+  <ul class="check-list${done ? ' check-done' : ''}">
+    ${items.map(t => `<li><span class="check-box" aria-hidden="true">${done ? '✓' : ''}</span>${t}</li>`).join('')}
   </ul>`;
+};
 
 /**
  * LedgerCopies — 같은 Block 이 각자의 장부에 똑같이 추가되는 모습.
@@ -545,6 +580,153 @@ const closingMessage = (items, text) => `
     <ul class="tag-cloud">${items.map(t => `<li>${t}</li>`).join('')}</ul>
     <p class="closing-text">${text}</p>
   </div>`;
+
+/* ------------------------------------------------------------
+   Ethereum · 공유된 State 파트 helper
+   ------------------------------------------------------------ */
+
+/** IF / THEN 규칙 블록 — 티켓 판매 프로그램 */
+const ruleBlock = ({ tag, ifLines, thenLines }) => `
+  <div class="rule">
+    ${tag ? `<p class="rule-tag">${tag}</p>` : ''}
+    <div class="rule-body">
+      <p class="rule-kw">IF</p>
+      <ul class="rule-lines">${ifLines.map(l => `<li>${l}</li>`).join('')}</ul>
+      <p class="rule-kw rule-kw-then">THEN</p>
+      <ul class="rule-lines">${thenLines.map(l => `<li>${l}</li>`).join('')}</ul>
+    </div>
+  </div>`;
+
+/** State 상자 — 가격 / 남은 티켓 / 판매량 */
+const stateBox = ({ tag, rows, tone }) => `
+  <div class="statebox tone-${tone || 'neutral'}">
+    <p class="statebox-tag">${tag}</p>
+    <dl class="statebox-rows">
+      ${rows.map(r => `<div class="statebox-row"><dt>${r.k}</dt><dd>${r.v}</dd></div>`).join('')}
+    </dl>
+  </div>`;
+
+/**
+ * StateFlow — 현재 State + Input → Program → 새로운 State
+ * 강의 전체에서 이 네 칸의 순서를 똑같이 반복해 같은 Mental Model 을 유지한다.
+ */
+const stateFlow = ({ current, input, program, next }) => `
+  <div class="stateflow">
+    ${stateBox(current)}
+    <div class="stateflow-mid">
+      <div class="stateflow-cell">
+        <p class="stateflow-tag">INPUT</p>
+        <p class="stateflow-input">${input}</p>
+      </div>
+      <p class="stateflow-arrow" aria-hidden="true">↓</p>
+      <div class="stateflow-cell">
+        <p class="stateflow-tag">PROGRAM</p>
+        <ul class="stateflow-checks">${program.map(l => `<li>${l}</li>`).join('')}</ul>
+      </div>
+    </div>
+    ${stateBox(next)}
+  </div>`;
+
+/**
+ * IpsPanels — INPUT | PROGRAM | STATE 세 영역.
+ * 체험도구와 같은 구조로 보여 화면이 바뀌어도 같은 Mental Model 을 유지한다.
+ */
+const ipsPanels = ({ input, program, state }) => `
+  <div class="ips">
+    <div class="ips-panel">
+      <p class="ips-tag">INPUT</p>
+      ${input}
+    </div>
+    <div class="ips-panel ips-program">
+      <p class="ips-tag">PROGRAM</p>
+      ${program}
+    </div>
+    <div class="ips-panel ips-state">
+      <p class="ips-tag">STATE</p>
+      ${state}
+    </div>
+  </div>`;
+
+/** 실행 순서 — 학생이 직접 눌러볼 순서 */
+const runOrder = (tag, items) => `
+  <div class="runorder">
+    <p class="runorder-tag">${tag}</p>
+    <ol class="runorder-list">
+      ${items.map((t, i) => `<li><span class="runorder-num">${i + 1}</span>${t}</li>`).join('')}
+    </ol>
+  </div>`;
+
+/** 네 번의 실행 결과 표 — 같은 Input 도 State 에 따라 결과가 달라진다 */
+const runTable = (tag, rows) => `
+  <div class="runtable">
+    <p class="runtable-tag">${tag}</p>
+    <ol class="runtable-rows">
+      ${rows.map((r, i) => `
+        <li class="runtable-row tone-${r.ok ? 'ok' : 'fail'}">
+          <span class="runtable-num">${i + 1}</span>
+          <span class="runtable-call">${r.call}</span>
+          <span class="runtable-why">${r.why}</span>
+          <span class="runtable-result">${r.result}</span>
+        </li>`).join('')}
+    </ol>
+  </div>`;
+
+/** EVM 명령과 작업 공간 한 단계씩 */
+const evmSteps = ({ code, steps }) => `
+  <div class="evm">
+    <div class="evm-code">
+      <p class="evm-tag">EVM INSTRUCTIONS</p>
+      <ol class="evm-lines">${code.map(c => `<li>${c}</li>`).join('')}</ol>
+    </div>
+    <ol class="evm-stack">
+      ${steps.map(st => `
+        <li class="evm-frame">
+          <span class="evm-frame-box">${st.box}</span>
+          <span class="evm-frame-label">${st.label}</span>
+        </li>`).join('')}
+    </ol>
+  </div>`;
+
+/** 환승 표시 — 노선이 바뀌는 지점 */
+const transferMark = (from, to, note) => `
+  <div class="transfer">
+    <p class="transfer-tag">환승</p>
+    <p class="transfer-line">
+      <span class="transfer-from">${from}</span>
+      <span class="transfer-arrow" aria-hidden="true">→</span>
+      <span class="transfer-to">${to}</span>
+    </p>
+    ${note ? `<p class="transfer-note">${note}</p>` : ''}
+  </div>`;
+
+/**
+ * TwoLines — 오늘 만든 두 개의 노선도.
+ * 하나의 직선으로 보이지 않도록 두 Line 을 나누고 사이에 환승역을 둔다.
+ */
+const twoLines = ({ line1, transfer, line2 }) => `
+  <div class="lines">
+    <section class="line line-1">
+      <p class="line-badge">LINE 1</p>
+      <p class="line-question">${line1.question}</p>
+      ${routeWithRoles(line1.stops)}
+    </section>
+
+    <div class="line-transfer">
+      <p class="line-transfer-badge">환승</p>
+      <p class="line-transfer-title">${transfer.title}</p>
+      <p class="line-transfer-note">${transfer.note}</p>
+      <p class="line-transfer-warn">${transfer.warn}</p>
+    </div>
+
+    <section class="line line-2">
+      <p class="line-badge line-badge-2">LINE 2</p>
+      <p class="line-question">${line2.question}</p>
+      ${routeWithRoles(line2.stops)}
+    </section>
+  </div>`;
+
+/** 짧은 설명 항목 */
+const bullets = items => `<ul class="bullet-list">${items.map(t => `<li>${t}</li>`).join('')}</ul>`;
 
 /** 다음 화면으로 넘어갈 질문을 미리 걸어둔다 — 분할된 화면 사이의 연결 */
 const nextHint = text => `<p class="next-hint"><span>다음 화면</span> ${text}</p>`;
@@ -947,86 +1129,287 @@ const SCREENS = [
     ].join('')
   },
   {
-    id: 'L20', sourcePage: 17, section: 'F', type: 'question', concept: 'ethereum',
-    eyebrow: 'TRANSITION',
-    title: '',
-    body: bigQuestion('“이 장부에는<br />송금 기록만 적어야 할까?”')
-  },
-  {
-    id: 'L21', sourcePage: 18, section: 'F', type: 'concept', concept: 'ethereum',
-    eyebrow: 'ETHEREUM',
-    title: 'Ethereum 은 왜 World Computer 라고 할까?',
+    /* PDF p18 — Bitcoin 중심의 ‘공유된 장부’에서 ‘공유된 State’로 시야를 넓히는 환승 */
+    id: 'L20', sourcePage: 18, section: 'F', type: 'concept', line: 'transfer',
+    eyebrow: 'TRANSFER',
+    title: '기록만 적어야 할까?',
     body: [
+      key('“이 장부에는 기록만 적어야 할까?”'),
       duo(
-        { tag: '기존 장부', title: 'A → B &nbsp; 1만원', lines: [], tone: 'neutral' },
-        { tag: '“기록 말고 규칙도 넣으면?”', title: 'IF &nbsp; 조건 충족<br />THEN 자산 이전', lines: [], tone: 'primary' },
+        { tag: '지금까지의 장부', title: 'A → B : 1만원', lines: [], tone: 'neutral' },
+        {
+          tag: '“기록 말고 규칙도 넣을 수 있다면?”',
+          html: ruleBlock({
+            ifLines: ['결제금액 ≥ 1,000원', '재고 > 0'],
+            thenLines: ['재고 -1', '판매량 +1']
+          }),
+          tone: 'primary'
+        },
         '→'
       ),
-      /* 노드 사이를 실제 선으로 잇고 각 노드 안에 같은 IF 를 둬 ‘공유’를 보이게 한다 */
-      sharedNodes({
-        items: ['Node 1', 'Node 2', 'Node 3', 'Node 4'],
-        chip: 'IF',
-        label: '동일한 프로그램 + 동일한 상태'
-      }),
-      conclusion('여러 노드가 동일한 프로그램과 상태를 공유 → World Computer'),
-      /* 결론이 아니라 바로 위 World Computer 라는 표현에 붙는 단서다 */
-      sub('“한 대의 거대한 컴퓨터라는 뜻은 아니다.”')
-    ].join('')
-  },
-  {
-    id: 'L22', sourcePage: 19, section: 'F', type: 'concept', concept: ['contract', 'dapp'],
-    eyebrow: 'SMART CONTRACT · DAPP',
-    title: 'Smart Contract 와 DApp',
-    body: [
-      `<div class="stack-lg">${stack([
-        { title: 'DApp',                   desc: '사용자가 그 프로그램을 이용하는 애플리케이션', tone: 'primary' },
-        { title: 'Smart Contract',         desc: '블록체인 위에서 실행되는 프로그램' },
-        { title: 'Ethereum / Blockchain',  desc: '프로그램이 실행되는 기반' }
-      ])}</div>`,
-      sub('사용자 ↓ 화면·앱 &nbsp;/&nbsp; 프로그램 ↓ 실행 기반')
+      transferMark('LINE 1 · 공유된 장부 (Shared Ledger)', 'LINE 2 · 공유된 State (Shared State)'),
+      conclusion('블록체인은 기록을 저장하는 것보다 더 많은 일을 할 수도 있다')
     ].join('')
   },
 
-  /* ===== Section G. 정리 ===== */
+  /* ===== Section G. Ethereum · World Computer ===== */
   {
-    id: 'L23', sourcePage: 20, section: 'G', type: 'summary',
-    concept: ['hash', 'block', 'chain', 'ledger', 'consensus'],
-    eyebrow: 'SUMMARY ①',
-    title: '오늘 만든 블록체인 노선도 ①',
+    /* PDF p19 */
+    id: 'L21', sourcePage: 19, section: 'G', type: 'concept', line: 2, concept: 'state',
+    eyebrow: 'STATE',
+    title: '컴퓨터가 하는 일을 아주 단순하게 보면',
     body: [
-      routeMap(['hash', 'block', 'chain', 'ledger', 'consensus']),
-      qaList([
-        { q: '왜 Block?',       a: '기록을 묶기 위해' },
-        { q: '왜 Chain?',       a: '기록을 연결하기 위해' },
-        { q: '왜 Distributed?', a: '한 중앙 장부에만 의존하지 않고 여러 참여자가 보유·검증하기 위해' },
-        { q: '왜 Consensus?',   a: '무엇을 올바른 기록으로 인정할지 결정하기 위해' }
-      ])
+      stateFlow({
+        current: {
+          tag: 'CURRENT STATE',
+          rows: [{ k: '가격', v: '1,000원' }, { k: '남은 티켓', v: '2장' }, { k: '판매량', v: '0장' }]
+        },
+        input: 'buy(1000)',
+        program: ['금액 ≥ 가격 ?', '남은 티켓 > 0 ?'],
+        next: {
+          tag: 'NEW STATE',
+          tone: 'ok',
+          rows: [{ k: '가격', v: '1,000원' }, { k: '남은 티켓', v: '1장' }, { k: '판매량', v: '1장' }]
+        }
+      }),
+      conclusion('현재 State + Input &nbsp;→&nbsp; Program &nbsp;→&nbsp; 새로운 State')
+    ].join(''),
+    note: 'State = 지금 시스템이 기억하고 있는 현재 상태'
+  },
+  {
+    /* PDF p20 — Ethereum 파트의 메인 체험. 설명하기 전에 먼저 실행한다 */
+    id: 'L22', sourcePage: 20, section: 'G', type: 'experience-entry', line: 2, concept: 'program',
+    eyebrow: 'EXPERIENCE',
+    title: '실습 ③ &nbsp;디지털 티켓 판매기',
+    body: [
+      ipsPanels({
+        input: `
+          <p class="ips-choice">결제금액 선택 &nbsp;<strong>500원</strong> / <strong>1,000원</strong></p>
+          <p class="ips-call">buy(1000)</p>`,
+        program: ruleBlock({
+          ifLines: ['결제금액 ≥ 가격 ?', '남은 티켓 > 0 ?'],
+          thenLines: ['남은 티켓 -1', '판매량 +1', '티켓 발급']
+        }),
+        state: stateBox({
+          tag: '',
+          rows: [{ k: '가격', v: '1,000원' }, { k: '남은 티켓', v: '2장' }, { k: '판매량', v: '0장' }]
+        })
+      }),
+      runOrder('직접 할 순서', ['buy(500)', 'buy(1000)', 'buy(1000)', 'buy(1000)'])
+    ].join(''),
+    note: '“앞에서 PoW를 했던 것처럼, 이번에도 일단 먼저 실행해보겠습니다.”',
+    experience: { module: 'world-computer', returnTo: 'L23', label: '디지털 티켓 판매기 직접 실행해보기' }
+  },
+  {
+    /* PDF p21 — 체험 직후 복귀 화면. 단순 Before/After 가 아니라 실행 과정을 해석한다 */
+    id: 'L23', sourcePage: 21, section: 'G', type: 'concept', line: 2, concept: 'transition',
+    eyebrow: 'STATE TRANSITION',
+    title: '방금 무엇이 실행되었을까?',
+    bridge: {
+      tag: '방금 한 일',
+      text: '단순히 기록 한 줄만 추가한 것이 아니라, 프로그램을 실행했고 그 결과 State가 바뀌었습니다.'
+    },
+    body: [
+      causalFlow([
+        { tag: 'INPUT', tone: 'in', html: `<p class="ips-call">buy(1000)</p>` },
+        { tag: 'PROGRAM', tone: 'check', html: checkList(['가격 조건 확인', '재고 조건 확인'], { done: true }) },
+        {
+          tag: 'STATE TRANSITION',
+          tone: 'out',
+          html: `<p class="transition-line">남은 티켓 <strong>2 → 1</strong><br />판매량 <strong>0 → 1</strong></p>`
+        }
+      ], { row: true }),
+      runTable('4번의 실행 결과', [
+        { call: 'buy(500)',  why: '금액 부족',   result: 'State 변화 없음',        ok: false },
+        { call: 'buy(1000)', why: '조건 만족',   result: '재고 2→1 · 판매량 0→1', ok: true },
+        { call: 'buy(1000)', why: '조건 만족',   result: '재고 1→0 · 판매량 1→2', ok: true },
+        { call: 'buy(1000)', why: '재고 없음',   result: 'State 변화 없음',        ok: false }
+      ]),
+      conclusion('Program이 현재 State를 읽고, 실행 결과에 따라 State를 바꾼다')
+    ].join(''),
+    note: '같은 buy(1000)인데 결과가 다르다 → 현재 State가 다르기 때문'
+  },
+  {
+    /* PDF p22 — Consensus 가 State 값을 직접 투표로 정하는 것처럼 보이지 않게 한다 */
+    id: 'L24', sourcePage: 22, section: 'G', type: 'concept', line: 2, concept: 'verify',
+    eyebrow: 'NODES',
+    title: '한 컴퓨터에서 여러 노드로',
+    body: [
+      causalFlow([
+        {
+          tag: '① Consensus',
+          tone: 'in',
+          html: `<p class="node-note">어떤 Block 을 이어갈지 합의<br />합의된 Block 안에는 실행할 Transaction 과 그 순서가 들어 있다</p>`
+        },
+        {
+          tag: '② Transaction 순서',
+          tone: 'in',
+          html: `<ol class="txlist"><li>buy(1000)</li><li>…</li><li>…</li></ol>
+                 <p class="node-note">실행 노드는 Block 에 정해진 순서대로 실행</p>`
+        },
+        {
+          tag: '③ EVM 실행·검증',
+          tone: 'check',
+          html: nodes([
+            { name: 'A', state: '✓', tone: 'ok' },
+            { name: 'B', state: '✓', tone: 'ok' },
+            { name: 'C', state: '✓', tone: 'ok' },
+            { name: 'D', state: '✓', tone: 'ok' }
+          ]) + `<p class="transition-line">남은 티켓 / 판매량<br /><strong>2 / 0 → 1 / 1</strong></p>
+                <p class="node-note">같은 EVM 규칙으로 실행하고 State Transition 을 검증</p>`
+        },
+        {
+          tag: '④ Ethereum State',
+          tone: 'out',
+          html: stateBox({ tag: 'SHARED STATE', tone: 'ok', rows: [{ k: '남은 티켓', v: '1' }, { k: '판매량', v: '1' }] })
+                + `<p class="node-note">같은 유효한 Chain 을 따르는 노드는 같은 State 를 이어간다</p>`
+        }
+      ], { row: true }),
+      conclusion('합의된 Block·Tx 순서 + 공통 EVM 규칙 &nbsp;→&nbsp; 같은 State Transition &nbsp;→&nbsp; 같은 Ethereum State')
     ].join('')
   },
   {
-    id: 'L24', sourcePage: 20, section: 'G', type: 'summary',
-    concept: ['pow', 'ethereum', 'contract', 'dapp'],
-    eyebrow: 'SUMMARY ②',
-    title: '오늘 만든 블록체인 노선도 ②',
+    /* PDF p23 — World Computer 를 먼저 정의하지 않고 체험 결과에서 회수한다 */
+    id: 'L25', sourcePage: 23, section: 'G', type: 'concept', line: 2, concept: 'world',
+    eyebrow: 'WORLD COMPUTER',
+    title: '그래서 World Computer',
     body: [
-      routeMap(['pow', 'ethereum', 'contract', 'dapp']),
-      qaList([
-        { q: '왜 PoW에 컴퓨팅 파워가 필요한가?', a: '조건을 만족하는 값을 찾기 위해 반복 계산하기 때문에' },
-        { q: 'Smart Contract?',                  a: '블록체인 위에서 실행되는 프로그램' },
-        { q: 'DApp?',                            a: '그 프로그램을 사용하는 애플리케이션' }
-      ])
+      flow([
+        { text: 'Program' },
+        { text: 'Transaction / Input' },
+        { text: 'Execution' },
+        { text: 'State → New State' },
+        { text: 'Many Nodes Verify', tone: 'ok' }
+      ]),
+      `<p class="brandline"><span>Ethereum</span><strong>World Computer</strong></p>`,
+      conclusion('프로그램과 상태를 여러 참여자가 공통된 규칙으로 검증하며 공유할 수 있는 ‘프로그래밍 가능한 분산 상태 시스템’'),
+      sub('“전 세계 컴퓨터가 하나의 거대한 CPU처럼 병렬 계산한다”는 뜻은 아니다')
     ].join('')
   },
   {
-    id: 'L25', sourcePage: 21, section: 'G', type: 'summary', concept: 'all',
+    /* PDF p24 — Opcode / Stack Machine 강의로 확장하지 않는다. 1분 이내 */
+    id: 'L26', sourcePage: 24, section: 'G', type: 'concept', line: 2, concept: 'evm',
+    eyebrow: 'ETHEREUM VIRTUAL MACHINE',
+    title: 'EVM 을 30 초만 들여다봅시다',
+    body: [
+      recall('아까 실행한 것', '<strong>buy(1000)</strong> 도 EVM이 실행할 수 있는 더 작은 명령들로 바뀌어 실행된다'),
+      evmSteps({
+        code: ['PUSH 2', 'PUSH 3', 'ADD'],
+        steps: [
+          { box: '[]',     label: '시작' },
+          { box: '[2]',    label: 'PUSH 2' },
+          { box: '[2, 3]', label: 'PUSH 3' },
+          { box: '[5]',    label: 'ADD' }
+        ]
+      }),
+      conclusion('Ethereum 안에는 실제로 Program의 명령을 실행하는 EVM이 있다')
+    ].join(''),
+    note: '아래 예는 티켓 프로그램의 실제 명령이 아니라, EVM이 명령을 한 단계씩 실행한다는 것을 보기 위한 가장 작은 예'
+  },
+  {
+    /* PDF p25 — 새 개념을 정의하는 것이 아니라 방금 실행한 그 프로그램에 이름을 붙인다 */
+    id: 'L27', sourcePage: 25, section: 'G', type: 'concept', line: 2, concept: 'contract',
+    eyebrow: 'SMART CONTRACT',
+    title: '방금 본 것이 Smart Contract 입니다',
+    body: [
+      ruleBlock({
+        tag: '체험에서 실행한 프로그램',
+        ifLines: ['결제금액 ≥ 가격', '남은 티켓 > 0'],
+        thenLines: ['남은 티켓 -1', '판매량 +1']
+      }),
+      conclusion('Smart Contract = Ethereum 위에서 실행되는 프로그램')
+    ].join(''),
+    note: '새로운 개념을 하나 더 배우는 것이 아니라, 아까부터 직접 실행해본 이 프로그램에 이름을 붙이는 것'
+  },
+  {
+    /* PDF p26 — 학생이 본 티켓 구매 화면에서 출발한다 */
+    id: 'L28', sourcePage: 26, section: 'G', type: 'concept', line: 2, concept: 'dapp',
+    eyebrow: 'DAPP',
+    title: '그렇다면 DApp 은?',
+    body: [
+      duo(
+        {
+          tag: '학생이 본 화면',
+          html: `
+            <div class="mockapp">
+              <p class="mockapp-title">디지털 티켓 판매기</p>
+              <p class="mockapp-field">구매금액 입력 <strong>1000</strong></p>
+              <p class="mockapp-button">BUY</p>
+              <p class="mockapp-state">남은 티켓 2장</p>
+            </div>`,
+          tone: 'neutral'
+        },
+        {
+          tag: '그 뒤의 구조',
+          html: `<div class="stack-sm">${stack([
+            { title: '사용자', desc: '화면을 보고 값을 입력한다', tone: 'primary' },
+            { title: 'DApp 화면', desc: '입력창 · 버튼 · 결과 표시' },
+            { title: 'Transaction 요청 / 지갑 서명', desc: '실행을 요청하는 Input' },
+            { title: 'Smart Contract', desc: '실행할 Program' },
+            { title: 'EVM / Ethereum State', desc: 'Program 이 실행되고 State 가 바뀌는 곳' }
+          ])}</div>`,
+          tone: 'primary'
+        },
+        '↓'
+      ),
+      bullets([
+        '사용자는 EVM 명령어를 직접 입력하지 않는다',
+        'DApp = 사용자가 Smart Contract 등 블록체인 기능과 상호작용하도록 만든 애플리케이션',
+        '모든 로직이 Smart Contract 안에만 있어야 하는 것은 아님'
+      ]),
+      conclusion('내가 누른 화면은 DApp이고, 뒤에서 Smart Contract가 실행될 수 있다')
+    ].join('')
+  },
+
+  /* ===== Section H. 두 개의 노선도 ===== */
+  {
+    /* PDF p27 — 하나의 직선으로 보이면 안 된다. 두 Line 과 환승역 */
+    id: 'L29', sourcePage: 27, section: 'H', type: 'summary', line: 'both',
+    eyebrow: 'TWO LINES',
+    title: '오늘 만든 두 개의 블록체인 노선도',
+    body: [
+      twoLines({
+        line1: {
+          question: '여러 참여자가 어떻게 믿을 수 있는 장부를 만들고 이어갈까?',
+          stops: [
+            { name: 'Hash',               role: '기록의 변경 확인' },
+            { name: 'Block',              role: '기록 묶기' },
+            { name: 'Chain',              role: '앞뒤 기록 연결' },
+            { name: 'Distributed Ledger', role: '여러 참여자가 보유·검증' },
+            { name: 'Consensus',          role: '무엇을 인정할 것인가' },
+            { name: 'PoW',                role: 'Bitcoin 예시 · Consensus 메커니즘의 하나' }
+          ]
+        },
+        transfer: {
+          title: '공유된 장부 → 공유된 State',
+          note: '“기록을 공유하는 것에서, 현재 State 와 Program Execution 까지 시야를 넓혀보면?”',
+          warn: '새 기술 세대로 ‘넘어가는’ 것이 아니다. Ethereum도 Block·Chain·Consensus를 쓴다.'
+        },
+        line2: {
+          question: '그 공유된 시스템에서 Program까지 실행할 수 있다면? &nbsp;·&nbsp; Ethereum · World Computer',
+          stops: [
+            { name: 'DApp',                  role: '사용자가 들어오는 층' },
+            { name: 'Transaction',           role: '실행을 요청하는 Input' },
+            { name: 'Smart Contract',        role: '실행할 Program' },
+            { name: 'EVM',                   role: 'Program을 실행하는 환경' },
+            { name: 'State Transition',      role: 'State가 바뀌는 과정' },
+            { name: 'Updated Shared State',  role: 'Ethereum의 현재 상태' }
+          ]
+        }
+      })
+    ].join(''),
+    note: '하나의 직선이 아니라, 서로 다른 질문에 답하는 두 개의 연결된 노선'
+  },
+  {
+    /* PDF p28 */
+    id: 'L30', sourcePage: 28, section: 'H', type: 'summary', line: 'both',
     eyebrow: 'CLOSING',
-    title: '오늘 만든 것은<br />블록체인의 ‘지하철 노선도’입니다.',
+    title: '오늘 만든 것은 하나의 직선이 아니라<br />서로 다른 질문에 답하는 두 개의 연결된 지하철 노선도입니다.',
     body: [
-      /* 마지막 기억점 — 오늘 지나온 9개 역을 실제 노선 모양으로 되돌려준다 */
-      subwayMap(),
+      lead('중요한 것은 기술의 순서를 외우는 것이 아니라, 각각이 어떤 질문에 답하기 위해 등장했는지를 이해하는 것입니다.'),
       closingMessage(
         ['Bitcoin', 'Ethereum', 'Stablecoin', 'NFT', 'STO', 'RWA', 'DeFi', 'CBDC', 'Web3', '…'],
-        '새로운 개념이 나오면, 오늘 만든 노선도의 어디에 있는 이야기인지 먼저 생각해 보세요.'
+        '“이건 어느 노선의 어떤 질문에 답하는 이야기일까?”'
       )
     ].join(''),
     closing: true

@@ -88,29 +88,69 @@ function goByOffset(offset) {
      #kind  실행할 체험 종류
    ------------------------------------------------------------ */
 function experienceUrl(screen) {
-  const { kind, returnTo } = screen.experience;
+  const { kind, returnTo, module: moduleName } = screen.experience;
+  /* Ethereum 체험은 기존 4단계 도구의 STEP 5 가 아니라 별도 모듈이다 */
+  if (moduleName) {
+    return `../experience/${moduleName}/index.html?from=${screen.id}&return=${returnTo}`;
+  }
   return `../experience/index.html?from=${screen.id}&return=${returnTo}#${kind}`;
 }
 
 /* ------------------------------------------------------------
    상단 개념 진행 표시기
    ------------------------------------------------------------ */
-function renderProgress(screen) {
-  const concept = screen.concept;
-  const isIntro = concept === 'intro';
-  const isAll = concept === 'all';
-  const active = new Set(Array.isArray(concept) ? concept : [concept]);
-
-  const stops = CONCEPTS.map(c => {
-    const on = isAll || active.has(c.key);
+/** 한 노선의 역 목록 */
+function progressStops(stops, active, allOn) {
+  return stops.map(stop => {
+    const on = allOn || active.has(stop.key);
     return `<li class="p-stop${on ? ' on' : ''}"${on ? ' aria-current="step"' : ''}>
-      <span class="p-full">${c.label}</span>
-      <span class="p-short">${c.short}</span>
+      <span class="p-full">${stop.label}</span>
+      <span class="p-short">${stop.short}</span>
     </li>`;
   }).join('');
+}
 
-  els.progress.innerHTML = `<ol class="p-list${isIntro ? ' intro' : ''}${isAll ? ' all' : ''}">
-    ${isIntro ? '<li class="p-stop p-intro on">INTRO</li>' : ''}${stops}
+/**
+ * 상단 진행 표시기.
+ * 화면이 어느 노선에 속하는지에 따라 LINE 1 / 환승 / LINE 2 를 보여준다.
+ * 하나의 긴 개념열로 두면 'PoW 다음 기술이 Ethereum' 처럼 읽히므로 나눈다.
+ */
+function renderProgress(screen) {
+  const [line1, line2] = LINES;
+  const where = screen.line || (screen.concept === 'intro' ? 'intro' : 1);
+  const active = new Set(Array.isArray(screen.concept) ? screen.concept : [screen.concept]);
+  const allOn = screen.concept === 'all';
+
+  if (where === 'transfer') {
+    els.progress.innerHTML = `<ol class="p-list p-transfer-list">
+      <li class="p-line-label">${line1.label}</li>
+      <li class="p-stop p-transfer on" aria-current="step">환승</li>
+      <li class="p-line-label p-line-label-2">${line2.label}</li>
+    </ol>`;
+    return;
+  }
+
+  /* 정리 화면에서는 역 이름을 모두 늘어놓지 않는다.
+     본문에 두 노선이 크게 그려져 있으므로 상단은 노선 이름만 남긴다. */
+  if (where === 'both') {
+    els.progress.innerHTML = `<ol class="p-list p-both">
+      <li class="p-line-badge">LINE 1</li>
+      <li class="p-line-label">${line1.label.replace('LINE 1 · ', '')}</li>
+      <li class="p-line-badge p-line-badge-2">LINE 2</li>
+      <li class="p-line-label p-line-label-2">${line2.label.replace('LINE 2 · ', '')}</li>
+    </ol>`;
+    return;
+  }
+
+  const isIntro = where === 'intro';
+  const line = where === 2 ? line2 : line1;
+  const badge = isIntro
+    ? '<li class="p-stop p-intro on">INTRO</li>'
+    : `<li class="p-line-badge${line.id === 2 ? ' p-line-badge-2' : ''}">LINE ${line.id}</li>`;
+
+  els.progress.innerHTML = `<ol class="p-list${isIntro ? ' intro' : ''}${allOn ? ' all' : ''}${line.id === 2 ? ' line-2' : ''}">
+    ${badge}
+    ${progressStops(line.stops, active, allOn)}
   </ol>`;
 }
 

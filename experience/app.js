@@ -740,15 +740,22 @@ window.addEventListener("hashchange", () => {
 
    복귀 위치의 기준값은 URL parameter 다. sessionStorage 는 from 이
    빠졌을 때를 메우는 보조 수단으로만 쓰고, URL 값을 덮어쓰지 않는다.
-   허용 값은 L01~L25 뿐이며, 그 밖의 값은 무시한다(임의 URL 복귀 금지).
+   허용 값은 L01~L30 뿐이며, 그 밖의 값은 무시한다(임의 URL 복귀 금지).
    ============================================================ */
 
-const LECTURE_SCREEN = /^L(?:0[1-9]|1[0-9]|2[0-5])$/;
+/* 강의 화면 수. lecture/screens.js 에 화면을 추가하면 이 값만 올리면 된다.
+   (예전에는 L01~L25 가 정규식에 박혀 있어 새 화면이 막혔다) */
+const LECTURE_SCREEN_COUNT = 30;
+const LECTURE_SCREEN_FORM = /^L(\d{2})$/;
 const LECTURE_PATH = "../lecture/index.html";
 const LECTURE_CONTEXT_KEY = "lecture:experience-context";
 
 function validLectureScreen(value) {
-  return typeof value === "string" && LECTURE_SCREEN.test(value) ? value : null;
+  if (typeof value !== "string") return null;
+  const matched = LECTURE_SCREEN_FORM.exec(value);
+  if (!matched) return null;
+  const number = Number(matched[1]);
+  return number >= 1 && number <= LECTURE_SCREEN_COUNT ? value : null;
 }
 
 /** 강의 화면 URL. 잘못된 값이면 기본 강의 화면으로 보낸다. */
