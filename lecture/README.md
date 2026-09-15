@@ -57,6 +57,8 @@ experience/index.html?from=L05&return=L06#hash
 | L13 ‘00’ 을 먼저 찾아라 | `pow` | L14 방금 ‘어려운 수학문제’를 풀었을까? |
 | L22 실습 ③ 디지털 티켓 판매기 | `world-computer` (별도 모듈) | L23 방금 무엇이 실행되었을까? |
 
+Ethereum 체험만 별도 모듈(`experience/world-computer/`)이고 나머지 넷은 한 도구의 STEP 1~4 입니다.
+
 체험 진입은 화면의 버튼 하나로 합니다. QR 은 쓰지 않습니다.
 `lecture/qr/*.svg` 에 사전 생성한 QR 이 남아 있으니 다시 쓰려면 `app.js` 의 체험 CTA 에 되살리면 됩니다.
 (배포 도메인이 바뀌면 QR 은 다시 만들어야 합니다.)
