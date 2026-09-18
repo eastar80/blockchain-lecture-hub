@@ -762,9 +762,12 @@ const SCREENS = [
         { name: 'PREV ✓',  hash: 'E04C…' }
       ]),
       `<p class="s-title-sub">왜 Block 인가? &nbsp; 왜 Chain 인가? &nbsp; 왜 Distributed 인가?</p>`
-    ].join(''),
-    /* 발표자 표기는 강의 내용이 아니므로 화면 맨 아래로 내린다 */
-    note: '김동규 · 서강대학교 블록체인 과정 이전 기수 강의'
+    ].join('')
+    /* 발표자 표기는 잠시 가려둔다. PDF v2.1 에서도 p1 에서 빠졌다.
+       다시 띄우려면 아래 한 줄의 주석만 풀면 된다.
+       (발표자 표기는 강의 내용이 아니므로 화면 맨 아래에 둔다)
+    , note: '김동규 · 서강대학교 블록체인 과정 이전 기수 강의'
+    */
   },
   {
     id: 'L02', sourcePage: 2, section: 'A', type: 'concept', concept: 'intro',

@@ -3163,6 +3163,15 @@
   .runorder { padding: 9px 14px; }
 }
 
+/* 720p 프로젝터에서는 DApp 화면(L28)처럼 층이 많은 도식이 마지막 몇십 px 을 넘긴다 */
+@media (min-width: 900px) and (max-height: 800px) {
+  .bullet-list { padding: 7px 18px 7px 28px; gap: 3px; }
+  .mockapp { padding: 9px; gap: 4px; }
+  .mockapp-field, .mockapp-button { padding: 6px 12px; }
+  .stack-sm .stack { gap: 5px; }
+  .stack-sm .stack-layer { padding: 6px 13px; }
+}
+
 /* 가로 인과 흐름 안의 점검 목록은 한 열로 */
 .causal-row .check-list { grid-template-columns: 1fr; }
 
