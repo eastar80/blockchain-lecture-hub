@@ -389,7 +389,7 @@
      임의 URL 이 들어와도 다른 곳으로 보내지 않기 위해서다.
      ------------------------------------------------------------ */
 
-  const LECTURE_SCREEN_COUNT = 30;   // lecture/screens.js 의 화면 수
+  const LECTURE_SCREEN_COUNT = 34;   // lecture/screens.js 의 화면 수
   const LECTURE_SCREEN_FORM = /^L(\d{2})$/;
   const LECTURE_PATH = "../../lecture/index.html";
 

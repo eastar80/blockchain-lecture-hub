@@ -1,7 +1,7 @@
 # Ethereum · World Computer 체험도구
 
 LECTURE-06-02 설계안에 따라 만든 정적 HTML/CSS/JavaScript 체험도구입니다.
-강의 화면(`lecture/`)의 L22 에서 진입하고 L23 으로 복귀합니다.
+강의 화면(`lecture/`)의 L23 `state-experience` 에서 진입하고 L24 `state-interpret` 로 복귀합니다.
 
 ## 실행
 
@@ -30,7 +30,7 @@ Hash / Block / Chain / PoW 체험과 같은 규약을 씁니다. 복귀 주소�
 **강의 화면 ID 만** 받습니다. 임의 URL 이 들어와도 다른 곳으로 보내지 않기 위해서입니다.
 
 ```text
-experience/world-computer/index.html?from=L22&return=L23
+experience/world-computer/index.html?from=L23&return=L24
 ```
 
 | parameter | 뜻 | 연결된 버튼 |
@@ -38,7 +38,7 @@ experience/world-computer/index.html?from=L22&return=L23
 | `from` | 체험 직전 강의 화면 | `강의로 돌아가기` |
 | `return` | 체험 후 이어서 볼 화면 | `강의에서 계속 보기` |
 
-- 허용 값은 `L01` ~ `L30` 뿐입니다. 그 밖의 값(전체 URL 포함)은 무시합니다.
+- 허용 값은 `L01` ~ `L34` 뿐입니다. 그 밖의 값(전체 URL 포함)은 무시합니다.
 - `return` 이 없으면 강의를 거치지 않고 직접 들어온 것으로 보고 두 복귀 버튼을 감춥니다.
 - `from` 이 없으면 `return` 바로 앞 화면으로 보정합니다.
 - 화면이 늘어나면 `app.js` 의 `LECTURE_SCREEN_COUNT` 한 값만 맞추면 됩니다.
@@ -46,14 +46,14 @@ experience/world-computer/index.html?from=L22&return=L23
 강의에서의 자리는 다음과 같습니다.
 
 ```text
-L22 실습 ③ 디지털 티켓 판매기   ← 체험 진입
+L23 실습 ③ 디지털 티켓 판매기   ← 체험 진입
   ↓
 [ 이 체험도구 ]
   ↓
-L23 방금 무엇이 실행되었을까?   ← 체험 복귀
+L24 방금 무엇이 실행되었을까?   ← 체험 복귀
 ```
 
-체험 후에는 진입 화면(L22)이 아니라 **해석 화면(L23)** 으로 돌아갑니다.
+체험 후에는 진입 화면(L23)이 아니라 **해석 화면(L24)** 으로 돌아갑니다.
 
 ## 구현 범위에서 의도적으로 제외한 것
 

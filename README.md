@@ -10,7 +10,7 @@
 ├─ index.html      강의 허브 Home
 ├─ shared.css      공통 디자인 토큰 (Home / Lecture / Experience 공용)
 ├─ home.css        Home 전용 레이아웃
-├─ lecture/        강의 화면 — 원본 21페이지를 25개 화면으로 재구성
+├─ lecture/        강의 화면 — 최종 강의자료를 34개 화면으로 재구성
 ├─ experience/     체험도구 — HASH → BLOCK → CHAIN → PoW
 │  └─ world-computer/   Ethereum · World Computer 체험 (별도 모듈)
 └─ materials/      강의자료 PDF (백업/보조)
