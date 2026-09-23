@@ -812,6 +812,10 @@ const PARTICIPANT_ITEMS = [
 function setupParticipant() {
   document.body.classList.add("participant");
 
+  /* 강의와 상관없는 옆길. 학생 화면에서만 보이고, 찾는 사람만 발견하면 된다 */
+  const sideQuest = document.querySelector("#sideQuest");
+  if (sideQuest) sideQuest.hidden = false;
+
   const path = document.querySelector(".learning-path");
   if (!path) return;
   path.setAttribute("aria-label", "오늘의 체험");

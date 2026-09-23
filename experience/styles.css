@@ -1371,3 +1371,58 @@ body.participant .step.active { border-color: var(--primary); }
   body.participant .step { padding: 9px 12px; }
   body.participant .step strong { font-size: .88rem; }
 }
+
+/* ------------------------------------------------------------
+   SIDE QUEST — 강의 본편과 상관없는 옆길
+
+   다섯 체험보다 한 단계 낮은 무게로 둔다.
+   배너도, 애니메이션도, NEW 표시도 쓰지 않는다.
+   ------------------------------------------------------------ */
+/* class 선택자가 브라우저 기본 [hidden] 보다 세다. 숨김을 명시해 둔다 */
+.side-quest[hidden] { display: none; }
+
+.side-quest {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--line);
+}
+
+.side-quest-tag {
+  margin: 0;
+  color: #8792a4;
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .12em;
+}
+
+.side-quest-copy {
+  flex: 1 1 260px;
+  margin: 0;
+  color: var(--muted);
+  font-size: .86rem;
+  line-height: 1.55;
+}
+
+.side-quest-link {
+  padding: 7px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .72);
+  color: #546176;
+  font-size: .82rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.side-quest-link:hover { border-color: #b9c9e4; background: #fff; color: var(--ink); }
+.side-quest-link:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+
+@media (max-width: 720px) {
+  .side-quest { gap: 6px 12px; margin-top: 20px; }
+  .side-quest-copy { flex-basis: 100%; font-size: .82rem; }
+}
