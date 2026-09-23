@@ -833,8 +833,8 @@
 /* ------------------------------------------------------------
    체험 진입 CTA
 
-   강의 화면에서 버튼을 눌러 바로 체험으로 들어간다.
-   QR 은 쓰지 않는다. (SVG 는 lecture/qr/ 에 남아 있다)
+   강의 화면에서 버튼을 눌러 바로 체험으로 들어간다. 강사용 경로다.
+   학생용 QR 은 L06 한 곳에만 둔다 — 아래 .qr-join 참고.
    ------------------------------------------------------------ */
 
 .cta-zone {
@@ -3632,3 +3632,105 @@
    ============================================================ */
 html[data-preview] body { pointer-events: none; cursor: default; }
 html[data-preview] .skip-link { display: none; }
+
+/* ============================================================
+   학생 체험 참여 — QR 한 번(L06)과 그 뒤의 짧은 안내
+
+   QR 은 첫 체험 화면에서만 쓴다. 그 뒤에는 이미 열어둔 체험 페이지를
+   가리키는 한 줄만 둔다. 화면을 번잡하게 만들지 않는다.
+   ============================================================ */
+.qr-join {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(14px, 2vw, 26px);
+  padding: clamp(12px, 2vh, 18px) clamp(14px, 2vw, 22px);
+  border: 1px solid #bfd3f8;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, #fff, var(--primary-soft));
+}
+
+.qr-image {
+  flex: none;
+  width: clamp(110px, min(13vw, 21vh), 190px);
+  height: auto;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.qr-guide { flex: 1 1 260px; display: grid; gap: 3px; }
+
+.qr-title {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(1.1rem, min(1.6vw, 2.7vh), 1.45rem);
+  font-weight: 900;
+  letter-spacing: -.01em;
+}
+
+.qr-line {
+  margin: 0;
+  color: var(--muted);
+  font-size: clamp(.88rem, min(1.15vw, 1.9vh), 1.02rem);
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.qr-url {
+  margin: 4px 0 0;
+  color: var(--primary-deep);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .82rem;
+  font-weight: 800;
+}
+
+.joined-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+  margin: 0;
+  padding: 8px 14px;
+  border: 1px dashed #b9c9e4;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .7);
+  color: var(--muted);
+  font-size: clamp(.85rem, min(1.1vw, 1.8vh), .97rem);
+  font-weight: 700;
+}
+
+.joined-hint strong { color: var(--primary-deep); font-weight: 900; }
+
+.joined-tag {
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary-deep);
+  font-size: .7rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+}
+
+@media (min-width: 900px) and (max-height: 900px) {
+  .qr-join { gap: 16px; padding: 11px 16px; }
+  .joined-hint { padding: 6px 12px; }
+}
+
+/* 낮은 프로젝터에서는 QR 자리를 줄인다. 스캔에는 지장이 없다 */
+@media (min-width: 900px) and (max-height: 800px) {
+  .qr-image { width: clamp(92px, 15vh, 128px); }
+  .qr-join { gap: 14px; padding: 8px 13px; }
+  .qr-title { font-size: 1.05rem; }
+  .qr-line { font-size: .88rem; }
+  .qr-url { margin-top: 2px; font-size: .76rem; }
+  .hash-rows { gap: 6px; }
+}
+
+/* 720p 에서는 QR 안내를 한 줄 더 줄인다 */
+@media (min-width: 900px) and (max-height: 740px) {
+  .qr-image { width: clamp(88px, 14vh, 112px); }
+  .qr-join { padding: 7px 12px; }
+  .qr-url { display: none; }   /* 주소는 QR 안에 들어 있다 */
+  .cta-zone { padding: 8px 14px; }
+  .stage-note { padding-top: 5px; }
+}

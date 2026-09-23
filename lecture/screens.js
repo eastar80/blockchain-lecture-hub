@@ -719,6 +719,30 @@ const twoLines = ({ line1, transfer, line2 }) => `
     </section>
   </div>`;
 
+/* ------------------------------------------------------------
+   학생 체험 참여
+
+   학생은 QR 을 오늘 한 번만 찍는다. 첫 체험이 나오는 L06 에서만 보여주고,
+   그 뒤 화면에서는 다시 만들지 않는다. 이미 열어둔 체험 페이지를 가리킬 뿐이다.
+   주소는 배포 도메인(CNAME)의 학생용 체험 페이지다.
+   ------------------------------------------------------------ */
+const SITE_ORIGIN = 'https://blockchain.mrdion.kim';      // CNAME
+const STUDENT_EXPERIENCE_URL = `${SITE_ORIGIN}/experience/#hash`;
+
+/** QR 한 번 — 오늘 쓸 체험을 한 곳에서 열어준다 */
+const studentQr = (title, lines) => `
+  <div class="qr-join">
+    <img class="qr-image" src="./qr/experience.svg" alt="오늘의 체험 페이지 QR 코드" width="190" height="190" />
+    <div class="qr-guide">
+      <p class="qr-title">${title}</p>
+      ${lines.map(line => `<p class="qr-line">${line}</p>`).join('')}
+      <p class="qr-url">${STUDENT_EXPERIENCE_URL.replace(/^https:\/\//, '')}</p>
+    </div>
+  </div>`;
+
+/** 이미 접속해둔 체험 페이지를 가리키는 짧은 안내. QR 을 다시 띄우지 않는다 */
+const joinedHint = text => `<p class="joined-hint"><span class="joined-tag">체험 페이지</span> ${text}</p>`;
+
 /** 짧은 설명 항목 */
 const bullets = items => `<ul class="bullet-list">${items.map(t => `<li>${t}</li>`).join('')}</ul>`;
 
@@ -977,7 +1001,10 @@ const SCREENS = [
         <p class="hash-row"><span class="hash-in">철수가 영희에게 <strong>10001</strong>원을 보냄</span><span class="hash-op">HASH →</span><span class="hash-out">?</span></p>
       </div>`,
       key('숫자 하나만 바꾸면?'),
-      lead('Hash = 데이터의 디지털 지문')
+      lead('Hash = 데이터의 디지털 지문'),
+      /* 오늘 QR 은 여기 한 번뿐이다. 이후 체험은 이 페이지에서 학생이 직접 고른다 */
+      /* 화면에는 한 줄만 둔다. 나머지 안내는 Presenter 대본에 있다 */
+      studentQr('QR 은 지금 한 번만', ['오늘 사용할 체험을 한 곳에서 자유롭게 이용할 수 있습니다.'])
     ].join(''),
     note: 'Hash는 암호화(숨기기)가 아니라 변경을 쉽게 확인하기 위한 도구',
     experience: { kind: 'hash', returnTo: 'block', label: 'Hash 직접 체험하기' }
@@ -997,7 +1024,8 @@ const SCREENS = [
         blockName: 'BLOCK',
         blockHash: 'Hash: 8F3A…'
       }),
-      conclusion('여러 기록을 일정한 단위로 묶는다')
+      conclusion('여러 기록을 일정한 단위로 묶는다'),
+      joinedHint('궁금하신 분은 <strong>BLOCK</strong> 을 눌러 같이 보셔도 됩니다.')
     ].join(''),
     experience: { kind: 'block', returnTo: 'chain', label: 'Block 직접 체험하기' }
   },
@@ -1040,7 +1068,8 @@ const SCREENS = [
         { text: 'Block 1 의 Hash 가 바뀐다', value: 'A72F… → C819…',    tone: 'warn' },
         { text: 'Block 2 의 Previous Hash 와 어긋난다', value: 'C819… ≠ A72F…', tone: 'bad' }
       ]),
-      conclusion('바꿀 수 없는 것이 아니라, 바꾸면 연결이 깨진다')
+      conclusion('바꿀 수 없는 것이 아니라, 바꾸면 연결이 깨진다'),
+      joinedHint('궁금하신 분은 <strong>CHAIN</strong> 을 눌러 같이 보셔도 됩니다.')
     ].join(''),
     experience: { kind: 'chain', returnTo: 'centralized-chain', label: 'Chain 직접 체험하기' }
   },
@@ -1134,7 +1163,9 @@ const SCREENS = [
     body: [
       `<div class="target-line"><span class="target-badge">00</span><span class="target-desc">으로 시작하는 Hash</span></div>`,
       `<ul class="candidate-list"><li>Blockchain 1</li><li>Blockchain 2</li><li>Blockchain 3</li><li>…</li></ul>`,
-      key('Hash 앞 두 자리가 00 인 숫자를 먼저 찾으세요.')
+      key('Hash 앞 두 자리가 00 인 숫자를 먼저 찾으세요.'),
+      /* 오늘 유일하게 다 같이 하는 체험이다. QR 은 다시 띄우지 않는다 */
+      joinedHint('아까 접속해둔 화면에서 <strong>PoW</strong> 를 눌러주세요. 이번에는 다 같이 해보겠습니다.')
     ].join(''),
     note: '먼저 찾은 사람은 손을 들어 주세요 · “그 느낌을 직접 한번 확인해보겠습니다.”',
     experience: { kind: 'pow', returnTo: 'pow-interpret', label: 'PoW 직접 체험하기' }
@@ -1335,7 +1366,8 @@ const SCREENS = [
           rows: [{ k: '가격', v: '1,000원' }, { k: '남은 티켓', v: '2장' }, { k: '판매량', v: '0장' }]
         })
       }),
-      runOrder('직접 할 순서', ['buy(500)', 'buy(1000)', 'buy(1000)', 'buy(1000)'])
+      runOrder('직접 할 순서', ['buy(500)', 'buy(1000)', 'buy(1000)', 'buy(1000)']),
+      joinedHint('원하시는 분은 <strong>STATE</strong> 를 눌러 같이 해보셔도 됩니다.')
     ].join(''),
     note: '“지금 본 State + Input → Program → New State 구조를 실제로 한번 실행해보겠습니다.”',
     experience: { module: 'world-computer', returnTo: 'state-interpret', label: '디지털 티켓 판매기 직접 실행해보기' }

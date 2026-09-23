@@ -341,3 +341,46 @@ h2 { margin: 0; font-size: clamp(1.35rem, 2.2vw, 1.85rem); letter-spacing: -.035
   .result-copy { flex: 1 1 calc(100% - 50px); }
   .advance-button { width: 100%; min-width: 0; margin-top: 4px; }
 }
+
+/* ============================================================
+   오늘의 체험 목록 — QR 로 들어온 학생 화면에서만 보인다
+
+   옆 도구(experience/)의 학생 화면과 같은 모양을 쓴다.
+   이 페이지의 체험 내용에는 영향을 주지 않는다.
+   ============================================================ */
+.learning-path {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.learning-path .step {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 11px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .72);
+  color: #546176;
+  font-size: .8rem;
+  text-align: left;
+  text-decoration: none;
+}
+
+.learning-path a.step:hover { border-color: #b9c9e4; background: #fff; }
+.learning-path .step strong { color: var(--ink); font-size: .95rem; font-weight: 800; overflow: hidden; text-overflow: ellipsis; }
+.learning-path .step-note { color: #8792a4; font-size: .72rem; font-style: normal; font-weight: 700; }
+
+.learning-path .step.together { border-color: #a9c5ff; background: var(--primary-soft); }
+.learning-path .step.together .step-note { color: var(--primary); font-weight: 800; }
+.learning-path .step.active { border-color: var(--primary); background: var(--primary-soft); }
+
+@media (max-width: 720px) {
+  .learning-path { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .learning-path .step { padding: 9px 12px; }
+  .learning-path .step strong { font-size: .88rem; }
+}

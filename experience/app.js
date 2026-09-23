@@ -635,6 +635,11 @@ function updateStepUI(step) {
     els.heroCopy.textContent = "Nonce를 바꾸며 특정 조건을 만족하는 Hash를 직접 찾아봅니다. 조건이 어려울수록 더 많은 계산이 필요합니다.";
     if (!isMining) renderPowIdle();
   }
+
+  /* 학생 화면에서는 단계 번호를 쓰지 않는다 */
+  if (document.body.classList.contains("participant")) {
+    els.heroEyebrow.textContent = "오늘의 블록체인 체험";
+  }
 }
 
 function navigateToStep(step, { updateHash = true } = {}) {
@@ -788,12 +793,45 @@ function storeContext(context) {
   }
 }
 
+/* ------------------------------------------------------------
+   오늘의 체험 — QR 로 직접 들어온 학생 화면
+
+   강의에서 연 경우(?from=&return=)는 지금까지와 똑같다. 강사용 경로다.
+   QR 로 들어온 학생에게는 STEP 1~4 라는 번호 대신 오늘 쓸 체험 목록을 보여준다.
+   순서대로 해야 하는 과정처럼 보이지 않게 하고, 함께 참여하는 PoW 만 표시한다.
+   학생 화면은 강사가 원격으로 바꾸지 않는다 — 학생이 직접 눌러서 이동한다.
+   ------------------------------------------------------------ */
+const PARTICIPANT_ITEMS = [
+  { step: "hash",  label: "HASH",  note: "선택" },
+  { step: "block", label: "BLOCK", note: "선택" },
+  { step: "chain", label: "CHAIN", note: "선택" },
+  { step: "pow",   label: "PoW",   note: "함께 참여", together: true },
+  { href: "./world-computer/index.html", label: "STATE", note: "선택" }
+];
+
+function setupParticipant() {
+  document.body.classList.add("participant");
+
+  const path = document.querySelector(".learning-path");
+  if (!path) return;
+  path.setAttribute("aria-label", "오늘의 체험");
+  path.innerHTML = PARTICIPANT_ITEMS.map(item => {
+    const inside = `<strong>${item.label}</strong><em class="step-note">${item.together ? "★ " : ""}${item.note}</em>`;
+    return item.href
+      ? `<a class="step available" href="${item.href}">${inside}</a>`
+      : `<button class="step available${item.together ? " together" : ""}" type="button" data-step="${item.step}">${inside}</button>`;
+  }).join("");
+}
+
 function setupReturnBar() {
   const params = new URLSearchParams(location.search);
   const returnTo = validLectureScreen(params.get("return"));
 
-  /* 강의를 거치지 않고 직접 들어온 경우에는 상단바를 표시하지 않는다. */
-  if (!returnTo) return;
+  /* 강의를 거치지 않고 직접 들어온 경우에는 상단바 대신 학생용 목록을 쓴다. */
+  if (!returnTo) {
+    setupParticipant();
+    return;
+  }
 
   const stored = readStoredContext();
   const from = validLectureScreen(params.get("from"))
@@ -841,9 +879,11 @@ async function init() {
   await Promise.all([renderSingle(), renderBlock({ animate: false }), renderChain()]);
   renderManualPow();
   renderPowIdle();
+  /* 학생용 목록을 먼저 세운 뒤 화면을 그린다. 그래야 첫 화면부터 단계 번호가 아니라
+     오늘의 체험 목록으로 보인다. */
+  setupReturnBar();
   const requestedStep = location.hash.replace("#", "");
   navigateToStep(["hash", "block", "chain", "pow"].includes(requestedStep) ? requestedStep : "hash", { updateHash: false });
-  setupReturnBar();
 }
 
 init();

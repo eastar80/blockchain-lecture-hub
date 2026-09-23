@@ -1324,3 +1324,50 @@ textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37, 99
   .return-back,
   .return-next { padding: 9px 12px; font-size: .84rem; }
 }
+
+/* ============================================================
+   학생 화면 — QR 로 직접 들어왔을 때 (participant)
+
+   번호 대신 오늘 쓸 체험 목록으로 보여준다.
+   다섯 개를 같은 무게로 두되, 함께 참여하는 PoW 만 눈에 띄게 한다.
+   ============================================================ */
+body.participant .learning-path {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+body.participant .step {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 11px 16px;
+  border-radius: 14px;
+  text-decoration: none;
+}
+
+body.participant .step strong {
+  color: var(--ink);
+  font-size: .95rem;
+  font-weight: 800;
+}
+
+body.participant .step-note {
+  color: #8792a4;
+  font-size: .72rem;
+  font-style: normal;
+  font-weight: 700;
+}
+
+body.participant .step.together {
+  border-color: #a9c5ff;
+  background: var(--primary-soft);
+}
+
+body.participant .step.together .step-note { color: var(--primary); font-weight: 800; }
+body.participant .step.active { border-color: var(--primary); }
+
+/* 휴대폰에서는 두 줄로 */
+@media (max-width: 720px) {
+  body.participant .learning-path { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  body.participant .step { padding: 9px 12px; }
+  body.participant .step strong { font-size: .88rem; }
+}
