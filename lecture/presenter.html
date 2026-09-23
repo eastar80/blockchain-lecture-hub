@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f4f7fb" />
+  <title>Presenter · 블록체인 강의</title>
+  <meta name="description" content="강의 진행용 강사 화면. 현재 화면 · 다음 화면 · 대본 · 이동 · 체험 실행을 한 화면에서 처리합니다." />
+  <meta name="robots" content="noindex, nofollow" />
+
+  <link rel="stylesheet" href="../shared.css" />
+  <link rel="stylesheet" href="./presenter.css" />
+</head>
+<body class="presenter-body">
+
+  <!-- ============================================================
+       상단 — 지금 어디인가 / 시간
+       ============================================================ -->
+  <header class="p-top">
+    <div class="p-now">
+      <p class="p-now-meta">
+        <span class="p-number" id="pNumber">L01</span>
+        <span class="p-eyebrow" id="pEyebrow">BLOCKCHAIN LECTURE</span>
+        <span class="p-stable" id="pStable">lecture-title</span>
+      </p>
+      <h1 class="p-now-title" id="pTitle">—</h1>
+    </div>
+
+    <div class="p-clock">
+      <p class="p-elapsed"><span id="pElapsed">00:00</span><span class="p-total"> / <span id="pTotal">00:00</span></span></p>
+      <p class="p-pace">
+        <span id="pTarget">목표 누적 00:00</span>
+        <span class="p-drift" id="pDrift"></span>
+      </p>
+      <p class="p-clock-actions">
+        <button class="p-mini" id="pTimerToggle" type="button">강의 시작</button>
+        <button class="p-mini" id="pTimerReset" type="button" hidden>초기화</button>
+      </p>
+    </div>
+
+    <div class="p-link">
+      <p class="p-link-state"><span class="p-dot" id="pDot"></span><span id="pLinkLabel">Stage 대기 중</span></p>
+      <button class="p-mini" id="pOpenStage" type="button">Stage 열기</button>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       본문 — 현재 / 다음 / 대본
+       ============================================================ -->
+  <main class="p-main">
+    <section class="p-panel p-panel-current">
+      <p class="p-panel-head"><span class="p-panel-tag">CURRENT</span><span class="p-panel-sub" id="pCurrentSub"></span></p>
+
+      <!-- 실제 Stage 를 그대로 띄운다. 보기 전용이므로 조작은 막혀 있다. -->
+      <div class="p-frame" id="pCurrentFrame">
+        <iframe id="pCurrentView" title="현재 프로젝터 화면" tabindex="-1" scrolling="no"></iframe>
+      </div>
+
+      <!-- 체험 / Demo 중에는 미리보기 대신 이 카드가 뜬다 -->
+      <div class="p-mode" id="pMode" hidden>
+        <p class="p-mode-tag" id="pModeTag">EXPERIENCE</p>
+        <p class="p-mode-title" id="pModeTitle">체험 진행 중</p>
+        <p class="p-mode-desc" id="pModeDesc"></p>
+        <p class="p-mode-back">
+          <span class="p-mode-back-tag">복귀 화면</span>
+          <span id="pModeReturn">—</span>
+        </p>
+        <button class="p-action p-action-primary" id="pModeEnd" type="button">체험 종료 · 강의 계속</button>
+      </div>
+    </section>
+
+    <section class="p-panel p-panel-next">
+      <p class="p-panel-head"><span class="p-panel-tag">NEXT</span><span class="p-panel-sub" id="pNextSub"></span></p>
+      <div class="p-frame" id="pNextFrame">
+        <iframe id="pNextView" title="다음 화면" tabindex="-1" scrolling="no"></iframe>
+        <p class="p-frame-empty" id="pNextEmpty" hidden>강의 종료</p>
+      </div>
+      <p class="p-next-title" id="pNextTitle">—</p>
+    </section>
+
+    <section class="p-panel p-panel-notes">
+      <p class="p-panel-head">
+        <span class="p-panel-tag">SPEAKER NOTES</span>
+        <span class="p-panel-sub" id="pNotesSub"></span>
+      </p>
+      <div class="p-notes" id="pNotes" tabindex="0">
+        <p class="p-notes-empty">대본이 없는 화면입니다.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================
+       하단 — 이동과 실행
+       ============================================================ -->
+  <footer class="p-bottom">
+    <button class="p-nav" id="pPrev" type="button"><span aria-hidden="true">←</span> 이전</button>
+
+    <p class="p-count"><strong id="pCount">1 / 34</strong><span id="pSection">도입</span></p>
+
+    <button class="p-nav" id="pNext" type="button">다음 <span aria-hidden="true">→</span></button>
+
+    <div class="p-actions">
+      <button class="p-action" id="pTocButton" type="button">목차 <kbd>G</kbd></button>
+      <button class="p-action p-action-primary" id="pExperience" type="button" hidden>체험 시작</button>
+      <button class="p-action p-action-primary" id="pNetwork" type="button" hidden>실제 Network 보기 <kbd>N</kbd></button>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       목차 — Section 단위로 접어 둔다
+       ============================================================ -->
+  <div class="p-backdrop" id="pTocBackdrop" hidden></div>
+  <aside class="p-toc" id="pToc" hidden aria-label="목차">
+    <div class="p-toc-head">
+      <p class="p-toc-title">목차</p>
+      <button class="p-mini" id="pTocClose" type="button" aria-label="목차 닫기">✕ Esc</button>
+    </div>
+    <div class="p-toc-list" id="pTocList"></div>
+  </aside>
+
+  <script src="./screens.js"></script>
+  <script src="./presenter-notes.js"></script>
+  <script src="./lecture-sync.js"></script>
+  <script src="./presenter.js"></script>
+</body>
+</html>

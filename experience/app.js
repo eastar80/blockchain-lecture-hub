@@ -806,6 +806,27 @@ function setupReturnBar() {
   els.returnNext.href = lectureUrl(returnTo);
   els.returnBar.hidden = false;
   document.body.classList.add("has-return-bar");
+
+  connectPresenter({ from, returnTo });
+}
+
+/* ------------------------------------------------------------
+   Presenter 연결 — 체험 내용에는 손대지 않는다.
+
+   강사가 Presenter 에서 [체험 종료 · 강의 계속] 을 누르면 이 창이 강의로 돌아간다.
+   체험도구가 열렸다는 사실과 복귀 위치만 알리고, 그 밖의 명령은 듣지 않는다.
+   ------------------------------------------------------------ */
+const LECTURE_ID_FORM = /^[A-Za-z][A-Za-z0-9-]{1,40}$/;
+
+function connectPresenter(lecture) {
+  if (typeof createLectureSync !== "function") return;   // 연결 스크립트가 없으면 그냥 지나간다
+  const sync = createLectureSync(message => {
+    if (message.type !== "RETURN_FROM_DEMO" && message.type !== "GOTO") return;
+    const target = LECTURE_ID_FORM.test(message.screenId || "") ? message.screenId : lecture.returnTo;
+    window.location.href = `${LECTURE_PATH}#/${target}`;
+  });
+  const kind = location.hash.replace("#", "") || "hash";
+  sync.post("STAGE_STATE", { mode: "experience", kind, from: lecture.from, returnTo: lecture.returnTo });
 }
 
 async function init() {

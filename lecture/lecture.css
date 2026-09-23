@@ -3623,3 +3623,12 @@
   .np-page { gap: 6px; }
   .np-stats li { padding: 5px 9px; }
 }
+
+/* ============================================================
+   미리보기 모드 — Presenter 안 iframe (?preview=1)
+
+   화면은 프로젝터와 똑같이 그리고 조작만 막는다.
+   Presenter 의 미리보기에서 누른 것이 실제 강의 화면을 옮기면 안 된다.
+   ============================================================ */
+html[data-preview] body { pointer-events: none; cursor: default; }
+html[data-preview] .skip-link { display: none; }
