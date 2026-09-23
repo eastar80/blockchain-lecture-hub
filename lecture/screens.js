@@ -762,31 +762,68 @@ const presenterCard = ({ name, role, tags, points }) => `
   </div>`;
 
 /**
- * NetworkPreview — 실제로 돌아가는 분산원장 화면 자리.
- * 지금은 실제 Dashboard 캡처가 없으므로 같은 구성의 미리보기 패널을 그린다.
- * 캡처가 준비되면 .np-shot 안쪽만 <img src="…" alt="…" /> 로 바꾸면 된다.
- * L02 와 L33 이 같은 화면을 써야 회수가 된다. 두 곳 모두 이 helper 를 쓴다.
+ * NetworkPreview — 실제로 돌아가는 분산원장 화면(repo.mrdion.kim).
+ *
+ * 실제 Dashboard 의 구성을 그대로 옮겨 그린다.
+ *   상단 현황 5칸 · 최근 거래 표 · 체인 시각
+ * 캡처 이미지 대신 화면으로 그리는 이유는 프로젝터에서 글자가 살아 있어야 하기 때문이다.
+ * L02(강의 처음)와 L33(강의 끝)이 같은 화면을 써야 회수가 된다. 두 곳 모두 이 helper 를 쓴다.
+ * 숫자를 바꾸려면 아래 NETWORK_SNAPSHOT 하나만 고치면 두 화면에 함께 반영된다.
  */
+const NETWORK_SNAPSHOT = {
+  url: 'repo.mrdion.kim',
+  title: 'Phase 2 · Repo Settlement Dashboard',
+  badge: 'PoC · 조회 전용',
+  clock: '체인 시각 2026-09-23 22:59:32 KST',
+  stats: [
+    { k: '전체 거래',    v: '8' },
+    { k: '운용 중',      v: '1', s: 'ACTIVE' },
+    { k: '만기 처리 중', v: '0', s: 'MATURITY_PENDING' },
+    { k: '종료',         v: '7', s: 'CLOSED' },
+    { k: '조치 필요',    v: '0', s: 'OPEN attention' }
+  ],
+  deals: [
+    { id: 'RP-REV-0001',  who: 'KSF → PD-A', cash: '100,000', back: '100,500', due: '2026-09-28', state: 'ACTIVE' },
+    { id: 'RP-OCI-0007',  who: 'KSF → PD-A', cash: '100,000', back: '100,500', due: '2026-09-15', state: 'CLOSED' },
+    { id: 'RP-OCI-0006',  who: 'KSF → PD-A', cash: '100,000', back: '100,500', due: '2026-09-15', state: 'CLOSED' }
+  ]
+};
+
 const networkPreview = ({ tag, callouts = [], foot }) => `
   <figure class="np">
     ${tag ? `<figcaption class="np-tag">${tag}</figcaption>` : ''}
-    <div class="np-shot" role="img" aria-label="분산원장 네트워크 대시보드 미리보기">
+    <div class="np-shot" role="img" aria-label="${NETWORK_SNAPSHOT.title} 화면 — 거래 현황과 최근 거래 목록">
       <div class="np-bar">
         <span class="np-dots" aria-hidden="true"></span>
-        <span class="np-bar-title">Distributed Ledger Network</span>
-        <span class="np-bar-live">LIVE</span>
+        <span class="np-url">${NETWORK_SNAPSHOT.url}</span>
       </div>
-      <div class="np-grid">
-        <div class="np-cell"><p class="np-k">NODES</p><p class="np-v">4</p><p class="np-s">peer 연결 정상</p></div>
-        <div class="np-cell"><p class="np-k">BLOCK HEIGHT</p><p class="np-v">18,204</p><p class="np-s">방금 +1</p></div>
-        <div class="np-cell"><p class="np-k">TRANSACTIONS</p><p class="np-v">52,871</p><p class="np-s">최근 12건</p></div>
-        <div class="np-cell"><p class="np-k">VALIDATORS</p><p class="np-v">4 / 4</p><p class="np-s">서명 수집 완료</p></div>
+      <div class="np-page">
+        <div class="np-head">
+          <p class="np-title">${NETWORK_SNAPSHOT.title}</p>
+          <p class="np-badge">${NETWORK_SNAPSHOT.badge}</p>
+          <p class="np-clock">${NETWORK_SNAPSHOT.clock}</p>
+        </div>
+        <ul class="np-stats">
+          ${NETWORK_SNAPSHOT.stats.map(c => `
+            <li><span class="np-k">${c.k}</span><strong class="np-v">${c.v}</strong>${c.s ? `<em class="np-s">${c.s}</em>` : ''}</li>`).join('')}
+        </ul>
+        <table class="np-table">
+          <thead>
+            <tr><th>거래</th><th>Seller → Buyer</th><th>개시 현금</th><th>환매금액</th><th>만기</th><th>상태</th></tr>
+          </thead>
+          <tbody>
+            ${NETWORK_SNAPSHOT.deals.map(d => `
+              <tr>
+                <td class="np-id">${d.id}</td>
+                <td>${d.who}</td>
+                <td class="np-num">${d.cash}</td>
+                <td class="np-num">${d.back}</td>
+                <td>${d.due}</td>
+                <td><span class="np-state np-state-${d.state.toLowerCase()}">${d.state}</span></td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
       </div>
-      <ul class="np-rows">
-        <li><span class="np-h">#18204</span><span class="np-t">0x9f3a…</span><span class="np-ok">committed</span></li>
-        <li><span class="np-h">#18203</span><span class="np-t">0x41c7…</span><span class="np-ok">committed</span></li>
-        <li><span class="np-h">#18202</span><span class="np-t">0xb08e…</span><span class="np-ok">committed</span></li>
-      </ul>
     </div>
     ${callouts.length ? `<ul class="np-callouts">${callouts.map(c => `<li><strong>${c.name}</strong><span>${c.desc}</span></li>`).join('')}</ul>` : ''}
     ${foot ? `<p class="np-foot">${foot}</p>` : ''}
@@ -862,7 +899,7 @@ const SCREENS = [
         ]
       }),
       networkPreview({
-        tag: '직접 구축해 본 분산원장',
+        tag: '직접 구축해 운영 중인 분산원장',
         foot: '“지금은 조금 복잡해 보이실 수 있습니다. 강의가 끝날 때쯤에는 이 화면에서 지금보다 훨씬 많은 것이 보이실 겁니다.”'
       }),
       sub('오늘의 역할 · 어려운 기술을 조금 먼저 걸어본 사람이 지도를 보여드리는 것'),
@@ -1511,7 +1548,7 @@ const SCREENS = [
           /* 역이 8개다. 역할 설명은 한 줄로 읽히도록 짧게 쓴다 */
           stops: [
             { name: 'State',            role: '지금 기억하는 상태' },
-            { name: 'Input',            role: '실행 요청 값' },
+            { name: 'Input',            role: '실행을 요청하는 Input' },
             { name: 'Program',          role: '실행되는 규칙' },
             { name: 'State Transition', role: 'State 가 바뀌는 과정' },
             { name: '여러 Node',         role: '같은 규칙으로 검증' },
@@ -1570,11 +1607,13 @@ const SCREENS = [
     body: [
       networkPreview({
         tag: '실제로 돌아가고 있는 분산원장',
+        /* 화면에 실제로 보이는 자리에만 이름을 붙인다.
+           오늘 만든 두 노선의 단어가 그대로 하나씩 대응된다 */
         callouts: [
-          { name: 'Node',        desc: '장부를 함께 보유하고 검증하는 참여자' },
-          { name: 'Block',       desc: '일정 단위로 묶인 기록' },
-          { name: 'Transaction', desc: '실행을 요청하는 Input' },
-          { name: 'Validator',   desc: '무엇을 이어갈지 합의에 참여하는 쪽' }
+          { name: 'Node · 참여자',      desc: 'KSF → PD-A · 같은 장부를 함께 보는 쪽' },
+          { name: 'Chain · 체인 시각',  desc: '기록이 여기까지 이어져 있다' },
+          { name: 'Transaction · 거래', desc: 'RP-… 실행을 요청한 Input' },
+          { name: 'State · 상태',       desc: 'ACTIVE / CLOSED · 실행 결과로 바뀐 상태' }
         ]
       }),
       conclusion('같은 화면인데, 이제 각각이 어떤 질문에 답하는 것인지 보입니다')
@@ -1582,7 +1621,7 @@ const SCREENS = [
     /* Network Demo 연결 지점. 화면에는 버튼을 노출하지 않는다.
        Presenter 가 OPEN_NETWORK 를 보내면 url 로 나가고, RETURN_FROM_DEMO 면 returnTo 로 돌아온다.
        실제 Dashboard 주소가 정해지면 url 만 채우면 된다. */
-    demo: { name: 'network', url: '', returnTo: 'closing' }
+    demo: { name: 'network', url: 'https://repo.mrdion.kim', returnTo: 'closing' }
   },
   {
     /* 신규 — 마지막 메시지. 요소를 더 넣지 않는다 */

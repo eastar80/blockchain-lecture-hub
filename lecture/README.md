@@ -221,8 +221,9 @@ World Computer → Smart Contract → DApp 을 먼저 지나고 마지막에 EVM
 | `cycleFlow` | L32 | 배운다 → 해본다 → 막힌다 → 다시 배운다 |
 | `boundaryStack` | L29 | 층을 쌓다가 오늘 강의의 경계에서 멈춘다 |
 
-`networkPreview` 는 지금 실제 Dashboard 캡처 대신 같은 구성의 미리보기 패널을 그립니다.
-캡처가 준비되면 `screens.js` 의 `.np-shot` 안쪽만 `<img>` 로 바꾸면 두 화면에 함께 반영됩니다.
+`networkPreview` 는 실제 Dashboard(`repo.mrdion.kim` · Phase 2 Repo Settlement Dashboard)의 구성을
+그대로 옮겨 그립니다. 캡처 이미지가 아니라 화면으로 그리는 이유는 프로젝터에서 글자가 살아 있어야 하기 때문입니다.
+표시 값(거래 수·최근 거래 줄)은 `screens.js` 의 `NETWORK_SNAPSHOT` 한 곳에 있고, 고치면 L02·L33 에 함께 반영됩니다.
 
 ## Network Demo · Presenter 연결 지점
 
@@ -233,8 +234,8 @@ window.lectureCommand('OPEN_NETWORK')       // real-network 화면의 demo.url �
 window.lectureCommand('RETURN_FROM_DEMO')   // demo.returnTo — closing 화면으로 돌아온다
 ```
 
-- 실제 Dashboard 주소가 정해지면 `screens.js` 의 `real-network` 화면에서 `demo.url` 만 채우면 됩니다.
-- 주소가 비어 있으면 `OPEN_NETWORK` 는 아무 일도 하지 않습니다.
+- 실제 Dashboard 는 `https://repo.mrdion.kim` 입니다. `screens.js` 의 `real-network` 화면 `demo.url` 에 들어 있습니다.
+- 주소를 비우면 `OPEN_NETWORK` 는 아무 일도 하지 않습니다.
 - BroadcastChannel / localStorage 동기화, Presenter View 자체는 다음 단계입니다.
 
 ## 화면 크기
