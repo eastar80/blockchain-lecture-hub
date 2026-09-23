@@ -10,21 +10,45 @@
    - sessionStorage 는 ‘이어서 보기’ 보조 수단으로만 쓴다.
    ============================================================ */
 
-const SCREEN_INDEX = new Map(SCREENS.map((s, i) => [s.id, i]));
-const FIRST_ID = SCREENS[0].id;
+/* ------------------------------------------------------------
+   화면 찾기 — 고정 ID 와 화면 번호를 모두 받는다.
+
+   id      'pow-challenge' — 화면의 고정 ID. 번호가 바뀌어도 그대로다.
+           체험 복귀, 내부 이동은 전부 이 값으로 연결한다.
+   number  'L14' — 화면에 표시하고 주소로 쓰는 번호.
+
+   주소는 지금까지처럼 #/L14 로 유지한다. 이미 나간 링크와 QR 이 그대로 살아 있어야 한다.
+   #/pow-challenge 로 들어와도 같은 화면을 열고 주소만 #/L14 로 맞춘다.
+   ------------------------------------------------------------ */
+const SCREEN_INDEX = new Map();
+SCREENS.forEach((s, i) => {
+  SCREEN_INDEX.set(s.id, i);
+  SCREEN_INDEX.set(s.number, i);
+});
+const FIRST_ID = SCREENS[0].number;
 const STORAGE_KEY = 'lecture:last-screen';
 
-/* ------------------------------------------------------------
-   화면 ID 검증 — 외부에서 들어온 값은 전부 여기를 통과해야 한다.
-   ------------------------------------------------------------ */
-function isValidScreenId(id) {
-  return typeof id === 'string' && SCREEN_INDEX.has(id);
+/* 외부에서 들어온 값은 전부 여기를 통과해야 한다. */
+function screenOf(value) {
+  if (typeof value !== 'string') return null;
+  const raw = value.trim();
+  const index = SCREEN_INDEX.has(raw) ? SCREEN_INDEX.get(raw) : SCREEN_INDEX.get(raw.toUpperCase());
+  return index === undefined ? null : SCREENS[index];
 }
 
-/** URL hash → 화면 ID. 형식이 어긋나면 null. */
+/** 어떤 형태로 들어오든 주소에 쓸 화면 번호로 바꾼다. 허용되지 않으면 null. */
+function toScreenNumber(value) {
+  const screen = screenOf(value);
+  return screen ? screen.number : null;
+}
+
+function isValidScreenId(id) {
+  return toScreenNumber(id) !== null;
+}
+
+/** URL hash → 화면 번호. 형식이 어긋나면 null. */
 function screenIdFromHash() {
-  const raw = location.hash.replace(/^#\/?/, '').trim().toUpperCase();
-  return isValidScreenId(raw) ? raw : null;
+  return toScreenNumber(location.hash.replace(/^#\/?/, '').trim());
 }
 
 const els = {
@@ -61,7 +85,7 @@ function recallScreen() {
    이동 — 화면 전환은 언제나 hash 를 통해서만 한다.
    ------------------------------------------------------------ */
 function goTo(id, { replace = false } = {}) {
-  const target = isValidScreenId(id) ? id : FIRST_ID;
+  const target = toScreenNumber(id) || FIRST_ID;
   const nextHash = `#/${target}`;
   if (location.hash === nextHash) {
     render(target);
@@ -78,7 +102,7 @@ function goTo(id, { replace = false } = {}) {
 function goByOffset(offset) {
   const index = SCREEN_INDEX.get(currentId);
   const next = SCREENS[index + offset];
-  if (next) goTo(next.id);
+  if (next) goTo(next.number);
 }
 
 /* ------------------------------------------------------------
@@ -89,11 +113,15 @@ function goByOffset(offset) {
    ------------------------------------------------------------ */
 function experienceUrl(screen) {
   const { kind, returnTo, module: moduleName } = screen.experience;
+  /* 화면 데이터는 고정 ID 로 적어 두고, 체험도구에 넘길 때만 번호로 바꾼다.
+     체험도구의 ?from= / ?return= 형식(L14)은 그대로 유지한다. */
+  const from = screen.number;
+  const back = toScreenNumber(returnTo) || FIRST_ID;
   /* Ethereum 체험은 기존 4단계 도구의 STEP 5 가 아니라 별도 모듈이다 */
   if (moduleName) {
-    return `../experience/${moduleName}/index.html?from=${screen.id}&return=${returnTo}`;
+    return `../experience/${moduleName}/index.html?from=${from}&return=${back}`;
   }
-  return `../experience/index.html?from=${screen.id}&return=${returnTo}#${kind}`;
+  return `../experience/index.html?from=${from}&return=${back}#${kind}`;
 }
 
 /* ------------------------------------------------------------
@@ -120,6 +148,15 @@ function renderProgress(screen) {
   const where = screen.line || (screen.concept === 'intro' ? 'intro' : 1);
   const active = new Set(Array.isArray(screen.concept) ? screen.concept : [screen.concept]);
   const allOn = screen.concept === 'all';
+
+  /* 에필로그(L32~L34)는 어느 노선에도 속하지 않는다. 역 이름을 늘어놓지 않는다 */
+  if (where === 'epilogue') {
+    els.progress.innerHTML = `<ol class="p-list intro">
+      <li class="p-stop p-intro on" aria-current="step">EPILOGUE</li>
+      <li class="p-line-label">배우고, 해보고, 다시 배우기</li>
+    </ol>`;
+    return;
+  }
 
   if (where === 'transfer') {
     els.progress.innerHTML = `<ol class="p-list p-transfer-list">
@@ -184,7 +221,7 @@ function renderStage(screen) {
         <a class="btn btn-primary cta-button" href="${url}">
           ${screen.experience.label} <span class="arrow" aria-hidden="true">→</span>
         </a>
-        <p class="cta-hint">체험을 마치면 <strong>강의 계속하기 →</strong> 로 ${screen.experience.returnTo} 화면에서 이어집니다.</p>
+        <p class="cta-hint">체험을 마치면 <strong>강의 계속하기 →</strong> 로 ${toScreenNumber(screen.experience.returnTo)} 화면에서 이어집니다.</p>
       </div>`);
   }
 
@@ -210,10 +247,10 @@ function renderStage(screen) {
   }
 
   /* 첫 화면에서만 — 보던 위치가 있으면 이어서 볼 수 있게 한다(URL 이 기준이므로 자동 이동은 하지 않는다) */
-  if (screen.id === FIRST_ID) {
+  if (screen.number === FIRST_ID) {
     const saved = recallScreen();
     if (saved && saved !== FIRST_ID) {
-      const savedScreen = SCREENS[SCREEN_INDEX.get(saved)];
+      const savedScreen = screenOf(saved);
       parts.push(`
         <p class="resume-line">
           <button class="resume-button" type="button" data-goto="${saved}">
@@ -245,7 +282,7 @@ function renderToc(screen) {
           ${items.map(s => `
             <li>
               <button class="toc-screen${s.id === screen.id ? ' current' : ''}" type="button" data-goto="${s.id}"${s.id === screen.id ? ' aria-current="true"' : ''}>
-                <span class="toc-screen-id">${s.id}</span>
+                <span class="toc-screen-id">${s.number}</span>
                 <span class="toc-screen-title">${(s.title || s.eyebrow).replace(/<br\s*\/?>/g, ' ').replace(/<[^>]+>/g, '')}</span>
                 ${s.experience ? '<span class="toc-screen-flag">체험</span>' : ''}
               </button>
@@ -284,8 +321,9 @@ function render(id) {
   const screen = SCREENS[index];
   if (!screen) return;
 
-  currentId = id;
-  document.documentElement.dataset.screen = id;
+  currentId = screen.number;
+  document.documentElement.dataset.screen = screen.number;
+  document.documentElement.dataset.screenId = screen.id;   // Presenter 연결용 고정 ID
 
   renderProgress(screen);
   renderStage(screen);
@@ -296,9 +334,9 @@ function render(id) {
   els.next.disabled = index === SCREENS.length - 1;
 
   const plainTitle = (screen.title || screen.eyebrow || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-  document.title = `${id} · ${plainTitle} · 블록체인 강의`;
+  document.title = `${screen.number} · ${plainTitle} · 블록체인 강의`;
 
-  rememberScreen(id);
+  rememberScreen(screen.number);
   window.scrollTo({ top: 0, behavior: 'auto' });
 
   /* 새 화면 본문으로 포커스를 옮긴다.
@@ -358,9 +396,40 @@ document.addEventListener('keydown', event => {
 
 window.addEventListener('hashchange', () => {
   const id = screenIdFromHash();
-  if (id) render(id);
-  else goTo(FIRST_ID, { replace: true });   // 잘못된 ID → 기본 화면
+  /* 고정 ID(#/pow-challenge)로 들어왔으면 주소를 번호(#/L14)로 정리한다.
+     이미 번호면 goTo 가 render 만 한다 — 기록이 두 번 쌓이지 않는다. */
+  goTo(id || FIRST_ID, { replace: true });   // 잘못된 ID → 기본 화면
 });
+
+/* ------------------------------------------------------------
+   Network Demo 연결 지점 — 이번 단계에서는 자리만 만들어 둔다.
+
+   강의 화면에는 강사용 control 을 노출하지 않는다.
+   다음 단계의 Presenter 가 아래 명령을 보내면 여기서 처리한다.
+
+     OPEN_NETWORK      real-network 화면의 demo.url 로 나간다
+                       (실제 Dashboard 주소가 정해지면 screens.js 의 demo.url 만 채우면 된다)
+     RETURN_FROM_DEMO  demo.returnTo — 즉 closing 화면으로 돌아온다
+
+   BroadcastChannel / localStorage 동기화는 다음 단계에서 붙인다.
+   ------------------------------------------------------------ */
+const LECTURE_COMMANDS = {
+  OPEN_NETWORK() {
+    const demo = (screenOf('real-network') || {}).demo;
+    if (!demo || !demo.url) return false;   // 주소가 아직 없으면 아무 일도 하지 않는다
+    window.open(demo.url, '_blank', 'noopener');
+    return true;
+  },
+  RETURN_FROM_DEMO() {
+    const demo = (screenOf('real-network') || {}).demo;
+    goTo((demo && demo.returnTo) || FIRST_ID);
+    return true;
+  }
+};
+
+/** Presenter 가 붙을 때 쓰는 최소한의 입구. 화면 쪽에서 먼저 호출하지 않는다. */
+window.lectureCommand = name =>
+  Object.prototype.hasOwnProperty.call(LECTURE_COMMANDS, name) ? LECTURE_COMMANDS[name]() : false;
 
 /* ------------------------------------------------------------
    시작
