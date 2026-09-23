@@ -51,6 +51,16 @@ function screenIdFromHash() {
   return toScreenNumber(location.hash.replace(/^#\/?/, '').trim());
 }
 
+/* ------------------------------------------------------------
+   미리보기 모드 — Presenter 안에서 iframe 으로 열릴 때 (?preview=1)
+
+   화면은 실제 프로젝터와 똑같이 그린다. Presenter 가 따로 만든 축소 UI 가
+   아니라 같은 Renderer 를 그대로 쓰기 위해서다.
+   다만 강의 진행 상태는 건드리지 않는다 — 저장도, 단축키도, 채널 참여도 없다.
+   ------------------------------------------------------------ */
+const PREVIEW = new URLSearchParams(location.search).has('preview');
+if (PREVIEW) document.documentElement.dataset.preview = 'on';
+
 const els = {
   progress: document.querySelector('#progress'),
   stage: document.querySelector('#stage'),
@@ -72,6 +82,7 @@ let currentId = null;
    보조 저장 — 실패해도 강의 진행에는 영향이 없어야 한다.
    ------------------------------------------------------------ */
 function rememberScreen(id) {
+  if (PREVIEW) return;   // 미리보기는 강의 진행 상태를 남기지 않는다
   try { sessionStorage.setItem(STORAGE_KEY, id); } catch { /* 무시 */ }
 }
 function recallScreen() {
@@ -337,13 +348,20 @@ function render(id) {
   document.title = `${screen.number} · ${plainTitle} · 블록체인 강의`;
 
   rememberScreen(screen.number);
+  if (!PREVIEW) {
+    lectureWrite(LECTURE_KEYS.screen, screen.id);   // 새로고침 복구용 — 고정 ID 로 남긴다
+    lectureWrite(LECTURE_KEYS.mode, 'lecture');
+    announceStage();                                // Presenter 가 따라오도록 알린다
+  }
   window.scrollTo({ top: 0, behavior: 'auto' });
 
   /* 새 화면 본문으로 포커스를 옮긴다.
      - 보조기술이 바뀐 화면을 읽을 수 있게 한다.
      - ‘이전’ 버튼을 마우스로 누른 뒤 Space 를 누르면 그 버튼이 다시 눌려
        뒤로 가버리던 문제를 막는다. (강의 중 Space = 다음 화면) */
-  els.main.focus({ preventScroll: true });
+  /* 미리보기(iframe)에서는 포커스를 가져오지 않는다.
+     가져가면 Presenter 창의 키보드 입력이 미리보기 안으로 빨려 들어간다. */
+  if (!PREVIEW) els.main.focus({ preventScroll: true });
 }
 
 /* ------------------------------------------------------------
@@ -366,6 +384,7 @@ document.addEventListener('click', event => {
 
 /* 강의자 편의 단축키. 입력 요소 위에서는 동작하지 않는다. */
 document.addEventListener('keydown', event => {
+  if (PREVIEW) return;   // 미리보기는 조작하지 않는다
   if (event.metaKey || event.ctrlKey || event.altKey) return;
 
   const tag = (event.target.tagName || '').toLowerCase();
@@ -417,7 +436,9 @@ const LECTURE_COMMANDS = {
   OPEN_NETWORK() {
     const demo = (screenOf('real-network') || {}).demo;
     if (!demo || !demo.url) return false;   // 주소가 아직 없으면 아무 일도 하지 않는다
-    window.open(demo.url, '_blank', 'noopener');
+    /* 프로젝터 화면이 그대로 Dashboard 로 바뀐다. 새 창을 띄우지 않는다. */
+    lectureWrite(LECTURE_KEYS.mode, 'network-demo');
+    location.href = demo.url;
     return true;
   },
   RETURN_FROM_DEMO() {
@@ -427,9 +448,65 @@ const LECTURE_COMMANDS = {
   }
 };
 
-/** Presenter 가 붙을 때 쓰는 최소한의 입구. 화면 쪽에서 먼저 호출하지 않는다. */
+/** Presenter 없이 콘솔 등에서 쓸 수 있는 입구. 화면 쪽에서 먼저 호출하지 않는다. */
 window.lectureCommand = name =>
   Object.prototype.hasOwnProperty.call(LECTURE_COMMANDS, name) ? LECTURE_COMMANDS[name]() : false;
+
+/* ------------------------------------------------------------
+   Presenter 연결
+
+   Stage 는 스스로 판단하지 않는다. 명령을 받아 움직이고,
+   움직인 결과를 알려주기만 한다. 진행의 主는 Presenter 다.
+   Stage 에서 직접 넘기던 기존 조작(버튼·단축키·목차)은 그대로 살아 있다.
+   ------------------------------------------------------------ */
+const sync = PREVIEW ? null : createLectureSync(onSyncMessage);
+
+/* 창을 연 직후의 첫 알림은 ‘내가 열렸다’는 뜻일 뿐이다.
+   Presenter 가 이미 진행 중이라면 그 위치를 따라가야지, Presenter 를 첫 화면으로
+   끌고 오면 안 된다. 그래서 첫 알림에는 initial 표시를 붙인다. */
+let firstAnnounce = true;
+
+/** 지금 무엇을 띄우고 있는지 알린다. render() 끝에서 부른다. */
+function announceStage() {
+  if (!sync) return;
+  const screen = screenOf(currentId);
+  sync.post('STAGE_STATE', {
+    mode: 'lecture',
+    initial: firstAnnounce,
+    screenId: screen ? screen.id : null,
+    number: screen ? screen.number : null
+  });
+  firstAnnounce = false;
+}
+
+function onSyncMessage(message) {
+  switch (message.type) {
+    case 'NEXT':
+      goByOffset(1);
+      break;
+    case 'PREV':
+      goByOffset(-1);
+      break;
+    case 'GOTO':
+    case 'STATE_SYNC':          // Presenter 가 이미 진행 중인 위치로 따라간다
+    case 'RETURN_FROM_DEMO':
+      if (message.screenId) goTo(message.screenId);
+      break;
+    case 'OPEN_EXPERIENCE': {
+      const screen = screenOf(message.screenId || currentId);
+      if (screen && screen.experience) location.href = experienceUrl(screen);
+      break;
+    }
+    case 'OPEN_NETWORK':
+      LECTURE_COMMANDS.OPEN_NETWORK();
+      break;
+    case 'READY':               // Presenter 가 나중에 열렸다 — 지금 위치를 알려준다
+      announceStage();
+      break;
+    default:
+      break;
+  }
+}
 
 /* ------------------------------------------------------------
    시작
@@ -437,4 +514,6 @@ window.lectureCommand = name =>
 (function init() {
   const requested = screenIdFromHash();
   goTo(requested || FIRST_ID, { replace: true });
+  /* Stage 가 나중에 열렸을 수 있다. Presenter 가 현재 위치를 알려주면 따라간다. */
+  if (sync) sync.post('READY', { role: 'stage' });
 })();

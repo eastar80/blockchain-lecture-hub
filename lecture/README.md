@@ -11,7 +11,11 @@ PDF 복사본이 아니라 실제 강의를 진행하는 화면이며, 체험도
 lecture/
 ├─ index.html    화면 셸 (진행 표시기 / 본문 / 하단 Navigation / 목차)
 ├─ screens.js    34개 화면 콘텐츠 — 원본 문구의 단일 출처
-├─ presenter-notes.js  강의자용 대본 · 목표 시간 (다음 단계 Presenter 용, 강의 화면은 쓰지 않음)
+├─ presenter.html   강사용 제어화면 (Presenter View)
+├─ presenter.css    Presenter 전용 레이아웃
+├─ presenter.js     Presenter 로직 — 상태 · 미리보기 · 대본 · 시간
+├─ presenter-notes.js  강의자용 대본 · 목표 시간 (Presenter 만 읽는다)
+├─ lecture-sync.js  Presenter ↔ Stage 연결 (BroadcastChannel + localStorage)
 ├─ lecture.css   강의 화면 전용 레이아웃 (토큰은 ../shared.css 재사용)
 ├─ app.js        Router / Renderer / Navigation
 └─ qr/           체험 진입용 QR (현재 화면에서는 쓰지 않음)
@@ -226,22 +230,98 @@ World Computer → Smart Contract → DApp 을 먼저 지나고 마지막에 EVM
 그대로 옮겨 그립니다. 캡처 이미지가 아니라 화면으로 그리는 이유는 프로젝터에서 글자가 살아 있어야 하기 때문입니다.
 표시 값(거래 수·최근 거래 줄)은 `screens.js` 의 `NETWORK_SNAPSHOT` 한 곳에 있고, 고치면 L02·L33 에 함께 반영됩니다.
 
-## Network Demo · Presenter 연결 지점
+## Presenter View — 강사용 제어화면
 
-강의 화면에는 강사용 control 을 두지 않습니다. 다음 단계의 Presenter 가 붙을 자리만 만들어 뒀습니다.
+```
+lecture/presenter.html     강사 노트북 화면
+lecture/index.html         프로젝터 화면 (Stage)
+```
 
-`presenter-notes.js` 에 화면별 대본(`script` / `cue` / `caution`)과 목표 시간이 **고정 ID 로** 들어 있습니다.
-강의 목표 시간은 34화면 합계 약 76분 + Network Demo 2분입니다.
-강의 화면(`index.html`)은 이 파일을 불러오지 않습니다 — Presenter 가 붙을 때 그대로 쓰면 됩니다.
+Windows 디스플레이를 **확장(Extend)** 으로 두고, Presenter 는 노트북에,
+Stage 는 프로젝터 쪽 창에 둡니다. Presenter 의 `[Stage 열기]` 를 누르면
+Stage 가 새 창으로 열립니다. 그 창을 프로젝터로 옮기고 전체화면(F11)으로 쓰면 됩니다.
+
+### 한 화면에서 보는 것
+
+| 자리 | 내용 |
+|---|---|
+| 위 | 지금 화면 번호·제목 · 경과시간 / 목표 누적 / 차이 · Stage 연결 상태 |
+| 가운데 왼쪽 | **CURRENT** — 실제 Stage 를 그대로 축소한 미리보기 |
+| 가운데 오른쪽 | **NEXT** — 다음 화면 미리보기 (마지막에서는 ‘강의 종료’) |
+| 가운데 아래 | **SPEAKER NOTES** — SCRIPT / CUE / CAUTION |
+| 아래 | 이전 · 현재 위치 · 다음 · 목차 · 체험 · Network |
+
+미리보기는 별도로 만든 축소 UI 가 아니라 **실제 Stage 를 `?preview=1` 로 띄운 것**입니다.
+그래서 프로젝터에 나갈 화면과 언제나 같습니다.
+미리보기 안에서는 저장·단축키·연결이 모두 꺼져 있어, 눌러도 실제 강의가 움직이지 않습니다.
+
+대본·다음 화면·시간·강사용 버튼은 Presenter 에만 있습니다. 프로젝터에는 나가지 않습니다.
+
+### 단축키
+
+| 입력 | 동작 |
+|---|---|
+| `→` / `Space` | 다음 |
+| `←` | 이전 |
+| `G` | 목차 |
+| `N` | 실제 Network 보기 (L33 에서만) |
+| `Esc` | 목차 닫기 |
+
+체험 시작에는 단축키를 두지 않았습니다. 강의 중 실수로 열리면 안 되기 때문입니다.
+
+### 두 창을 잇는 방법
+
+`lecture-sync.js` 의 `BroadcastChannel('blockchain-lecture')` 하나가 전부입니다.
+외부 서버도 WebSocket 도 쓰지 않습니다.
+
+| 명령 | 방향 | 뜻 |
+|---|---|---|
+| `NEXT` / `PREV` / `GOTO` | Presenter → Stage | 화면 이동 |
+| `OPEN_EXPERIENCE` | Presenter → Stage | 체험도구 열기 |
+| `OPEN_NETWORK` | Presenter → Stage | 실제 Network 열기 |
+| `RETURN_FROM_DEMO` | Presenter → Stage·체험도구 | 체험·Demo 끝내고 복귀 |
+| `READY` | 양쪽 | 창이 열렸다 |
+| `STATE_SYNC` | Presenter → Stage | 지금 여기다 |
+| `STAGE_STATE` | Stage·체험도구 → Presenter | 지금 이것을 띄우고 있다 |
+
+명령에는 번호가 아니라 **고정 ID** 를 싣습니다.
+
+- 늦게 열린 쪽이 상대 위치를 따라갑니다. Stage 를 나중에 열면 Presenter 위치로 맞춰집니다.
+- Stage 에서 직접 넘겨도(버튼·단축키·목차) Presenter 가 따라옵니다.
+- 새로고침하면 `localStorage` 의 `lecture:current-screen` 등으로 위치와 시간을 되살립니다.
+  채널이 살아 있으면 언제나 채널이 우선입니다.
+- 체험도구도 이 채널을 듣습니다. Presenter 의 `[체험 종료 · 강의 계속]` 한 번으로 강의로 돌아옵니다.
+  체험 내용 자체는 건드리지 않았습니다.
+- 외부 Dashboard 는 우리 코드가 아니라 채널이 닿지 않습니다. 그래서 Demo 복귀는
+  `[Stage 열기]` 로 연 창 손잡이로 처리합니다. Stage 를 직접 연 경우에는
+  `[Demo 종료]` 가 Stage 창을 새로 열 수 있습니다.
+
+### 시간
+
+`presenter-notes.js` 의 `targetSeconds` 를 누적해 **이 화면에 도착했어야 하는 시각**을 계산합니다.
+전체 목표는 76:15 입니다. 조금 늦어도 붉은 경고나 깜빡임을 쓰지 않습니다 — `+01:12` 처럼만 적습니다.
+`[강의 시작]` 을 눌러야 시계가 갑니다. `[일시정지]` / `[초기화]` 는 보조입니다.
+
+### 화면 크기
+
+1920×1080 · 1600×900 · 1366×768 에서 스크롤 없이 들어갑니다.
+Presenter 는 강의용 PC 전용 화면입니다. 모바일 대응은 하지 않았습니다(Stage 는 그대로 대응합니다).
+
+## Network Demo
+
+강의 화면에는 강사용 control 을 두지 않습니다. Demo 는 Presenter 에서만 시작합니다.
+
+- 실제 Dashboard 는 `https://repo.mrdion.kim` 입니다. `screens.js` 의 `real-network` 화면
+  `demo.url` 에 들어 있고, 비우면 Presenter 가 `Network Demo URL 미설정` 으로 표시합니다.
+- Presenter 없이 확인할 때는 콘솔에서 아래를 쓸 수 있습니다.
 
 ```js
-window.lectureCommand('OPEN_NETWORK')       // real-network 화면의 demo.url 로 나간다
+window.lectureCommand('OPEN_NETWORK')       // 프로젝터 화면이 Dashboard 로 바뀐다
 window.lectureCommand('RETURN_FROM_DEMO')   // demo.returnTo — closing 화면으로 돌아온다
 ```
 
-- 실제 Dashboard 는 `https://repo.mrdion.kim` 입니다. `screens.js` 의 `real-network` 화면 `demo.url` 에 들어 있습니다.
-- 주소를 비우면 `OPEN_NETWORK` 는 아무 일도 하지 않습니다.
-- BroadcastChannel / localStorage 동기화, Presenter View 자체는 다음 단계입니다.
+- Demo 대본(Node → Block → Block Height → Transaction → Validator → 회수)과 2분 제한은
+  `presenter-notes.js` 의 `PRESENTER_MODES['network-demo']` 에 있습니다.
 
 ## 화면 크기
 
