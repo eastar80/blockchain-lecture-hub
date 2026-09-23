@@ -11,6 +11,7 @@ PDF 복사본이 아니라 실제 강의를 진행하는 화면이며, 체험도
 lecture/
 ├─ index.html    화면 셸 (진행 표시기 / 본문 / 하단 Navigation / 목차)
 ├─ screens.js    34개 화면 콘텐츠 — 원본 문구의 단일 출처
+├─ presenter-notes.js  강의자용 대본 · 목표 시간 (다음 단계 Presenter 용, 강의 화면은 쓰지 않음)
 ├─ lecture.css   강의 화면 전용 레이아웃 (토큰은 ../shared.css 재사용)
 ├─ app.js        Router / Renderer / Navigation
 └─ qr/           체험 진입용 QR (현재 화면에서는 쓰지 않음)
@@ -228,6 +229,10 @@ World Computer → Smart Contract → DApp 을 먼저 지나고 마지막에 EVM
 ## Network Demo · Presenter 연결 지점
 
 강의 화면에는 강사용 control 을 두지 않습니다. 다음 단계의 Presenter 가 붙을 자리만 만들어 뒀습니다.
+
+`presenter-notes.js` 에 화면별 대본(`script` / `cue` / `caution`)과 목표 시간이 **고정 ID 로** 들어 있습니다.
+강의 목표 시간은 34화면 합계 약 76분 + Network Demo 2분입니다.
+강의 화면(`index.html`)은 이 파일을 불러오지 않습니다 — Presenter 가 붙을 때 그대로 쓰면 됩니다.
 
 ```js
 window.lectureCommand('OPEN_NETWORK')       // real-network 화면의 demo.url 로 나간다

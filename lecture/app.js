@@ -407,10 +407,10 @@ window.addEventListener('hashchange', () => {
    강의 화면에는 강사용 control 을 노출하지 않는다.
    다음 단계의 Presenter 가 아래 명령을 보내면 여기서 처리한다.
 
-     OPEN_NETWORK      real-network 화면의 demo.url 로 나간다
-                       (실제 Dashboard 주소가 정해지면 screens.js 의 demo.url 만 채우면 된다)
+     OPEN_NETWORK      real-network 화면의 demo.url(https://repo.mrdion.kim)로 나간다
      RETURN_FROM_DEMO  demo.returnTo — 즉 closing 화면으로 돌아온다
 
+   강의자용 대본과 목표 시간은 presenter-notes.js 에 고정 ID 로 들어 있다.
    BroadcastChannel / localStorage 동기화는 다음 단계에서 붙인다.
    ------------------------------------------------------------ */
 const LECTURE_COMMANDS = {

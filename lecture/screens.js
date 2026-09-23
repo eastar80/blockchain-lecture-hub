@@ -1282,7 +1282,7 @@ const SCREENS = [
     /* PDF p18 — Bitcoin 중심의 ‘공유된 장부’에서 ‘공유된 State’로 시야를 넓히는 환승 */
     id: 'ethereum-transition', number: 'L21', sourcePage: 18, section: 'F', type: 'concept', line: 'transfer',
     eyebrow: 'TRANSFER',
-    title: '기록만 적어야 할까?',
+    title: '이 장부에는 송금 기록만 적어야 할까?',
     body: [
       key('“이 장부에는 기록만 적어야 할까?”'),
       duo(
@@ -1618,10 +1618,10 @@ const SCREENS = [
       }),
       conclusion('같은 화면인데, 이제 각각이 어떤 질문에 답하는 것인지 보입니다')
     ].join(''),
-    /* Network Demo 연결 지점. 화면에는 버튼을 노출하지 않는다.
+    /* Network Demo 연결 지점. 화면에는 강사용 버튼을 노출하지 않는다.
        Presenter 가 OPEN_NETWORK 를 보내면 url 로 나가고, RETURN_FROM_DEMO 면 returnTo 로 돌아온다.
-       실제 Dashboard 주소가 정해지면 url 만 채우면 된다. */
-    demo: { name: 'network', url: 'https://repo.mrdion.kim', returnTo: 'closing' }
+       대본과 목표 시간은 presenter-notes.js 의 PRESENTER_MODES['network-demo'] 에 있다. */
+    demo: { id: 'network-demo', label: '실제 Network 보기', url: 'https://repo.mrdion.kim', returnTo: 'closing' }
   },
   {
     /* 신규 — 마지막 메시지. 요소를 더 넣지 않는다 */
