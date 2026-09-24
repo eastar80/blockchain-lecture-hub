@@ -172,8 +172,8 @@ const PRESENTER_NOTES = {
     number: 'L25',
     targetSeconds: 120,
     script: "그런데 방금 체험은 제 컴퓨터 한 대에서 실행한 프로그램일 뿐입니다.\n이게 왜 Ethereum일까요?\n\nEthereum에서는 네트워크가 이어갈 Block이 정해지고,\n그 Block 안에는 실행할 Transaction과 순서가 들어 있습니다.\n\n실행 Node들은 같은 규칙으로 그 Transaction들을 실행하고 검증합니다.\n그래서 같은 유효한 Chain을 따라가는 Node들은 같은 State Transition을 재구성할 수 있습니다.",
-    cue: "Consensus → Transaction 순서 → 여러 Node의 동일 규칙 실행 → 같은 State Transition 흐름을 보여준다.",
-    caution: "‘Node들이 State 값을 직접 합의한다’고 말하지 않는다."
+    cue: "Consensus → Transaction 순서 → 여러 Node의 동일 규칙 실행 → 같은 State Transition 흐름을 보여준다.\nEVM 이라는 용어는 여기서 쓰지 않는다 — L29 에서 처음 꺼낸다.",
+    caution: "‘Node들이 State 값을 직접 합의한다’고 말하지 않는다.\n‘같은 EVM 규칙’ 대신 ‘같은 실행 규칙’으로 말한다."
   },
   'world-computer': {
     number: 'L26',
@@ -198,8 +198,8 @@ const PRESENTER_NOTES = {
   'evm-boundary': {
     number: 'L29',
     targetSeconds: 60,
-    script: "여기까지 오니까 Ethereum 안쪽에 EVM이라는 용어가 하나 보입니다.\nEthereum Virtual Machine입니다.\n\n사실 이게 무엇인지 제대로 설명하기 시작하면 프로그램이 내부에서 어떤 형태로 바뀌는지,\n명령이 어떻게 실행되는지,\n메모리와 저장공간은 어떻게 다른지,\nGas는 왜 필요한지 같은 이야기로 들어가야 합니다.\n\n여기부터는 오늘 우리가 만들려고 했던 지하철 노선도를 조금 벗어나기 시작합니다.\n\n쉽게 설명하겠다고 여기까지 왔는데 어느새 역 내부의 배선도까지 들여다볼 지점에 온 셈입니다.\n그래서 오늘은 여기서 멈추겠습니다.\n\n앞으로 EVM이라는 말을 만나시면\n“Smart Contract가 실제로 실행되는 Ethereum의 조금 더 안쪽 구조에 관한 이야기구나.”\n정도만 기억해두시면 충분합니다.\n\n오늘 우리의 목적은 역 내부를 뜯어보는 것이 아니라 전체 노선이 어떻게 연결되는지를 보는 것이었습니다.\n이제 마지막으로 그 노선도를 한번 보겠습니다.",
-    cue: "EVM을 설명하려 하지 않는다. 30초~1분 이내로 끝내고 바로 전체 노선도로 돌아간다.",
+    script: "여기까지 오니까 Ethereum 안쪽에 EVM이라는 용어가 하나 보입니다.\nEthereum Virtual Machine입니다.\n\nSmart Contract가 실제로 실행되는, Ethereum의 조금 더 안쪽 구조에 관한 이야기입니다.\n\n이걸 제대로 설명하기 시작하면 오늘 우리가 만들려고 했던 지하철 노선도를 벗어나기 시작합니다.\n쉽게 설명하겠다고 여기까지 왔는데 어느새 역 내부의 배선도까지 들여다볼 지점에 온 셈입니다.\n\n그래서 오늘은 여기서 멈추겠습니다.\n\n앞으로 EVM이라는 말을 만나시면\n“Smart Contract가 실행되는 Ethereum의 더 안쪽 구조에 관한 이야기구나.”\n정도만 기억해두시면 충분합니다.\n\n오늘 우리의 목적은 역 내부를 뜯어보는 것이 아니라 전체 노선이 어떻게 연결되는지를 보는 것이었습니다.\n이제 마지막으로 그 노선도를 한번 보겠습니다.",
+    cue: "EVM 을 설명하려 하지 않는다. 이 화면의 역할은 설명이 아니라 경계 설정이다.\n30초~1분 이내로 끝내고 바로 전체 노선도로 돌아간다.",
     caution: "Opcode, PUSH/ADD, Stack, Bytecode, Memory/Storage, Gas 구조 등의 심화 설명으로 들어가지 않는다."
   },
   'two-lines-map': {
@@ -225,8 +225,8 @@ const PRESENTER_NOTES = {
   'real-network': {
     number: 'L33',
     targetSeconds: 90,
-    script: "그래서 저도 공부하면서 조금 더 큰 것을 하나 만들어봤습니다.\n\n강의 처음에 잠깐 보여드렸던 화면입니다.\n\n처음보다...\n뭐가 좀 보이시나요?\n\nNode가 있고,\nBlock이 계속 만들어지고,\nTransaction이 들어오고,\nValidator들이 네트워크를 유지하고 있습니다.\n\n오늘 따로 배웠던 개념들이 실제 하나의 시스템 안에서 움직이고 있습니다.",
-    cue: "질문 후 2~3초 기다린다. 필요하면 Presenter의 [실제 Network 보기] 버튼으로 Demo Mode에 들어간다."
+    script: "그래서 저도 공부하면서 조금 더 큰 것을 하나 만들어봤습니다.\n\n강의 처음에 잠깐 보여드렸던 화면입니다.\n\n처음보다...\n뭐가 좀 보이시나요?\n\nNode가 있고,\nChain이 이어지고 있고,\nTransaction이 들어오고,\n그 실행 결과가 State로 나타나고 있습니다.\n\n오늘 따로 배웠던 개념들이 실제 하나의 시스템 안에서 같이 움직이고 있습니다.",
+    cue: "질문 후 2~3초 기다린다.\n화면에 붙은 이름표(Node · Chain · Transaction · State)만 짚는다.\nBlock Height · Validator 는 Demo 화면에서 직접 보여줄 때 설명한다."
   },
   'closing': {
     number: 'L34',
