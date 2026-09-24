@@ -453,6 +453,35 @@
      ------------------------------------------------------------ */
   const LECTURE_ID_FORM = /^[A-Za-z][A-Za-z0-9-]{1,40}$/;
 
+  /* ------------------------------------------------------------
+     오늘의 체험 목록 — QR 로 직접 들어온 학생 화면에서만 보인다.
+
+     학생은 QR 을 한 번만 찍고, 그 화면에서 다섯 체험 사이를 직접 오간다.
+     Hash / Block / Chain / PoW 는 옆 도구(../index.html)로 돌아간다.
+     체험 내용 자체는 건드리지 않는다.
+     ------------------------------------------------------------ */
+  const PARTICIPANT_ITEMS = [
+    { href: "../index.html#hash",  label: "HASH",  note: "선택" },
+    { href: "../index.html#block", label: "BLOCK", note: "선택" },
+    { href: "../index.html#chain", label: "CHAIN", note: "선택" },
+    { href: "../index.html#pow",   label: "PoW",   note: "함께 참여", together: true },
+    { label: "STATE", note: "선택", here: true }
+  ];
+
+  function setupParticipantNav() {
+    const nav = $("#participantNav");
+    if (!nav) return;
+    document.body.classList.add("participant");
+    nav.innerHTML = PARTICIPANT_ITEMS.map((item) => {
+      const inside = `<strong>${item.label}</strong><em class="step-note">${item.together ? "★ " : ""}${item.note}</em>`;
+      const cls = `step available${item.together ? " together" : ""}${item.here ? " active" : ""}`;
+      return item.here
+        ? `<span class="${cls}" aria-current="step">${inside}</span>`
+        : `<a class="${cls}" href="${item.href}">${inside}</a>`;
+    }).join("");
+    nav.hidden = false;
+  }
+
   function connectPresenter(lecture) {
     if (typeof createLectureSync !== "function") return;   // 연결 스크립트가 없으면 그냥 지나간다
     const sync = createLectureSync((message) => {
@@ -473,8 +502,10 @@
     els.continueLectureButton.addEventListener("click", () => goToLecture(lecture.returnTo));
     connectPresenter(lecture);
   } else {
+    /* 강의를 거치지 않고 들어온 학생 화면 */
     els.returnLectureTop.classList.add("hidden");
     els.continueLectureButton.classList.add("hidden");
+    setupParticipantNav();
   }
 
   renderState();

@@ -105,9 +105,22 @@ Ethereum 체험만 별도 모듈이다 — `experience/world-computer/index.html
 
 Ethereum 체험만 별도 모듈(`experience/world-computer/`)이고 나머지 넷은 한 도구의 STEP 1~4 입니다.
 
-체험 진입은 화면의 버튼 하나로 합니다. QR 은 쓰지 않습니다.
-`lecture/qr/*.svg` 에 사전 생성한 QR 이 남아 있으니 다시 쓰려면 `app.js` 의 체험 CTA 에 되살리면 됩니다.
-(배포 도메인이 바뀌면 QR 은 다시 만들어야 합니다.)
+### 학생은 QR 을 한 번만 찍는다
+
+학생용 QR 은 **첫 체험 화면(L06)에 한 번만** 둡니다.
+
+```
+lecture/qr/experience.svg  →  https://blockchain.mrdion.kim/experience/#hash
+```
+
+주소는 배포 도메인(`CNAME`)의 학생용 체험 페이지입니다. `screens.js` 의 `SITE_ORIGIN` 에 있습니다.
+배포 도메인이 바뀌면 그 값과 QR 파일을 함께 다시 만들어야 합니다.
+
+- L07 · L09 · L14 · L23 에서는 QR 을 다시 띄우지 않습니다. 이미 열어둔 체험 페이지를
+  가리키는 한 줄(`joinedHint`)만 둡니다.
+- 다섯 체험 중 **PoW 만 다 같이** 합니다. 나머지는 강사가 프로젝터에서 시연하고
+  학생 완료를 기다리지 않습니다.
+- 강사용 체험 진입(화면 버튼 · Presenter Action)은 그대로입니다. 학생 QR 과 별개입니다.
 
 ## 조작
 

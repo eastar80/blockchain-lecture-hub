@@ -1324,3 +1324,105 @@ textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37, 99
   .return-back,
   .return-next { padding: 9px 12px; font-size: .84rem; }
 }
+
+/* ============================================================
+   학생 화면 — QR 로 직접 들어왔을 때 (participant)
+
+   번호 대신 오늘 쓸 체험 목록으로 보여준다.
+   다섯 개를 같은 무게로 두되, 함께 참여하는 PoW 만 눈에 띄게 한다.
+   ============================================================ */
+body.participant .learning-path {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+body.participant .step {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 11px 16px;
+  border-radius: 14px;
+  text-decoration: none;
+}
+
+body.participant .step strong {
+  color: var(--ink);
+  font-size: .95rem;
+  font-weight: 800;
+}
+
+body.participant .step-note {
+  color: #8792a4;
+  font-size: .72rem;
+  font-style: normal;
+  font-weight: 700;
+}
+
+body.participant .step.together {
+  border-color: #a9c5ff;
+  background: var(--primary-soft);
+}
+
+body.participant .step.together .step-note { color: var(--primary); font-weight: 800; }
+body.participant .step.active { border-color: var(--primary); }
+
+/* 휴대폰에서는 두 줄로 */
+@media (max-width: 720px) {
+  body.participant .learning-path { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  body.participant .step { padding: 9px 12px; }
+  body.participant .step strong { font-size: .88rem; }
+}
+
+/* ------------------------------------------------------------
+   SIDE QUEST — 강의 본편과 상관없는 옆길
+
+   다섯 체험보다 한 단계 낮은 무게로 둔다.
+   배너도, 애니메이션도, NEW 표시도 쓰지 않는다.
+   ------------------------------------------------------------ */
+/* class 선택자가 브라우저 기본 [hidden] 보다 세다. 숨김을 명시해 둔다 */
+.side-quest[hidden] { display: none; }
+
+.side-quest {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--line);
+}
+
+.side-quest-tag {
+  margin: 0;
+  color: #8792a4;
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .12em;
+}
+
+.side-quest-copy {
+  flex: 1 1 260px;
+  margin: 0;
+  color: var(--muted);
+  font-size: .86rem;
+  line-height: 1.55;
+}
+
+.side-quest-link {
+  padding: 7px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .72);
+  color: #546176;
+  font-size: .82rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.side-quest-link:hover { border-color: #b9c9e4; background: #fff; color: var(--ink); }
+.side-quest-link:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+
+@media (max-width: 720px) {
+  .side-quest { gap: 6px 12px; margin-top: 20px; }
+  .side-quest-copy { flex-basis: 100%; font-size: .82rem; }
+}

@@ -223,8 +223,8 @@ function renderStage(screen) {
   if (screen.kicker) parts.push(`<p class="stage-kicker">${screen.kicker}</p>`);
   if (screen.body) parts.push(`<div class="stage-body">${screen.body}</div>`);
 
-  /* 체험 진입 — 강의 화면에서 버튼을 눌러 바로 들어간다.
-     QR 은 쓰지 않는다(SVG 는 lecture/qr/ 에 남겨 뒀다). */
+  /* 체험 진입 — 강의 화면에서 버튼을 눌러 바로 들어간다. 강사용 경로다.
+     학생용 QR 은 L06 화면 본문에 한 번만 둔다(screens.js 의 studentQr). */
   if (screen.experience) {
     const url = experienceUrl(screen);
     parts.push(`
