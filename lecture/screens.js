@@ -1420,7 +1420,7 @@ const SCREENS = [
                  <p class="node-note">실행 노드는 Block 에 정해진 순서대로 실행</p>`
         },
         {
-          tag: '③ EVM 실행·검증',
+          tag: '③ 같은 실행 규칙으로 실행·검증',
           tone: 'check',
           html: nodes([
             { name: 'A', state: '✓', tone: 'ok' },
@@ -1428,7 +1428,7 @@ const SCREENS = [
             { name: 'C', state: '✓', tone: 'ok' },
             { name: 'D', state: '✓', tone: 'ok' }
           ]) + `<p class="transition-line">남은 티켓 / 판매량<br /><strong>2 / 0 → 1 / 1</strong></p>
-                <p class="node-note">같은 EVM 규칙으로 실행하고 State Transition 을 검증</p>`
+                <p class="node-note">각 Node 가 같은 실행 규칙으로 Transaction 을 실행하고 State Transition 을 검증</p>`
         },
         {
           tag: '④ Ethereum State',
@@ -1437,7 +1437,8 @@ const SCREENS = [
                 + `<p class="node-note">같은 유효한 Chain 을 따르는 노드는 같은 State 를 이어간다</p>`
         }
       ], { row: true }),
-      conclusion('합의된 Block·Tx 순서 + 공통 EVM 규칙 &nbsp;→&nbsp; 같은 State Transition &nbsp;→&nbsp; 같은 Ethereum State')
+      /* EVM 이라는 이름은 L29 에서 처음 나온다. 여기서는 ‘같은 실행 규칙’ 까지만 말한다 */
+      conclusion('합의된 Block·Transaction 순서 + 공통 실행 규칙 &nbsp;→&nbsp; 같은 State Transition &nbsp;→&nbsp; 같은 Ethereum State')
     ].join('')
   },
   {
@@ -1529,10 +1530,11 @@ const SCREENS = [
         layers: [
           { title: 'DApp',           desc: '사용자가 보는 화면' },
           { title: 'Smart Contract', desc: '실행되는 Program' },
-          { title: 'EVM',            desc: 'Ethereum Virtual Machine · Program 이 실행되는 환경', tone: 'primary' }
+          /* EVM 을 정의하지 않는다. 여기부터가 안쪽이라는 표시만 한다 */
+          { title: 'EVM',            desc: 'Ethereum Virtual Machine · Smart Contract 실행과 관련된 Ethereum 의 더 안쪽 구조', tone: 'primary' }
         ],
         edgeLabel: '오늘 강의의 경계',
-        beyond: 'Ethereum 의 더 안쪽 구조'
+        beyond: '오늘 강의에서 다루지 않는 영역'
       }),
       conclusion('오늘은 여기까지만 보겠습니다.'),
       sub('여기부터는 ‘노선도’보다 역 내부 구조에 가까운 이야기입니다.')
