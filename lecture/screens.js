@@ -788,37 +788,52 @@ const presenterCard = ({ name, role, tags, points }) => `
   </div>`;
 
 /**
- * NetworkPreview — 실제로 돌아가는 분산원장 화면(repo.mrdion.kim).
+ * NetworkPreview — 실제로 돌아가고 있는 분산원장 화면(dlt.mrdion.kim/lecture).
  *
  * 실제 Dashboard 의 구성을 그대로 옮겨 그린다.
- *   상단 현황 5칸 · 최근 거래 표 · 체인 시각
+ *   LIVE DISTRIBUTED LEDGER · Hyperledger Besu · Consensus/Validators/Quorum
+ *   큰 BLOCK HEIGHT · 최근 5개 블록이 이어진 모습 · 마지막 블록의 Hash/Parent/Tx
  * 캡처 이미지 대신 화면으로 그리는 이유는 프로젝터에서 글자가 살아 있어야 하기 때문이다.
+ * 실시간 조회(RPC)는 하지 않는다. 아래 숫자는 멈춰 있는 한 장면이다.
  * L02(강의 처음)와 L33(강의 끝)이 같은 화면을 써야 회수가 된다. 두 곳 모두 이 helper 를 쓴다.
  * 숫자를 바꾸려면 아래 NETWORK_SNAPSHOT 하나만 고치면 두 화면에 함께 반영된다.
+ * blocks 는 오래된 것 → 최신 순이고, 각 블록의 parent 는 바로 앞 블록의 hash 다.
+ * 그 연결이 L33 에서 ‘Chain’ 을 짚는 자리이므로 값을 바꿀 때도 이 관계는 지킨다.
  */
 const NETWORK_SNAPSHOT = {
-  url: 'repo.mrdion.kim',
-  title: 'Phase 2 · Repo Settlement Dashboard',
-  badge: 'PoC · 조회 전용',
-  clock: '체인 시각 2026-09-23 22:59:32 KST',
-  stats: [
-    { k: '전체 거래',    v: '8' },
-    { k: '운용 중',      v: '1', s: 'ACTIVE' },
-    { k: '만기 처리 중', v: '0', s: 'MATURITY_PENDING' },
-    { k: '종료',         v: '7', s: 'CLOSED' },
-    { k: '조치 필요',    v: '0', s: 'OPEN attention' }
+  url: 'dlt.mrdion.kim/lecture',
+  title: 'LIVE DISTRIBUTED LEDGER',
+  engine: 'Hyperledger Besu',
+  meta: [
+    { k: 'Consensus',  v: 'QBFT' },
+    { k: 'Validators', v: '4' },
+    { k: 'Quorum',     v: '3' }
   ],
-  deals: [
-    { id: 'RP-REV-0001',  who: 'KSF → PD-A', cash: '100,000', back: '100,500', due: '2026-09-28', state: 'ACTIVE' },
-    { id: 'RP-OCI-0007',  who: 'KSF → PD-A', cash: '100,000', back: '100,500', due: '2026-09-15', state: 'CLOSED' },
-    { id: 'RP-OCI-0006',  who: 'KSF → PD-A', cash: '100,000', back: '100,500', due: '2026-09-15', state: 'CLOSED' }
+  heightLabel: 'BLOCK HEIGHT',
+  height: '128,944',
+  /* 가장 오래된 블록의 parent. 화면 밖(앞쪽)으로 이어진다는 표시다 */
+  parentOfFirst: '0x3f8c21a9…7d41',
+  blocks: [
+    { n: '128,940', hash: '0x9a4e01c7…b8f2', tx: '0' },
+    { n: '128,941', hash: '0x51d7bb30…2c6a', tx: '0' },
+    { n: '128,942', hash: '0xc08f4e12…9d33', tx: '0' },
+    { n: '128,943', hash: '0x2b61a7d4…ef08', tx: '0' },
+    { n: '128,944', hash: '0x7e3309b5…41ac', tx: '0' }
   ]
 };
+
+/* 블록마다 parent 를 앞 블록 hash 에서 끌어온다. 두 값을 따로 적어두면 어긋날 수 있다 */
+const NETWORK_BLOCKS = NETWORK_SNAPSHOT.blocks.map((b, i) => ({
+  ...b,
+  parent: i ? NETWORK_SNAPSHOT.blocks[i - 1].hash : NETWORK_SNAPSHOT.parentOfFirst,
+  latest: i === NETWORK_SNAPSHOT.blocks.length - 1
+}));
+const NETWORK_LATEST = NETWORK_BLOCKS[NETWORK_BLOCKS.length - 1];
 
 const networkPreview = ({ tag, callouts = [], foot }) => `
   <figure class="np">
     ${tag ? `<figcaption class="np-tag">${tag}</figcaption>` : ''}
-    <div class="np-shot" role="img" aria-label="${NETWORK_SNAPSHOT.title} 화면 — 거래 현황과 최근 거래 목록">
+    <div class="np-shot" role="img" aria-label="${NETWORK_SNAPSHOT.title} 화면 — 블록 높이 ${NETWORK_SNAPSHOT.height} 와 최근 블록 ${NETWORK_BLOCKS.length}개가 이어진 모습">
       <div class="np-bar">
         <span class="np-dots" aria-hidden="true"></span>
         <span class="np-url">${NETWORK_SNAPSHOT.url}</span>
@@ -826,29 +841,32 @@ const networkPreview = ({ tag, callouts = [], foot }) => `
       <div class="np-page">
         <div class="np-head">
           <p class="np-title">${NETWORK_SNAPSHOT.title}</p>
-          <p class="np-badge">${NETWORK_SNAPSHOT.badge}</p>
-          <p class="np-clock">${NETWORK_SNAPSHOT.clock}</p>
+          <p class="np-badge">${NETWORK_SNAPSHOT.engine}</p>
+          <ul class="np-meta">
+            ${NETWORK_SNAPSHOT.meta.map(m => `
+              <li><span class="np-k">${m.k}</span><strong class="np-v">${m.v}</strong></li>`).join('')}
+          </ul>
         </div>
-        <ul class="np-stats">
-          ${NETWORK_SNAPSHOT.stats.map(c => `
-            <li><span class="np-k">${c.k}</span><strong class="np-v">${c.v}</strong>${c.s ? `<em class="np-s">${c.s}</em>` : ''}</li>`).join('')}
-        </ul>
-        <table class="np-table">
-          <thead>
-            <tr><th>거래</th><th>Seller → Buyer</th><th>개시 현금</th><th>환매금액</th><th>만기</th><th>상태</th></tr>
-          </thead>
-          <tbody>
-            ${NETWORK_SNAPSHOT.deals.map(d => `
-              <tr>
-                <td class="np-id">${d.id}</td>
-                <td>${d.who}</td>
-                <td class="np-num">${d.cash}</td>
-                <td class="np-num">${d.back}</td>
-                <td>${d.due}</td>
-                <td><span class="np-state np-state-${d.state.toLowerCase()}">${d.state}</span></td>
-              </tr>`).join('')}
-          </tbody>
-        </table>
+
+        <div class="np-height">
+          <p class="np-height-k">${NETWORK_SNAPSHOT.heightLabel}</p>
+          <p class="np-height-v">${NETWORK_SNAPSHOT.height}</p>
+        </div>
+
+        <ol class="np-chain">
+          ${NETWORK_BLOCKS.map(b => `
+            <li class="np-block${b.latest ? ' np-block-latest' : ''}">
+              <span class="np-block-n">#${b.n}</span>
+              <span class="np-block-h">${b.hash}</span>
+              <span class="np-block-p">parent ${b.parent}</span>
+            </li>`).join('')}
+        </ol>
+
+        <dl class="np-latest">
+          <div><dt>Hash</dt><dd>${NETWORK_LATEST.hash}</dd></div>
+          <div><dt>Parent</dt><dd>${NETWORK_LATEST.parent}</dd></div>
+          <div><dt>Tx</dt><dd>${NETWORK_LATEST.tx}</dd></div>
+        </dl>
       </div>
     </div>
     ${callouts.length ? `<ul class="np-callouts">${callouts.map(c => `<li><strong>${c.name}</strong><span>${c.desc}</span></li>`).join('')}</ul>` : ''}
@@ -1636,10 +1654,9 @@ const SCREENS = [
         /* 화면에 실제로 보이는 자리에만 이름을 붙인다.
            오늘 만든 두 노선의 단어가 그대로 하나씩 대응된다 */
         callouts: [
-          { name: 'Node · 참여자',      desc: 'KSF → PD-A · 같은 장부를 함께 보는 쪽' },
-          { name: 'Chain · 체인 시각',  desc: '기록이 여기까지 이어져 있다' },
-          { name: 'Transaction · 거래', desc: 'RP-… 실행을 요청한 Input' },
-          { name: 'State · 상태',       desc: 'ACTIVE / CLOSED · 실행 결과로 바뀐 상태' }
+          { name: 'Block · 블록',     desc: 'BLOCK HEIGHT · 기록이 여기까지 한 칸씩 쌓였다' },
+          { name: 'Chain · 체인',     desc: 'parent 가 바로 앞 블록의 Hash · 그래서 끊기지 않는다' },
+          { name: 'Consensus · 합의', desc: 'QBFT · Validator 4 중 3이 동의해야 한 칸이 늘어난다' }
         ]
       }),
       conclusion('같은 화면인데, 이제 각각이 어떤 질문에 답하는 것인지 보입니다')
@@ -1647,7 +1664,7 @@ const SCREENS = [
     /* Network Demo 연결 지점. 화면에는 강사용 버튼을 노출하지 않는다.
        Presenter 가 OPEN_NETWORK 를 보내면 url 로 나가고, RETURN_FROM_DEMO 면 returnTo 로 돌아온다.
        대본과 목표 시간은 presenter-notes.js 의 PRESENTER_MODES['network-demo'] 에 있다. */
-    demo: { id: 'network-demo', label: '실제 Network 보기', url: 'https://repo.mrdion.kim', returnTo: 'closing' }
+    demo: { id: 'network-demo', label: '실제 Network 보기', url: 'https://dlt.mrdion.kim/lecture', returnTo: 'closing' }
   },
   {
     /* 신규 — 마지막 메시지. 요소를 더 넣지 않는다 */

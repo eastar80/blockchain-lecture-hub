@@ -21,8 +21,8 @@ const PRESENTER_NOTES = {
   'why-me': {
     number: 'L02',
     targetSeconds: 90,
-    script: "본격적으로 시작하기 전에 제가 왜 오늘 이 이야기를 드리는지 잠깐 말씀드리겠습니다.\n\n저는 블록체인을 오랫동안 연구해온 학자나 블록체인 전문 개발자는 아닙니다.\n대신 금융회사에서 이 기술을 실제 업무로 접하고 있고, 공부하다 잘 이해되지 않는 부분은 직접 만들어보면서 확인해왔습니다.\n\nHash도 직접 계산해보고, Block과 Chain도 만들어보고, 여러 개의 Node를 띄워 실제 분산원장 네트워크도 운영해봤습니다.\n\n지금 보이는 화면이 그 네트워크입니다.\n지금은 조금 복잡해 보이실 수 있습니다.\n오늘 강의가 끝날 때쯤에는 이 화면에 있는 것들이 지금보다 훨씬 많이 보이실 겁니다.\n\n저도 이 길을 처음부터 잘 알았던 것은 아닙니다.\n대신 여러분보다 조금 먼저 직접 걸어봤습니다.\n오늘은 제가 처음 공부할 때 잘 연결되지 않았던 부분을 중심으로 길을 조금 덜 헤맬 수 있는 지도 하나를 같이 만들어보겠습니다.",
-    cue: "Dashboard 캡처를 5~10초 보여준다. 실제 Network Demo로 들어가지는 않는다.",
+    script: "본격적으로 시작하기 전에 제가 왜 오늘 이 이야기를 드리는지 잠깐 말씀드리겠습니다.\n\n저는 블록체인을 오랫동안 연구해온 학자나 블록체인 전문 개발자는 아닙니다.\n대신 금융회사에서 이 기술을 실제 업무로 접하고 있고, 공부하다 잘 이해되지 않는 부분은 직접 만들어보면서 확인해왔습니다.\n\nHash도 직접 계산해보고, Block과 Chain도 만들어보고, 여러 개의 Node를 띄워 실제 분산원장 네트워크도 운영해봤습니다.\n\n지금 보이는 화면이 그 네트워크입니다.\nBlock이 계속 쌓이고 있고, 그 Block들이 서로 이어져 있고, 네 개의 Validator가 합의로 그 순서를 정하고 있습니다.\n지금은 무슨 말인지 모르셔도 괜찮습니다. 이름만 한 번 듣고 지나가시면 됩니다.\n\n지금은 조금 복잡해 보이실 수 있습니다.\n오늘 강의가 끝날 때쯤에는 이 화면에 있는 것들이 지금보다 훨씬 많이 보이실 겁니다.\n\n저도 이 길을 처음부터 잘 알았던 것은 아닙니다.\n대신 여러분보다 조금 먼저 직접 걸어봤습니다.\n오늘은 제가 처음 공부할 때 잘 연결되지 않았던 부분을 중심으로 길을 조금 덜 헤맬 수 있는 지도 하나를 같이 만들어보겠습니다.",
+    cue: "Dashboard 화면을 5~10초 보여준다. 단어를 설명하지 말고 Block · Chain · Consensus 자리만 손으로 짚고 넘어간다.\n실제 Network Demo로 들어가지는 않는다.",
     caution: "‘전문가가 아닙니다’에 오래 머무르지 말고 현업 + 직접 구축 경험으로 빠르게 전환한다."
   },
   'simplify-first': {
@@ -225,8 +225,8 @@ const PRESENTER_NOTES = {
   'real-network': {
     number: 'L33',
     targetSeconds: 90,
-    script: "그래서 저도 공부하면서 조금 더 큰 것을 하나 만들어봤습니다.\n\n강의 처음에 잠깐 보여드렸던 화면입니다.\n\n처음보다...\n뭐가 좀 보이시나요?\n\nNode가 있고,\nChain이 이어지고 있고,\nTransaction이 들어오고,\n그 실행 결과가 State로 나타나고 있습니다.\n\n오늘 따로 배웠던 개념들이 실제 하나의 시스템 안에서 같이 움직이고 있습니다.",
-    cue: "질문 후 2~3초 기다린다.\n화면에 붙은 이름표(Node · Chain · Transaction · State)만 짚는다.\nBlock Height · Validator 는 Demo 화면에서 직접 보여줄 때 설명한다."
+    script: "그래서 저도 공부하면서 조금 더 큰 것을 하나 만들어봤습니다.\n\n강의 처음에 잠깐 보여드렸던 화면입니다.\n\n처음보다...\n뭐가 좀 보이시나요?\n\nBlock이 하나씩 쌓이고 있고,\n그 Block들이 parent로 이어져 Chain이 되고 있고,\n네 개의 Validator 중 셋이 동의해야 한 칸이 늘어나는 Consensus가 돌고 있습니다.\n\n오늘 따로 배웠던 개념들이 실제 하나의 시스템 안에서 같이 움직이고 있습니다.",
+    cue: "질문 후 2~3초 기다린다.\n화면에 붙은 이름표(Block · Chain · Consensus)만 짚는다.\n지금은 거래가 없어서 Block이 비어 있지만, Block은 계속 만들어지고 있습니다 — Tx 0 은 이 한 마디로만 넘긴다."
   },
   'closing': {
     number: 'L34',
@@ -245,8 +245,8 @@ const PRESENTER_MODES = {
     from: 'real-network',
     returnTo: 'closing',
     targetSeconds: 120,
-    script: "1. Node\n“먼저 Node입니다. 지금 네 개의 Node가 같은 네트워크에 참여하고 있습니다.”\n\n2. Block\n“그리고 Block이 계속 만들어지고 있습니다.”\n\n3. Block Height\n“이 숫자가 현재 Chain이 어디까지 이어졌는지를 보여줍니다.”\n\n4. Transaction\n“Transaction이 들어오면 Block에 포함됩니다.”\n\n5. Validator\n“이 네트워크에서는 Validator들이 Block 생성과 검증 과정에 참여합니다.”\n\n6. 회수\n“강의 앞부분에서는 따로따로 배웠는데 실제 시스템에서는 이 요소들이 이렇게 같이 움직입니다.”",
+    script: "1. Block Height\n“가장 큰 숫자부터 봅니다. 지금까지 Block이 이만큼 쌓였다는 뜻입니다. 잠시 보시면 이 숫자가 올라갑니다.”\n\n2. Block\n“최근에 만들어진 다섯 개의 Block입니다. 각각 자기 Hash를 하나씩 가지고 있습니다.”\n\n3. Chain\n“그리고 각 Block의 parent가 바로 앞 Block의 Hash입니다. 이렇게 손을 잡고 있어서 Chain입니다.”\n\n4. Consensus\n“이 네트워크는 QBFT로 돌아갑니다. Validator가 넷이고, 그중 셋이 동의해야 Block 하나가 확정됩니다.”\n\n5. Tx\n“지금은 거래가 없어서 Block이 비어 있습니다. 그래도 Block은 계속 만들어지고 있습니다.”\n\n6. 회수\n“강의 앞부분에서는 따로따로 배웠는데 실제 시스템에서는 이 요소들이 이렇게 같이 움직입니다.”",
     cue: "최대 2분. Demo 종료 후 closing으로 복귀한다.",
-    caution: "RP 업무, Token, DvP, Smart Contract 코드, 서버/Cloud 구조로 확장하지 않는다."
+    caution: "RP 업무, Token, DvP, Smart Contract 코드, 서버/Cloud 구조로 확장하지 않는다.\nTx 0 을 두고 ‘아직 쓸모가 없다’는 쪽으로 이야기가 흐르지 않게 한다."
   }
 };
