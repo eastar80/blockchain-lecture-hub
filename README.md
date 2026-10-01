@@ -14,7 +14,7 @@
 │                  presenter.html 은 강사용 제어화면(Presenter View)
 ├─ experience/     체험도구 — HASH → BLOCK → CHAIN → PoW
 │  └─ world-computer/   Ethereum · World Computer 체험 (별도 모듈)
-└─ materials/      강의자료 PDF (백업/보조)
+└─ materials/      lecture.pdf — 34화면 PDF (수강생 배포용 겸 강사 백업)
 ```
 
 ## 로컬에서 보기
