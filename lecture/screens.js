@@ -6,7 +6,7 @@
           (수강생 배포용 겸 강사 백업) 원본 교재 PDF 는 커밋 3456109 에 남아 있다.
    화면: L01 ~ L35
           원본 p14 / p16 / p17 / p20 은 가독성을 위해 2화면으로 나눴고,
-          L02(강사 포지셔닝)·L03(들어본 말들)·L33~L35(에필로그)는 원본에 없는 신규 화면이다.
+          L01(들어본 말들)·L03(강사 포지셔닝)·L33~L35(에필로그)는 원본에 없는 신규 화면이다.
           번호(number)는 아래 SCREENS 순서에서 자동으로 매긴다. 손으로 적지 않는다.
 
    각 화면 객체는 다음을 가진다.
@@ -968,6 +968,18 @@ const boundaryStack = ({ layers, edgeLabel, beyond }) => `
 const SCREENS = [
   /* ===== Section A. 도입 ===== */
   {
+    /* 신규 — 강의의 실제 첫 화면. 개념을 설명하거나 정리하는 화면이 아니다.
+       들어는 본 말들을 한 번 꺼내 보게 하는 자리이므로 정의도 정답도 여기서 꺼내지 않는다.
+       마지막 질문(‘왜 Block 이고 왜 Chain 일까?’)이 다음 화면 제목으로 그대로 이어진다 */
+    id: 'familiar-words', section: 'A', type: 'concept', concept: 'intro',
+    eyebrow: 'FAMILIAR WORDS',
+    title: '어디선가 한 번쯤 들어본 이야기들 …',
+    body: [
+      wordCloud(FAMILIAR_WORDS),
+      sub('지금 다 아실 필요는 없습니다. ‘들어는 봤다’ 정도면 충분합니다.')
+    ].join('')
+  },
+  {
     id: 'lecture-title', sourcePage: 1, section: 'A', type: 'title', concept: 'intro',
     eyebrow: 'BLOCKCHAIN LECTURE',
     title: '블록체인은 왜<br /><em class="accent-block">‘블록</em><em class="accent-chain">체인’</em>일까?',
@@ -977,7 +989,7 @@ const SCREENS = [
         { name: 'PREV ✓',  hash: '93B1…' },
         { name: 'PREV ✓',  hash: 'E04C…' }
       ]),
-      `<p class="s-title-sub">왜 Block 인가? &nbsp; 왜 Chain 인가? &nbsp; 왜 Distributed 인가?</p>`
+      `<p class="s-title-sub">왜 Block인가? &nbsp; 왜 Chain인가? &nbsp; 왜 여러 곳에 나눠 가질까?</p>`
     ].join('')
     /* 발표자 표기는 잠시 가려둔다. PDF v2.1 에서도 p1 에서 빠졌다.
        다시 띄우려면 아래 한 줄의 주석만 풀면 된다.
@@ -1011,17 +1023,6 @@ const SCREENS = [
     ].join('')
   },
   {
-    /* 신규 — 개념을 설명하는 화면이 아니다. 들어는 본 말들을 한 번 꺼내 보게 하는 도입 화면이다.
-       정의도 정답도 여기서 꺼내지 않는다. 바로 다음 화면에서 ‘단순하게 보자’로 넘어간다 */
-    id: 'familiar-words', section: 'A', type: 'concept', concept: 'intro',
-    eyebrow: 'FAMILIAR WORDS',
-    title: '어디선가 한 번쯤 들어본 이야기들 …',
-    body: [
-      wordCloud(FAMILIAR_WORDS),
-      sub('지금 다 아실 필요는 없습니다. ‘들어는 봤다’ 정도면 충분합니다.')
-    ].join('')
-  },
-  {
     id: 'simplify-first', sourcePage: 2, section: 'A', type: 'concept', concept: 'intro',
     eyebrow: 'INTRO',
     title: '오늘은 조금 단순하게 설명하겠습니다',
@@ -1033,7 +1034,7 @@ const SCREENS = [
         { tag: '실제 지도', title: '있는 그대로', note: '모든 것이 정확하다 · 그래서 복잡하다' },
         { tag: '지하철 노선도', title: '단순하게', note: '필요한 연결만 남긴다 · 그래도 목적지에는 도착한다' }
       ),
-      conclusion('오늘의 목표는 위성사진이 아니라 ‘블록체인 지하철 노선도’를 만드는 것입니다.')
+      conclusion('먼저, 이해하는 데 필요한 만큼 단순하게 보겠습니다.')
     ].join('')
   },
 
