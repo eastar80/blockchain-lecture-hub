@@ -405,17 +405,18 @@
   .num-answer { grid-column: auto; }
 }
 
-/* 5개 질문을 좌 → 우 로 늘어놓는 배치 */
+/* 질문을 좌 → 우 로 늘어놓는 배치.
+   칸 수는 항목 수가 정한다. 다섯을 셋으로 줄여도 가로를 다 쓰도록 auto-fit 으로 둔다 */
 @media (min-width: 1040px) {
-  .num-row { grid-template-columns: repeat(5, 1fr); }
+  .num-row { grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); }
   .num-row .num-item {
     grid-template-columns: auto;
     align-content: start;
     gap: 8px;
-    padding: 14px;
+    padding: clamp(14px, 1.8vh, 20px) clamp(14px, 1.3vw, 20px);
   }
-  .num-row .num-question { font-size: clamp(.92rem, 1.15vw, 1.05rem); }
-  .num-row .num-answer { grid-column: 1; font-size: .86rem; }
+  .num-row .num-question { font-size: clamp(.95rem, min(1.35vw, 2.2vh), 1.2rem); }
+  .num-row .num-answer { grid-column: 1; font-size: clamp(.86rem, min(1.1vw, 1.8vh), 1rem); }
 }
 
 /* ------------------------------------------------------------
@@ -3532,6 +3533,162 @@
   line-height: 1.55;
 }
 
+/* ---------- Hash 에서 본 것 (L08) ----------
+   체험이 보여준 성질을 네 칸으로만 늘어놓는다. 설명을 길게 쓰지 않는다.
+   ------------------------------------------------------------ */
+.obs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(8px, 1.2vh, 14px) clamp(10px, 1.4vw, 18px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.obs-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  column-gap: 10px;
+  row-gap: 2px;
+  padding: clamp(10px, 1.5vh, 16px) clamp(13px, 1.5vw, 20px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+
+.obs-num {
+  grid-row: span 2;
+  color: var(--primary);
+  font-size: clamp(1.1rem, min(1.7vw, 2.8vh), 1.5rem);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.obs-head {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(.98rem, min(1.45vw, 2.4vh), 1.25rem);
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.obs-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: clamp(.84rem, min(1.15vw, 1.9vh), 1rem);
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+/* ---------- 작은 대비 두 칸 (L17) ---------- */
+.mini-contrast {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mini-contrast li {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  padding: 6px 15px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+}
+
+.mc-k { color: var(--muted); font-size: .82rem; font-weight: 800; }
+.mc-v {
+  color: var(--primary-deep);
+  font-size: clamp(.92rem, min(1.3vw, 2.1vh), 1.1rem);
+  font-weight: 900;
+}
+
+/* ---------- 과거를 다시 쓰는 쪽 vs 계속 가는 쪽 (L22) ----------
+   두 줄을 같은 가로축에 두어야 ‘따라잡아야 한다’가 눈에 들어온다.
+   ------------------------------------------------------------ */
+.race { display: grid; gap: clamp(9px, 1.4vh, 16px); }
+
+.race-row {
+  display: grid;
+  gap: 6px;
+  padding: clamp(10px, 1.4vh, 15px) clamp(12px, 1.4vw, 18px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #fbfcfe;
+}
+
+.race-attack { border-color: #f0c9c6; background: linear-gradient(180deg, #fff, #fdf2f1); }
+.race-honest { border-color: #bfd3f8; background: linear-gradient(180deg, #fff, var(--primary-soft)); }
+
+.race-tag {
+  margin: 0;
+  color: var(--muted);
+  font-size: clamp(.78rem, min(1.05vw, 1.75vh), .92rem);
+  font-weight: 900;
+  letter-spacing: .04em;
+}
+
+.race-chain {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.race-block {
+  position: relative;
+  display: grid;
+  gap: 1px;
+  padding: clamp(7px, 1.1vh, 11px) clamp(9px, 1.1vw, 14px);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  text-align: center;
+}
+
+/* 칸 사이의 화살표가 ‘이어진다’를 만든다 */
+.race-block + .race-block::before {
+  content: '→';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: #9fb0c8;
+  font-size: .8rem;
+  font-weight: 900;
+}
+
+.race-name {
+  color: var(--ink);
+  font-size: clamp(.88rem, min(1.25vw, 2vh), 1.05rem);
+  font-weight: 900;
+}
+
+.race-note {
+  color: var(--muted);
+  font-size: clamp(.74rem, min(1vw, 1.65vh), .88rem);
+  font-weight: 700;
+}
+
+.race-block.is-changed { border-color: #e4867f; background: #fdeceb; }
+.race-block.is-changed .race-name,
+.race-block.is-changed .race-note { color: #c8352f; }
+
+.race-block.is-redo { border-color: #efcbc7; }
+.race-block.is-redo .race-note { color: #c8352f; }
+
+.race-block.is-new { border-color: var(--primary); }
+.race-block.is-new .race-note { color: var(--primary-deep); }
+
+.race-block.is-more { border-style: dashed; }
+
 /* ---------- 들어본 말들 (L03) ----------
 
    생각 조각이 떠 있는 느낌을 만든다. 줄을 맞추지 않는다.
@@ -3739,6 +3896,10 @@
 
 /* ---------- 모바일 ---------- */
 @media (max-width: 720px) {
+  .obs { grid-template-columns: 1fr; }
+  .race-chain { grid-template-columns: repeat(2, 1fr); }
+  .race-block + .race-block::before { content: none; }
+
   /* 좁은 화면에서는 흩어 놓을 자리가 없다. 흐름 배치로 바꾸고 배경 말은 뺀다 */
   .cloudfield {
     height: auto;
@@ -3775,6 +3936,9 @@
   .presenter { gap: 9px; padding: 12px 18px; }
   .presenter-points li { padding: 7px 13px; }
   .cloudfield { height: clamp(280px, 54vh, 520px); }
+  .obs-item { padding: 8px 13px; }
+  .race-row { padding: 8px 13px; }
+  .race-block { padding: 6px 10px; }
   .np-page { padding: 9px 11px 10px; gap: 7px; }
   .np-height { padding: 7px 13px; }
   .np-block { padding: 6px 9px; }

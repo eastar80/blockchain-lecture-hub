@@ -1,9 +1,9 @@
 # 강의 화면 (lecture/)
 
-최종 강의자료 `블록체인_강의자료_v2.1.pdf` 28페이지를 강의 진행용 **35개 HTML 화면**으로 재구성한 화면입니다.
+최종 강의자료 `블록체인_강의자료_v2.1.pdf` 28페이지를 강의 진행용 **37개 HTML 화면**으로 재구성한 화면입니다.
 PDF 복사본이 아니라 실제 강의를 진행하는 화면이며, 체험도구와 한 번의 조작으로 왕복합니다.
 
-`materials/lecture.pdf` 는 이 35화면을 그대로 담은 PDF 입니다.
+`materials/lecture.pdf` 는 이 37화면을 그대로 담은 PDF 입니다.
 수강생 배포용이자 강사 비상 백업이며, 사이트에서 여는 유일한 PDF 입니다.
 
 실제 Stage 를 `?preview=1` 로 띄워 한 문서로 인쇄한 것이라 **글자를 선택·검색할 수 있습니다.**
@@ -12,14 +12,14 @@ PDF 복사본이 아니라 실제 강의를 진행하는 화면이며, 체험도
 
 원본 교재 PDF(28쪽)는 커밋 `3456109` 에 남아 있습니다.
 
-원본에 없는 신규 화면이 다섯 있습니다 — L01(들어본 말들), L03(강사 포지셔닝), L33~L35(에필로그).
+원본에 없는 신규 화면이 일곱 있습니다 — L01(들어본 말들), L03(강사 포지셔닝), L08(Hash 회수), L22(과거 재작성), L35~L37(에필로그).
 
 ## 파일
 
 ```
 lecture/
 ├─ index.html    화면 셸 (진행 표시기 / 본문 / 하단 Navigation / 목차)
-├─ screens.js    35개 화면 콘텐츠 — 원본 문구의 단일 출처
+├─ screens.js    37개 화면 콘텐츠 — 원본 문구의 단일 출처
 ├─ presenter.html   강사용 제어화면 (Presenter View)
 ├─ presenter.css    Presenter 전용 레이아웃
 ├─ presenter.js     Presenter 로직 — 상태 · 미리보기 · 대본 · 시간
@@ -37,13 +37,13 @@ lecture/
 | 값 | 예 | 쓰는 곳 |
 |---|---|---|
 | `id` | `pow-challenge` | **고정 ID.** 화면 번호가 바뀌어도 그대로입니다. 체험 복귀·목차 이동·Presenter 연결은 전부 이 값 기준입니다. |
-| `number` | `L15` | 화면에 표시하고 주소로 쓰는 번호. 강의 중 "지금 몇 번" 을 말하기 위한 값입니다.<br />화면 객체에는 적지 않습니다. `screens.js` 끝에서 **순서대로 자동으로 매깁니다.** |
+| `number` | `L16` | 화면에 표시하고 주소로 쓰는 번호. 강의 중 "지금 몇 번" 을 말하기 위한 값입니다.<br />화면 객체에는 적지 않습니다. `screens.js` 끝에서 **순서대로 자동으로 매깁니다.** |
 
 내부 연결에 번호를 쓰지 않기 때문에, 화면을 중간에 끼워 넣어 번호가 밀려도
 체험 왕복과 목차가 깨지지 않습니다. (v2.2 에서 화면 4개가 늘었고 Ethereum 후반 순서가 바뀌었습니다.)
 
 ```js
-{ id: 'pow-challenge', … }        // number 는 순서에서 나온다 → L15
+{ id: 'pow-challenge', … }        // number 는 순서에서 나온다 → L16
 experience: { kind: 'pow', returnTo: 'pow-interpret', … }   // 번호가 아니라 고정 ID
 ```
 
@@ -52,15 +52,15 @@ experience: { kind: 'pow', returnTo: 'pow-interpret', … }   // 번호가 아�
 URL hash 가 현재 화면의 단일 출처입니다.
 
 ```
-lecture/index.html#/L15            화면 번호 — 평소 쓰는 주소
-lecture/index.html#/pow-challenge  고정 ID — 같은 화면을 열고 주소를 #/L15 로 정리한다
+lecture/index.html#/L16            화면 번호 — 평소 쓰는 주소
+lecture/index.html#/pow-challenge  고정 ID — 같은 화면을 열고 주소를 #/L16 로 정리한다
 ```
 
 - 화면이 바뀌면 주소의 hash 도 항상 함께 바뀝니다. 주소를 복사하거나 QR로 만들면 같은 위치로 다시 들어옵니다.
 - 새로고침 / URL 직접 접속 / QR 접속 모두 해당 화면으로 바로 진입합니다.
 - 허용되지 않은 ID(`#/L99` 등)는 `L01` 로 안전하게 되돌립니다.
 - 검증은 `SCREEN_INDEX` 한 곳에서만 합니다. 화면 목록에 없는 값은 어디서도 통과하지 못합니다.
-- `<html data-screen="L15" data-screen-id="pow-challenge">` 로 현재 화면을 노출합니다. (Presenter 연결용)
+- `<html data-screen="L16" data-screen-id="pow-challenge">` 로 현재 화면을 노출합니다. (Presenter 연결용)
 - `sessionStorage` 는 첫 화면의 `이어서 보기` 를 위한 **보조** 수단일 뿐이며, URL 을 덮어쓰지 않습니다.
 
 ## 강의 ↔ 체험 왕복
@@ -68,18 +68,18 @@ lecture/index.html#/pow-challenge  고정 ID — 같은 화면을 열고 주소�
 강의 화면은 다음 형태로 체험도구를 엽니다.
 
 ```
-experience/index.html?from=L07&return=L08#hash
+experience/index.html?from=L07&return=L09#hash
 ```
 
 | parameter | 뜻 |
 |---|---|
 | `#hash` | 실행할 체험 종류 (`hash` / `block` / `chain` / `pow`) |
-| 경로 | Ethereum 체험만 별도 모듈이다 — `experience/world-computer/index.html?from=L24&return=L25` (hash 없음) |
+| 경로 | Ethereum 체험만 별도 모듈이다 — `experience/world-computer/index.html?from=L26&return=L27` (hash 없음) |
 | `from` | 체험 직전 강의 화면 → 체험도구의 `← 강의로 돌아가기` |
 | `return` | 체험 후 이어서 진행할 강의 화면 → 체험도구의 `강의 계속하기 →` |
 
 - 복귀 위치의 기준값은 URL parameter 입니다.
-- `return` / `from` 은 `L01 ~ L35` 만 허용하며, 그 밖의 값(임의 URL 포함)은 무시합니다.
+- `return` / `from` 은 `L01 ~ L37` 만 허용하며, 그 밖의 값(임의 URL 포함)은 무시합니다.
 - `return` 이 없으면 체험도구 상단바를 표시하지 않습니다. (체험도구에 직접 접속한 경우)
 - `from` 이 없으면 `return` 바로 앞 화면으로 보정합니다.
 
@@ -87,11 +87,11 @@ experience/index.html?from=L07&return=L08#hash
 
 | 진입 화면 | 체험 | 복귀 화면 |
 |---|---|---|
-| L07 `hash-question` Hash — 기록의 지문 | `hash` | L08 `block` |
-| L08 `block` 왜 Block 일까? | `block` | L09 `chain` |
-| L10 `tamper` 하나를 바꾸면? | `chain` | L11 `centralized-chain` |
-| L15 `pow-challenge` ‘00’ 을 먼저 찾아라 | `pow` | L16 `pow-interpret` |
-| L24 `state-experience` 실습 ③ 디지털 티켓 판매기 | `world-computer` (별도 모듈) | L25 `state-interpret` |
+| L07 `hash-question` Hash — 기록의 지문 | `hash` | L08 `hash-meaning` |
+| L09 `block` 왜 Block 일까? | `block` | L10 `chain` |
+| L11 `tamper` 하나를 바꾸면? | `chain` | L12 `centralized-chain` |
+| L16 `pow-challenge` ‘00’ 을 먼저 찾아라 | `pow` | L17 `pow-interpret` |
+| L26 `state-experience` 실습 ③ 디지털 티켓 판매기 | `world-computer` (별도 모듈) | L27 `state-interpret` |
 
 Ethereum 체험만 별도 모듈(`experience/world-computer/`)이고 나머지 넷은 한 도구의 STEP 1~4 입니다.
 
@@ -106,7 +106,7 @@ lecture/qr/experience.svg  →  https://blockchain.mrdion.kim/experience/#hash
 주소는 배포 도메인(`CNAME`)의 학생용 체험 페이지입니다. `screens.js` 의 `SITE_ORIGIN` 에 있습니다.
 배포 도메인이 바뀌면 그 값과 QR 파일을 함께 다시 만들어야 합니다.
 
-- L08 · L10 · L15 · L24 에서는 QR 을 다시 띄우지 않습니다. 이미 열어둔 체험 페이지를
+- L09 · L11 · L16 · L26 에서는 QR 을 다시 띄우지 않습니다. 이미 열어둔 체험 페이지를
   가리키는 한 줄(`joinedHint`)만 둡니다.
 - 다섯 체험 중 **PoW 만 다 같이** 합니다. 나머지는 강사가 프로젝터에서 시연하고
   학생 완료를 기다리지 않습니다.
@@ -132,35 +132,37 @@ lecture/qr/experience.svg  →  https://blockchain.mrdion.kim/experience/#hash
 | L04 | `simplify-first` | 2 | 도입 | 오늘은 조금 단순하게 설명하겠습니다 | intro |  | 다음 |
 | L05 | `ledger-trust` | 3 | 장부에 대한 믿음 | 장부에 대한 믿음은 어디에서 오는가? | intro |  | 다음 |
 | L06 | `no-central-authority` | 4 | 장부에 대한 믿음 | “이게 공식 장부입니다”라고 말할 수 있는 신뢰있는 존재가 없다면? | intro |  | 다음 |
-| L07 | `hash-question` | 5 | Hash → Block → Chain | Hash — 기록의 지문 | 1 |  | **hash 체험** → block 복귀 |
-| L08 | `block` | 6 | Hash → Block → Chain | 왜 Block 일까? | 1 | ○ | **block 체험** → chain 복귀 |
-| L09 | `chain` | 7 | Hash → Block → Chain | 왜 Chain 일까? | 1 | ○ | 다음 |
-| L10 | `tamper` | 8 | Hash → Block → Chain | 하나를 바꾸면? | 1 |  | **chain 체험** → centralized-chain 복귀 |
-| L11 | `centralized-chain` | 9 | Hash → Block → Chain | 그런데 여기까지만이라면? | 1 | ○ | 다음 |
-| L12 | `distributed-vs-servers` | 10 | Distributed Ledger → Consensus | 서버가 여러 대면 분산원장일까? | 1 |  | 다음 |
-| L13 | `consensus-question` | 11 | Distributed Ledger → Consensus | 장부가 서로 다르면? | 1 |  | 다음 |
-| L14 | `consensus-methods` | 12 | Distributed Ledger → Consensus | Consensus 에는 여러 방법이 있습니다 | 1 |  | 다음 |
-| L15 | `pow-challenge` | 13 | Proof of Work | ‘00’ 을 먼저 찾아라 | 1 |  | **pow 체험** → pow-interpret 복귀 |
-| L16 | `pow-interpret` | 14 | Proof of Work | 방금 ‘어려운 수학문제’를 풀었을까? | 1 | ○ | 다음 |
-| L17 | `pow-repeat` | 14 | Proof of Work | 조건을 만족할 때까지 반복해서 시도한다 | 1 |  | 다음 |
-| L18 | `pow-proposal` | 15 | Proof of Work | 그래서 먼저 찾으면 무엇을 하나? | 1 |  | 다음 |
-| L19 | `pow-verification` | 16 | Proof of Work | 제안했다고 끝이 아니다 | 1 |  | 다음 |
-| L20 | `pow-ledger-commit` | 16 | Proof of Work | 제안 ≠ 인정 | 1 |  | 다음 |
-| L21 | `ledger-line-recap` | 17 | 첫 번째 노선 회수 · 환승 | 장부에 대한 믿음은 어디에서 올까? | 1 |  | 다음 |
-| L22 | `ethereum-transition` | 18 | 첫 번째 노선 회수 · 환승 | 기록만 적어야 할까? | transfer |  | 다음 |
-| L23 | `state-model` | 19 | Ethereum · World Computer | 컴퓨터가 하는 일을 아주 단순하게 보면 | 2 |  | 다음 |
-| L24 | `state-experience` | 20 | Ethereum · World Computer | 실습 ③ 디지털 티켓 판매기 | 2 |  | **world-computer 체험** → state-interpret 복귀 |
-| L25 | `state-interpret` | 21 | Ethereum · World Computer | 방금 무엇이 실행되었을까? | 2 | ○ | 다음 |
-| L26 | `multi-node-execution` | 22 | Ethereum · World Computer | 한 컴퓨터에서 여러 노드로 | 2 |  | 다음 |
-| L27 | `world-computer` | 23 | Ethereum · World Computer | 그래서 World Computer | 2 |  | 다음 |
-| L28 | `smart-contract-name` | 25 | Ethereum · World Computer | 방금 본 것이 Smart Contract 입니다 | 2 |  | 다음 |
-| L29 | `dapp-reveal` | 26 | Ethereum · World Computer | 그렇다면 DApp 은? | 2 |  | 다음 |
-| L30 | `evm-boundary` | 24 | Ethereum · World Computer | 여기서 지도를 조금 더 확대하면… | 2 |  | 다음 |
-| L31 | `two-lines-map` | 27 | 두 개의 노선도 | 오늘 만든 두 개의 블록체인 노선도 | both |  | 다음 |
-| L32 | `blockchain-close` | 28 | 두 개의 노선도 | 오늘 만든 것은 블록체인의 ‘지하철 노선도’입니다 | both |  | 다음 |
-| L33 | `learning-to-building` | — | 에필로그 · 배우고, 해보고, 다시 배우기 | From Learning to Building | epilogue |  | 다음 |
-| L34 | `real-network` | — | 에필로그 · 배우고, 해보고, 다시 배우기 | 처음보다 뭐가 좀 보이시나요? | epilogue | ○ | 다음 |
-| L35 | `closing` | — | 에필로그 · 배우고, 해보고, 다시 배우기 | 완벽히 이해할 때까지 기다리지는 마세요. | epilogue |  | 강의 홈 / 처음부터 |
+| L07 | `hash-question` | 5 | Hash → Block → Chain | Hash — 기록의 지문 | 1 |  | **hash 체험** → hash-meaning 복귀 |
+| L08 | `hash-meaning` | — | Hash → Block → Chain | 방금 Hash에서 무엇을 본 걸까? | 1 | ○ | 다음 |
+| L09 | `block` | 6 | Hash → Block → Chain | 왜 Block 일까? | 1 | ○ | **block 체험** → chain 복귀 |
+| L10 | `chain` | 7 | Hash → Block → Chain | 왜 Chain 일까? | 1 | ○ | 다음 |
+| L11 | `tamper` | 8 | Hash → Block → Chain | 하나를 바꾸면? | 1 |  | **chain 체험** → centralized-chain 복귀 |
+| L12 | `centralized-chain` | 9 | Hash → Block → Chain | 그런데 여기까지만이라면? | 1 | ○ | 다음 |
+| L13 | `distributed-vs-servers` | 10 | Distributed Ledger → Consensus | 서버가 여러 대면 분산원장일까? | 1 |  | 다음 |
+| L14 | `consensus-question` | 11 | Distributed Ledger → Consensus | 장부가 서로 다르면? | 1 |  | 다음 |
+| L15 | `consensus-methods` | 12 | Distributed Ledger → Consensus | Consensus 에는 여러 방법이 있습니다 | 1 |  | 다음 |
+| L16 | `pow-challenge` | 13 | Proof of Work | ‘00’ 을 먼저 찾아라 | 1 |  | **pow 체험** → pow-interpret 복귀 |
+| L17 | `pow-interpret` | 14 | Proof of Work | 방금 ‘어려운 수학문제’를 풀었을까? | 1 | ○ | 다음 |
+| L18 | `pow-repeat` | 14 | Proof of Work | 조건을 만족할 때까지 반복해서 시도한다 | 1 |  | 다음 |
+| L19 | `pow-proposal` | 15 | Proof of Work | 그래서 먼저 찾으면 무엇을 하나? | 1 |  | 다음 |
+| L20 | `pow-verification` | 16 | Proof of Work | 제안했다고 끝이 아니다 | 1 |  | 다음 |
+| L21 | `pow-ledger-commit` | 16 | Proof of Work | 제안 ≠ 인정 | 1 |  | 다음 |
+| L22 | `pow-chain-security` | — | Proof of Work | 그렇다면 과거 Block 을 바꾸려면? | 1 |  | 다음 |
+| L23 | `ledger-line-recap` | 17 | 첫 번째 노선 회수 · 환승 | 장부에 대한 믿음은 어디에서 올까? | 1 |  | 다음 |
+| L24 | `ethereum-transition` | 18 | 첫 번째 노선 회수 · 환승 | 기록만 적어야 할까? | transfer |  | 다음 |
+| L25 | `state-model` | 19 | Ethereum · World Computer | 컴퓨터가 하는 일을 아주 단순하게 보면 | 2 |  | 다음 |
+| L26 | `state-experience` | 20 | Ethereum · World Computer | 실습 ③ 디지털 티켓 판매기 | 2 |  | **world-computer 체험** → state-interpret 복귀 |
+| L27 | `state-interpret` | 21 | Ethereum · World Computer | 방금 무엇이 실행되었을까? | 2 | ○ | 다음 |
+| L28 | `multi-node-execution` | 22 | Ethereum · World Computer | 한 컴퓨터에서 여러 노드로 | 2 |  | 다음 |
+| L29 | `world-computer` | 23 | Ethereum · World Computer | 그래서 World Computer | 2 |  | 다음 |
+| L30 | `smart-contract-name` | 25 | Ethereum · World Computer | 방금 본 것이 Smart Contract 입니다 | 2 |  | 다음 |
+| L31 | `dapp-reveal` | 26 | Ethereum · World Computer | 그렇다면 DApp 은? | 2 |  | 다음 |
+| L32 | `evm-boundary` | 24 | Ethereum · World Computer | 여기서 지도를 조금 더 확대하면… | 2 |  | 다음 |
+| L33 | `two-lines-map` | 27 | 두 개의 노선도 | 오늘 만든 두 개의 블록체인 노선도 | both |  | 다음 |
+| L34 | `blockchain-close` | 28 | 두 개의 노선도 | 오늘 만든 것은 블록체인의 ‘지하철 노선도’입니다 | both |  | 다음 |
+| L35 | `learning-to-building` | — | 에필로그 · 배우고, 해보고, 다시 배우기 | From Learning to Building | epilogue |  | 다음 |
+| L36 | `real-network` | — | 에필로그 · 배우고, 해보고, 다시 배우기 | 처음보다 뭐가 좀 보이시나요? | epilogue | ○ | 다음 |
+| L37 | `closing` | — | 에필로그 · 배우고, 해보고, 다시 배우기 | 완벽히 이해할 때까지 기다리지는 마세요. | epilogue |  | 강의 홈 / 처음부터 |
 
 ## 원본 페이지 ↔ 화면 대응
 
@@ -173,32 +175,32 @@ lecture/qr/experience.svg  →  https://blockchain.mrdion.kim/experience/#hash
 | 3 | L05 |
 | 4 | L06 |
 | 5 | L07 |
-| 6 | L08 |
-| 7 | L09 |
-| 8 | L10 |
-| 9 | L11 |
-| 10 | L12 |
-| 11 | L13 |
-| 12 | L14 |
-| 13 | L15 |
-| 14 | L16, L17 |
-| 15 | L18 |
-| 16 | L19, L20 |
-| 17 | L21 |
-| 18 | L22 |
-| 19 | L23 |
-| 20 | L24 |
-| 21 | L25 |
-| 22 | L26 |
-| 23 | L27 |
-| 24 | L30 |
-| 25 | L28 |
-| 26 | L29 |
-| 27 | L31 |
-| 28 | L32 |
-| — (신규) | L01, L03, L33, L34, L35 |
+| 6 | L09 |
+| 7 | L10 |
+| 8 | L11 |
+| 9 | L12 |
+| 10 | L13 |
+| 11 | L14 |
+| 12 | L15 |
+| 13 | L16 |
+| 14 | L17, L18 |
+| 15 | L19 |
+| 16 | L20, L21 |
+| 17 | L23 |
+| 18 | L24 |
+| 19 | L25 |
+| 20 | L26 |
+| 21 | L27 |
+| 22 | L28 |
+| 23 | L29 |
+| 24 | L32 |
+| 25 | L30 |
+| 26 | L31 |
+| 27 | L33 |
+| 28 | L34 |
+| — (신규) | L01, L03, L08, L22, L35, L36, L37 |
 
-p24(EVM)은 v2.2 에서 화면 위치가 L30 로 내려갔습니다.
+p24(EVM)은 v2.2 에서 화면 위치가 L32 로 내려갔습니다.
 World Computer → Smart Contract → DApp 을 먼저 지나고 마지막에 EVM 경계를 긋습니다.
 
 ## 설명 구조 표현 요소
@@ -208,31 +210,31 @@ World Computer → Smart Contract → DApp 을 먼저 지나고 마지막에 EVM
 | helper | 쓰는 곳 | 표현하는 관계 |
 |---|---|---|
 | `conclusion` | 원본 하단 결론 | 결론을 작은 note 가 아니라 본문급으로 |
-| `bridge`(화면 필드) | L08 · L09 · L11 · L16 · L25 · L34 | 체험 직후 `방금 한 일` 회수 |
-| `recall` | L04 · L17 · L20 · L30 | 앞 화면 맥락 회수 |
-| `nextHint` | L19 · L21 | 다음 화면 질문 예고 |
-| `converge` | L16 | 두 갈래 → 하나의 결과 |
-| `loopFlow` | L17 | 조건을 만족할 때까지 되돌아가는 반복 |
-| `causalFlow` + `checkList` | L19 | 입력 → 검사 → 결과 |
-| `ledgerCopies` | L20 | 같은 Block 이 각자의 장부에 |
-| `routeWithRoles` | L06 · L21 · L31 | 개념을 잇는 노선 + 각 역의 역할 |
-| `treeOrg` / `meshOrg` / `orgCompare` | L12 | 중앙 트리 ↔ 분산 네트워크 |
-| `gather` | L08 | 흩어진 거래가 Block 안으로 |
-| `branchTree` | L14 | 상위 개념 → 하위 방식 |
-| `sharedNodes` | L06 · L23 | 노드들이 같은 것을 공유 |
-| `changeTrail` | L10 | 변경이 어디까지 번지는가 |
+| `bridge`(화면 필드) | L09 · L10 · L12 · L17 · L27 · L36 | 체험 직후 `방금 한 일` 회수 |
+| `recall` | L04 · L18 · L21 · L32 | 앞 화면 맥락 회수 |
+| `nextHint` | L20 · L23 | 다음 화면 질문 예고 |
+| `converge` | L17 | 두 갈래 → 하나의 결과 |
+| `loopFlow` | L18 | 조건을 만족할 때까지 되돌아가는 반복 |
+| `causalFlow` + `checkList` | L20 | 입력 → 검사 → 결과 |
+| `ledgerCopies` | L21 | 같은 Block 이 각자의 장부에 |
+| `routeWithRoles` | L06 · L23 · L33 | 개념을 잇는 노선 + 각 역의 역할 |
+| `treeOrg` / `meshOrg` / `orgCompare` | L13 | 중앙 트리 ↔ 분산 네트워크 |
+| `gather` | L09 | 흩어진 거래가 Block 안으로 |
+| `branchTree` | L15 | 상위 개념 → 하위 방식 |
+| `sharedNodes` | L06 · L25 | 노드들이 같은 것을 공유 |
+| `changeTrail` | L11 | 변경이 어디까지 번지는가 |
 | `mapCompare` | L04 | 같은 역을 실제 지도 ↔ 노선도로 두 번 그려 대비 |
 | `simplifyExample` | L04 | ‘단순화란 무엇인가’를 여는 예시와 되묻는 질문 |
-| `closingMessage` | L32 | 키워드 나열과 당부를 한 흐름으로 |
+| `closingMessage` | L34 | 키워드 나열과 당부를 한 흐름으로 |
 | `presenterCard` | L02 | 누가 이 이야기를 하는가 |
-| `networkPreview` | L02 · L34 | 실제 분산원장 화면 — 처음에 보여주고 마지막에 회수 |
-| `toolThumbs` | L33 | 오늘 쓴 체험도구를 한눈에 |
-| `cycleFlow` | L33 | 배운다 → 해본다 → 막힌다 → 다시 배운다 |
-| `boundaryStack` | L30 | 층을 쌓다가 오늘 강의의 경계에서 멈춘다 |
+| `networkPreview` | L02 · L36 | 실제 분산원장 화면 — 처음에 보여주고 마지막에 회수 |
+| `toolThumbs` | L35 | 오늘 쓴 체험도구를 한눈에 |
+| `cycleFlow` | L35 | 배운다 → 해본다 → 막힌다 → 다시 배운다 |
+| `boundaryStack` | L32 | 층을 쌓다가 오늘 강의의 경계에서 멈춘다 |
 
 `networkPreview` 는 실제 Dashboard(`repo.mrdion.kim` · Phase 2 Repo Settlement Dashboard)의 구성을
 그대로 옮겨 그립니다. 캡처 이미지가 아니라 화면으로 그리는 이유는 프로젝터에서 글자가 살아 있어야 하기 때문입니다.
-표시 값(거래 수·최근 거래 줄)은 `screens.js` 의 `NETWORK_SNAPSHOT` 한 곳에 있고, 고치면 L02·L34 에 함께 반영됩니다.
+표시 값(거래 수·최근 거래 줄)은 `screens.js` 의 `NETWORK_SNAPSHOT` 한 곳에 있고, 고치면 L02·L36 에 함께 반영됩니다.
 
 ## Presenter View — 강사용 제어화면
 
@@ -268,7 +270,7 @@ Stage 가 새 창으로 열립니다. 그 창을 프로젝터로 옮기고 전�
 | `→` / `Space` | 다음 |
 | `←` | 이전 |
 | `G` | 목차 |
-| `N` | 실제 Network 보기 (L34 에서만) |
+| `N` | 실제 Network 보기 (L36 에서만) |
 | `Esc` | 목차 닫기 |
 
 체험 시작에는 단축키를 두지 않았습니다. 강의 중 실수로 열리면 안 되기 때문입니다.
@@ -332,7 +334,7 @@ window.lectureCommand('RETURN_FROM_DEMO')   // demo.returnTo — closing 화면�
 프로젝터를 1순위로 본다. 큰 글자는 화면 폭과 **높이**를 함께 보고(`min(vw, vh)`),
 낮은 해상도에서는 여백만 줄인다. 콘텐츠는 줄이지 않는다.
 
-| 해상도 | 35개 화면 중 세로 스크롤이 생기는 화면 |
+| 해상도 | 37개 화면 중 세로 스크롤이 생기는 화면 |
 |---|---|
 | 1920×1080 | 0개 |
 | 1366×768 | 0개 |
