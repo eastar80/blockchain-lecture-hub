@@ -12,7 +12,7 @@ PDF 복사본이 아니라 실제 강의를 진행하는 화면이며, 체험도
 
 원본 교재 PDF(28쪽)는 커밋 `3456109` 에 남아 있습니다.
 
-원본에 없는 신규 화면이 다섯 있습니다 — L02(강사 포지셔닝), L03(들어본 말들), L33~L35(에필로그).
+원본에 없는 신규 화면이 다섯 있습니다 — L01(들어본 말들), L03(강사 포지셔닝), L33~L35(에필로그).
 
 ## 파일
 
@@ -126,9 +126,9 @@ lecture/qr/experience.svg  →  https://blockchain.mrdion.kim/experience/#hash
 
 | 화면 | 고정 ID | 원본 | Section | 제목 | 노선 | Bridge | 주요 Action |
 |---|---|---:|---|---|---|:-:|---|
-| L01 | `lecture-title` | 1 | 도입 | 블록체인은 왜 ‘블록 체인’ 일까? | intro |  | 다음 |
-| L02 | `why-me` | — | 도입 | 제가 오늘 이 이야기를 드리는 이유 | intro |  | 다음 |
-| L03 | `familiar-words` | — | 도입 | 어디선가 한 번쯤 들어본 이야기들 … | intro |  | 다음 |
+| L01 | `familiar-words` | — | 도입 | 어디선가 한 번쯤 들어본 이야기들 … | intro |  | 다음 |
+| L02 | `lecture-title` | 1 | 도입 | 블록체인은 왜 ‘블록 체인’ 일까? | intro |  | 다음 |
+| L03 | `why-me` | — | 도입 | 제가 오늘 이 이야기를 드리는 이유 | intro |  | 다음 |
 | L04 | `simplify-first` | 2 | 도입 | 오늘은 조금 단순하게 설명하겠습니다 | intro |  | 다음 |
 | L05 | `ledger-trust` | 3 | 장부에 대한 믿음 | 장부에 대한 믿음은 어디에서 오는가? | intro |  | 다음 |
 | L06 | `no-central-authority` | 4 | 장부에 대한 믿음 | “이게 공식 장부입니다”라고 말할 수 있는 신뢰있는 존재가 없다면? | intro |  | 다음 |
@@ -168,7 +168,7 @@ lecture/qr/experience.svg  →  https://blockchain.mrdion.kim/experience/#hash
 
 | 원본 페이지 | 화면 |
 |---:|---|
-| 1 | L01 |
+| 1 | L02 |
 | 2 | L04 |
 | 3 | L05 |
 | 4 | L06 |
@@ -196,7 +196,7 @@ lecture/qr/experience.svg  →  https://blockchain.mrdion.kim/experience/#hash
 | 26 | L29 |
 | 27 | L31 |
 | 28 | L32 |
-| — (신규) | L02, L03, L33, L34, L35 |
+| — (신규) | L01, L03, L33, L34, L35 |
 
 p24(EVM)은 v2.2 에서 화면 위치가 L30 로 내려갔습니다.
 World Computer → Smart Contract → DApp 을 먼저 지나고 마지막에 EVM 경계를 긋습니다.
