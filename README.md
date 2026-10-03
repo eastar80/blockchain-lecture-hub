@@ -10,11 +10,11 @@
 ├─ index.html      강의 허브 Home
 ├─ shared.css      공통 디자인 토큰 (Home / Lecture / Experience 공용)
 ├─ home.css        Home 전용 레이아웃
-├─ lecture/        강의 화면 — 최종 강의자료를 34개 화면으로 재구성
+├─ lecture/        강의 화면 — 최종 강의자료를 35개 화면으로 재구성
 │                  presenter.html 은 강사용 제어화면(Presenter View)
 ├─ experience/     체험도구 — HASH → BLOCK → CHAIN → PoW
 │  └─ world-computer/   Ethereum · World Computer 체험 (별도 모듈)
-└─ materials/      lecture.pdf — 34화면 PDF (수강생 배포용 겸 강사 백업)
+└─ materials/      lecture.pdf — 35화면 PDF (수강생 배포용 겸 강사 백업)
 ```
 
 ## 로컬에서 보기

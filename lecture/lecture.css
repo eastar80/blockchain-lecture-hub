@@ -3532,6 +3532,87 @@
   line-height: 1.55;
 }
 
+/* ---------- 들어본 말들 (L03) ----------
+
+   생각 조각이 떠 있는 느낌을 만든다. 줄을 맞추지 않는다.
+   자리는 screens.js 가 --x / --y 로 넘긴다. 여기서는 무게와 색만 정한다.
+   글자 뒤의 흐린 덩어리는 ::before 로 그린다. 이미지가 아니라서 프로젝터에서 번지지 않는다.
+   ------------------------------------------------------------ */
+.cloudfield {
+  position: relative;
+  isolation: isolate;           /* 덩어리(z-index:-1)가 화면 배경 뒤로 빠지지 않게 가둔다 */
+  width: 100%;
+  height: clamp(300px, 56vh, 545px);
+  margin: 4px 0 0;
+}
+
+.cw {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  transform: translate(-50%, -50%);
+  display: grid;
+  justify-items: center;
+  gap: 1px;
+  text-align: center;
+  line-height: 1.14;
+  /* 줄은 screens.js 의 <br> 로만 나눈다. 자동 줄바꿈을 두면 폭이 없는 칸에서 세로로 쪼개진다 */
+  white-space: nowrap;
+
+  --tone: #6b7789;
+  --blob: rgba(148, 163, 184, .16);
+}
+
+/* 생각구름 */
+.cw::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -38% -20%;
+  border-radius: 52% 48% 56% 44% / 50% 56% 44% 50%;
+  background: var(--blob);
+  filter: blur(13px);
+}
+
+.cw-main { color: var(--tone); font-weight: 900; }
+.cw-sub  { color: var(--tone); font-style: normal; font-weight: 700; opacity: .72; }
+.cw-note { color: var(--tone); font-style: normal; font-weight: 800; }
+
+/* 네 단계의 무게. 겹칠 때 또렷한 쪽이 위로 오게 쌓는다 */
+.cw-ghost { z-index: 0; }
+.cw-faint { z-index: 1; }
+.cw-mid   { z-index: 2; }
+.cw-lead  { z-index: 3; }
+
+.cw-lead .cw-main { font-size: clamp(1.45rem, min(2.7vw, 4.4vh), 2.6rem); }
+.cw-lead .cw-sub  { font-size: clamp(.82rem, min(1.2vw, 2vh), 1.05rem); }
+.cw-lead .cw-note { font-size: clamp(.86rem, min(1.35vw, 2.2vh), 1.15rem); margin-top: 2px; }
+
+/* 오늘 가장 많이 들어봤을 말 하나만 더 크게 */
+.cw-hero .cw-main { font-size: clamp(2rem, min(3.9vw, 6.2vh), 3.5rem); }
+.cw-hero .cw-sub  { font-size: clamp(.95rem, min(1.5vw, 2.5vh), 1.3rem); }
+
+.cw-mid .cw-main { font-size: clamp(1rem, min(1.65vw, 2.7vh), 1.55rem); }
+.cw-mid .cw-sub  { font-size: clamp(.74rem, min(1.05vw, 1.75vh), .92rem); }
+
+.cw-faint { --tone: #8c98ab; --blob: rgba(148, 163, 184, .13); }
+.cw-faint .cw-main { font-size: clamp(.8rem, min(1.15vw, 1.9vh), 1.02rem); font-weight: 800; }
+.cw-faint .cw-sub  { font-size: clamp(.68rem, min(.95vw, 1.6vh), .84rem); }
+
+/* 오늘의 중심이 아닌 말. 있는지도 모를 정도로만 둔다 */
+.cw-ghost { --tone: #c3ccda; --blob: rgba(148, 163, 184, .07); }
+.cw-ghost .cw-main { font-size: clamp(.76rem, min(1.05vw, 1.7vh), .95rem); font-weight: 800; }
+
+.cw-blue   { --tone: var(--primary-deep); --blob: rgba(37, 99, 235, .13); }
+.cw-purple { --tone: #5b3fd1;             --blob: rgba(124, 92, 231, .16); }
+.cw-red    { --tone: #c8352f;             --blob: rgba(226, 92, 86, .16); }
+.cw-green  { --tone: #0b7d5a;             --blob: rgba(15, 159, 114, .14); }
+.cw-amber  { --tone: #a05a0a;             --blob: rgba(217, 138, 24, .15); }
+
+/* 흐린 말에는 색을 거의 남기지 않는다 */
+.cw-faint.cw-amber { --tone: #a98457; }
+.cw-faint.cw-green { --tone: #6f9e8e; }
+
 /* ---------- 체험도구 thumbnail ---------- */
 .thumbs { display: grid; gap: 7px; }
 
@@ -3658,6 +3739,23 @@
 
 /* ---------- 모바일 ---------- */
 @media (max-width: 720px) {
+  /* 좁은 화면에서는 흩어 놓을 자리가 없다. 흐름 배치로 바꾸고 배경 말은 뺀다 */
+  .cloudfield {
+    height: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px 16px;
+    padding: 14px 8px;
+    overflow: hidden;   /* 덩어리가 글자 밖으로 나가 가로 스크롤을 만들지 않게 */
+  }
+  /* 흐름 배치로 바뀌어도 덩어리는 글자에 붙어 있어야 한다.
+     static 으로 두면 ::before 가 cloudfield 전체를 덮는다 */
+  .cw { position: relative; left: auto; top: auto; transform: none; }
+  .cw::before { inset: -22% -14%; filter: blur(9px); }
+  .cw-ghost { display: none; }
+
   .np-chain { grid-template-columns: repeat(2, 1fr); }
   .np-block + .np-block::before { content: none; }
   .np-latest { grid-template-columns: 1fr; }
@@ -3676,6 +3774,7 @@
 @media (min-width: 900px) and (max-height: 900px) {
   .presenter { gap: 9px; padding: 12px 18px; }
   .presenter-points li { padding: 7px 13px; }
+  .cloudfield { height: clamp(280px, 54vh, 520px); }
   .np-page { padding: 9px 11px 10px; gap: 7px; }
   .np-height { padding: 7px 13px; }
   .np-block { padding: 6px 9px; }
