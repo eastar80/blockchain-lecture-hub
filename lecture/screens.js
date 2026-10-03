@@ -2,11 +2,12 @@
    lecture/screens.js — 강의 화면 콘텐츠 단일 출처
 
    원본: 블록체인_강의자료_v2.1 (28페이지)
-          이 저장소의 materials/lecture.pdf 는 이제 아래 35화면을 그대로 뽑은 PDF 다.
+          이 저장소의 materials/lecture.pdf 는 이제 아래 37화면을 그대로 뽑은 PDF 다.
           (수강생 배포용 겸 강사 백업) 원본 교재 PDF 는 커밋 3456109 에 남아 있다.
-   화면: L01 ~ L35
+   화면: L01 ~ L37
           원본 p14 / p16 / p17 / p20 은 가독성을 위해 2화면으로 나눴고,
-          L01(들어본 말들)·L03(강사 포지셔닝)·L33~L35(에필로그)는 원본에 없는 신규 화면이다.
+          L01(들어본 말들)·L03(강사 포지셔닝)·L08(Hash 회수)·L22(과거 재작성)·L35~L37(에필로그)는
+          원본에 없는 신규 화면이다.
           번호(number)는 아래 SCREENS 순서에서 자동으로 매긴다. 손으로 적지 않는다.
 
    각 화면 객체는 다음을 가진다.
@@ -76,7 +77,7 @@ const LINES = [
 const TRANSFER_LABEL = '환승 · 공유된 장부 → 공유된 State';
 
 /* ------------------------------------------------------------
-   목차 Section — 35개를 한 번에 나열하지 않고 9개 Section 을 먼저 보여준다
+   목차 Section — 37개를 한 번에 나열하지 않고 9개 Section 을 먼저 보여준다
    범위(from/to)는 파일 끝에서 화면에서 뽑는다
    ------------------------------------------------------------ */
 const SECTIONS = [
@@ -770,7 +771,7 @@ const subwayMap = () => `
   </div>`;
 
 /* ------------------------------------------------------------
-   35개 화면
+   37개 화면
    ------------------------------------------------------------ */
 /* ------------------------------------------------------------
    도입 · 에필로그 helper
@@ -933,6 +934,46 @@ const wordCloud = items => `
       </span>`).join('')}
   </div>`;
 
+/**
+ * Observations — 체험에서 ‘본 것’을 네 칸으로 늘어놓는다.
+ * 설명을 길게 쓰지 않는다. 왼쪽은 관찰, 오른쪽은 그래서 무엇인지 한 줄.
+ */
+const observations = items => `
+  <ol class="obs">
+    ${items.map((o, i) => `
+      <li class="obs-item">
+        <span class="obs-num" aria-hidden="true">${'①②③④⑤⑥'[i]}</span>
+        <p class="obs-head">${o.head}</p>
+        <p class="obs-note">${o.note}</p>
+      </li>`).join('')}
+  </ol>`;
+
+/** 작은 대비 두 칸. 문장을 늘리지 않고 차이만 보이게 한다 */
+const miniContrast = (left, right) => `
+  <ul class="mini-contrast">
+    <li><span class="mc-k">${left.k}</span><strong class="mc-v">${left.v}</strong></li>
+    <li><span class="mc-k">${right.k}</span><strong class="mc-v">${right.v}</strong></li>
+  </ul>`;
+
+/**
+ * RewriteRace — 과거를 다시 쓰는 쪽과 계속 앞으로 가는 쪽을 위아래로 둔다.
+ * 두 줄을 같은 가로축에 그려야 ‘따라잡아야 한다’가 눈에 들어온다.
+ */
+const rewriteRace = ({ attack, honest }) => `
+  <div class="race">
+    ${[attack, honest].map(row => `
+      <div class="race-row race-${row.kind}">
+        <p class="race-tag">${row.tag}</p>
+        <ol class="race-chain">
+          ${row.blocks.map(b => `
+            <li class="race-block${b.tone ? ` is-${b.tone}` : ''}">
+              <span class="race-name">${b.name}</span>
+              ${b.note ? `<span class="race-note">${b.note}</span>` : ''}
+            </li>`).join('')}
+        </ol>
+      </div>`).join('')}
+  </div>`;
+
 /** 오늘 쓴 체험도구를 작게 늘어놓는다 */
 const toolThumbs = (tag, items) => `
   <div class="thumbs">
@@ -1061,23 +1102,14 @@ const SCREENS = [
     eyebrow: 'ROADMAP',
     title: '“이게 공식 장부입니다”라고 말할 수 있는 신뢰있는 존재가 없다면?',
     body: [
-      lead('아래 다섯 가지 질문에 대한 답이 필요합니다'),
+      lead('크게 세 가지 문제가 생깁니다'),
+      /* 기술 다섯 개를 동급으로 늘어놓지 않는다. 각 기술이 어떤 문제에 답하는지로 묶는다.
+         세 묶음 자체가 구조를 설명하므로 아래에 요약 문장을 더 붙이지 않는다 */
       numberedCards([
-        { num: 1, question: '기록이 바뀌지는 않았는가?',                  answer: 'Hash' },
-        { num: 2, question: '기록을 어떻게 묶을까?',                      answer: 'Block' },
-        { num: 3, question: '과거와 현재를 어떻게 연결할까?',             answer: 'Chain' },
-        { num: 4, question: '여러 참여자가 같은 장부를 어떻게 공유할까?', answer: 'Distributed Ledger' },
-        { num: 5, question: '서로 다르면 무엇을 진짜라고 할까?',          answer: 'Consensus' }
-      ], 'row'),
-      /* 다섯 질문이 곧 오늘의 노선이라는 것을 노선 모양으로 보여준다 */
-      routeWithRoles([
-        { name: 'Hash',               role: '① 변경 확인' },
-        { name: 'Block',              role: '② 묶기' },
-        { name: 'Chain',              role: '③ 연결' },
-        { name: 'Distributed Ledger', role: '④ 공유' },
-        { name: 'Consensus',          role: '⑤ 인정' }
-      ]),
-      conclusion('한 사람이 공식 장부를 결정하지 못한다면, 이 다섯 가지 질문을 차례로 풀어야 한다.')
+        { num: 1, question: '기록이 바뀌었는지 어떻게 알까?',                          answer: 'Hash' },
+        { num: 2, question: '수많은 기록을 어떻게 하나의 역사로 남길까?',               answer: 'Block + Chain' },
+        { num: 3, question: '여러 참여자가 서로 다른 기록을 가지고 있다면 무엇을 인정할까?', answer: 'Distributed Ledger + Consensus' }
+      ], 'row')
     ].join('')
   },
 
@@ -1099,14 +1131,33 @@ const SCREENS = [
       studentQr('QR 은 지금 한 번만', ['오늘 사용할 체험을 한 곳에서 자유롭게 이용할 수 있습니다.'])
     ].join(''),
     note: 'Hash는 암호화(숨기기)가 아니라 변경을 쉽게 확인하기 위한 도구',
-    experience: { kind: 'hash', returnTo: 'block', label: 'Hash 직접 체험하기' }
+    experience: { kind: 'hash', returnTo: 'hash-meaning', label: 'Hash 직접 체험하기' }
+  },
+  {
+    /* 신규 — Hash 체험에서 본 것을 회수하는 화면. 체험이 보여준 성질을 강의 본편이 받는다.
+       ④ 한 방향성은 여기서 끝내지 않고 PoW(pow-interpret)에서 다시 꺼낸다 */
+    id: 'hash-meaning', section: 'C', type: 'concept', concept: 'hash',
+    eyebrow: 'HASH',
+    title: '방금 Hash에서 무엇을 본 걸까?',
+    bridge: { tag: '방금 한 일', text: '입력을 바꿔 가며 Hash 를 직접 계산해 봤습니다. 거기서 성질 네 가지가 보입니다.' },
+    body: [
+      observations([
+        { head: '어떤 길이의 입력도 → 정해진 길이', note: 'SHA-256 은 결과를 256bit 로 만든다' },
+        { head: '같은 입력 → 같은 Hash',            note: '다시 계산해서 비교할 수 있다' },
+        { head: '조금만 달라져도 → 크게 다른 Hash',  note: '작은 변경을 알아차리기 쉽다' },
+        { head: '입력 → Hash &nbsp;/&nbsp; Hash → 입력?', note: '앞으로 계산은 쉽지만, 결과에서 원래 입력을 거꾸로 찾기는 현실적으로 어렵다' }
+      ]),
+      /* 이 강의 전체를 관통하는 구분이다. ‘진짜인가’와 ‘바뀌었는가’를 섞지 않는다 */
+      conclusion('Hash 는 기록이 ‘진짜인지’를 알려주지는 않는다. 대신 기록이 ‘바뀌었는지’를 확인하게 해준다.'),
+      nextHint('이 한 방향성은 조금 뒤 PoW 에서 다시 사용합니다.')
+    ].join('')
   },
   {
     id: 'block', sourcePage: 6, section: 'C', type: 'experience-entry', concept: 'block',
     eyebrow: 'BLOCK',
     title: '왜 Block 일까?',
     /* Hash 체험 직후 복귀 화면 */
-    bridge: { tag: '방금 확인한 것', text: '데이터가 바뀌면 Hash도 달라집니다. 그렇다면 여러 기록은 어떤 단위로 다룰까요?' },
+    bridge: { tag: '방금 한 일', text: '하나의 입력에 Hash 를 만들었습니다. 이번에는 여러 기록을 하나의 묶음으로 다뤄봅니다.' },
     body: [
       /* 카드 2개 비교가 아니라 거래가 Block 안으로 ‘들어가는’ 구조로 보여준다 */
       gather({
@@ -1116,7 +1167,7 @@ const SCREENS = [
         blockName: 'BLOCK',
         blockHash: 'Hash: 8F3A…'
       }),
-      conclusion('여러 기록을 일정한 단위로 묶는다'),
+      conclusion('여러 기록을 하나의 단위로 묶고, 그 묶음 전체에 하나의 Hash 를 만든다'),
       joinedHint('궁금하신 분은 <strong>BLOCK</strong> 을 눌러 같이 보셔도 됩니다.')
     ].join(''),
     experience: { kind: 'block', returnTo: 'chain', label: 'Block 직접 체험하기' }
@@ -1133,7 +1184,7 @@ const SCREENS = [
         { name: 'BLOCK 2', prev: 'A72F…', txs: ['E → F : 20만원'],   hash: '93B1…' },
         { name: 'BLOCK 3', prev: '93B1…', txs: ['G → H : 3만원'],    hash: 'E04C…' }
       ], { size: 'lg' }),
-      conclusion('같은 값 → 앞뒤가 연결된다')
+      conclusion('각 Block 이 이전 Block 의 Hash 를 기억한다 → Block 들이 순서 있는 기록의 역사가 된다')
     ].join(''),
     note: '다음 Block이 이전 Block의 Hash를 기억한다'
   },
@@ -1272,6 +1323,8 @@ const SCREENS = [
     bridge: { tag: '방금 한 일', text: '숫자 변경 → Hash 계산 → 조건 확인 → 실패하면 다시. 이것을 반복했습니다.' },
     body: [
       conclusion('어려운 방정식을 푼 것이 아니라, 조건을 만족하는 값이 나올 때까지 반복해서 계산한 것이다'),
+      /* 방금 교실에서 일어난 일(한 사람이 찾고 → 모두가 같은 값을 넣어 확인)을 두 칸으로만 회수한다 */
+      miniContrast({ k: '찾기', v: '많은 시도' }, { k: '검증', v: '한 번 계산' }),
       duo(
         { tag: 'A', title: '초당 10회',        lines: ['1초에 시도하는 Hash 계산 횟수'], tone: 'neutral' },
         { tag: 'B', title: '초당 1,000,000회', lines: ['1초에 시도하는 Hash 계산 횟수'], tone: 'primary' },
@@ -1294,6 +1347,7 @@ const SCREENS = [
         noLabel: '아니오 · 숫자를 바꿔 다시',
         yes: '성공'
       }),
+      sub('원하는 Hash 를 역으로 계산하는 것이 아니라, 많은 후보를 반복해서 시도한다'),
       conclusion('컴퓨팅 파워는 어려운 공식을 푸는 힘이 아니라, 같은 계산을 더 많이 반복하는 능력이다')
     ].join(''),
     note: '실제 Bitcoin에서는 ‘00’의 개수가 아니라 Hash가 Target보다 작은지를 판단'
@@ -1367,6 +1421,40 @@ const SCREENS = [
     ].join('')
   },
 
+  {
+    /* 신규 — tamper 에서 남겨둔 질문(“뒤를 다시 계산하면 되지 않나?”)에 이제 답한다.
+       PoW 하나로 조작이 불가능해진다고 말하지 않는다. 51% 같은 심화로도 넓히지 않는다 */
+    id: 'pow-chain-security', section: 'E', type: 'concept', concept: 'pow',
+    eyebrow: 'PROOF OF WORK',
+    title: '그렇다면 과거 Block 을 바꾸려면?',
+    body: [
+      /* L11 tamper 에서 일부러 남겨둔 질문을 여기서 받는다 */
+      recall('Chain 에서 남겨둔 질문', '연결이 깨졌다면, 뒤 Block 도 전부 다시 계산하면 되지 않을까?'),
+      rewriteRace({
+        attack: {
+          kind: 'attack', tag: '과거를 바꾸려는 쪽',
+          blocks: [
+            { name: 'Block 1', note: '거래를 바꾼다', tone: 'changed' },
+            { name: 'Block 2', note: 'PoW 다시',      tone: 'redo' },
+            { name: 'Block 3', note: 'PoW 다시',      tone: 'redo' },
+            { name: 'Block 4', note: 'PoW 다시',      tone: 'redo' }
+          ]
+        },
+        honest: {
+          kind: 'honest', tag: '그 사이 정상 Network',
+          blocks: [
+            { name: 'Block 4', note: '여기까지 같다' },
+            { name: 'Block 5', note: '새로 쌓인다', tone: 'new' },
+            { name: 'Block 6', note: '새로 쌓인다', tone: 'new' },
+            { name: '…',       note: '계속 앞으로', tone: 'more' }
+          ]
+        }
+      }),
+      conclusion('과거를 바꾸려면 그 이후의 작업도 다시 해야 한다. 그 사이 정상 Chain 은 계속 앞으로 나아간다.'),
+      sub('Chain 이라는 모양 자체가 조작을 막는 것이 아니라, Hash 로 이어진 역사에 Consensus 와 PoW 가 결합되면서 과거를 다시 쓰는 일이 어려워진다.')
+    ].join('')
+  },
+
   /* ===== Section F. 첫 번째 노선 회수 · 환승 ===== */
   {
     id: 'ledger-line-recap', sourcePage: 17, section: 'F', type: 'summary',
@@ -1380,15 +1468,16 @@ const SCREENS = [
         '↔'
       ),
       /* 여섯 개념을 독립 카드가 아니라 하나의 노선으로 잇고 역할을 함께 둔다 */
+      /* 동급으로 줄 세우지 않는다. 역할이 서로 다르다는 것이 이 화면의 요점이다 */
       routeWithRoles([
-        { name: 'Hash',               role: '변경 확인' },
-        { name: 'Block',              role: '기록 묶음' },
-        { name: 'Chain',              role: '앞뒤 연결' },
-        { name: 'Distributed Ledger', role: '여러 참여자의 장부' },
-        { name: 'Consensus',          role: '무엇을 인정할 것인가' },
-        { name: 'PoW',                role: 'Bitcoin의 합의 메커니즘' }
+        { name: 'Hash',               role: '기록의 변경 확인' },
+        { name: 'Block',              role: '여러 기록을 다루는 단위' },
+        { name: 'Chain',              role: '순서 있는 기록의 역사' },
+        { name: 'Distributed Ledger', role: '여러 참여자가 보유·검증' },
+        { name: 'Consensus',          role: '어떤 기록과 순서를 인정할 것인가' },
+        { name: 'PoW',                role: 'Bitcoin 에서 작업을 요구하는 방식' }
       ]),
-      conclusion('여섯 가지는 따로 있는 개념이 아니라, 한 장부를 믿을 수 있게 만들기 위해 차례로 이어진 하나의 노선이다.')
+      conclusion('각각 역할은 다르지만, 함께 작동하며 분산된 장부의 역사를 이어간다.')
     ].join('')
   },
   {
@@ -1645,11 +1734,11 @@ const SCREENS = [
           question: '여러 참여자가 어떻게 믿을 수 있는 장부를 만들고 이어갈까?',
           stops: [
             { name: 'Hash',               role: '기록의 변경 확인' },
-            { name: 'Block',              role: '기록 묶기' },
-            { name: 'Chain',              role: '앞뒤 기록 연결' },
+            { name: 'Block',              role: '여러 기록을 다루는 단위' },
+            { name: 'Chain',              role: '순서 있는 기록의 역사' },
             { name: 'Distributed Ledger', role: '여러 참여자가 보유·검증' },
-            { name: 'Consensus',          role: '무엇을 인정할 것인가' },
-            { name: 'PoW',                role: 'Bitcoin 예시 · Consensus 메커니즘의 하나' }
+            { name: 'Consensus',          role: '유효한 기록과 순서 인정' },
+            { name: 'PoW',                role: 'Bitcoin 예시 · 작업을 요구하는 방식' }
           ]
         },
         transfer: {
@@ -1726,9 +1815,9 @@ const SCREENS = [
         /* 화면에 실제로 보이는 자리에만 이름을 붙인다.
            오늘 만든 두 노선의 단어가 그대로 하나씩 대응된다 */
         callouts: [
-          { name: 'Block · 블록',     desc: 'BLOCK HEIGHT · 기록이 여기까지 한 칸씩 쌓였다' },
-          { name: 'Chain · 체인',     desc: 'parent 가 바로 앞 블록의 Hash · 그래서 끊기지 않는다' },
-          { name: 'Consensus · 합의', desc: 'QBFT · Validator 4 중 3이 동의해야 한 칸이 늘어난다' }
+          { name: 'Block · 블록',     desc: 'BLOCK HEIGHT · 기록 단위가 계속 추가된다' },
+          { name: 'Chain · 체인',     desc: 'parent 가 바로 앞 Block 의 Hash 를 가리킨다 · 순서 있는 역사가 이어진다' },
+          { name: 'Consensus · 합의', desc: 'QBFT · Validator 들이 공통 규칙으로 다음 Block 을 인정한다' }
         ]
       }),
       conclusion('같은 화면인데, 이제 각각이 어떤 질문에 답하는 것인지 보입니다')

@@ -612,6 +612,42 @@ textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37, 99
 .chain-status p { margin: 2px 0 0; color: #557166; font-size: .8rem; line-height: 1.5; }
 .chain-status.broken p { color: #795b3c; }
 
+/* 뒤 Block 을 다시 계산한 상태 — 정상도 아니고 깨진 것도 아니다.
+   “맞출 수는 있다. 대신 다시 해야 했다”는 자리라 파란 계열로 따로 둔다 */
+.chain-status.rebuilt { border-color: #bfd3f8; background: var(--primary-soft); }
+.chain-status.rebuilt .chain-status-icon { color: var(--primary); }
+.chain-status.rebuilt p { color: #45556f; }
+
+.chain-rebuild-row { align-items: center; }
+.chain-rebuild-row[hidden] { display: none; }
+.chain-rebuild-row .secondary-button { flex: none; margin-left: auto; }
+
+/* Hash 한 방향성 — 기능이 아니라 안내 한 줄 */
+.oneway {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fbfcfe;
+}
+.oneway-pair { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.oneway-pair li {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  padding: 6px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+}
+.oneway-pair .oneway-k { color: var(--muted); font-size: .8rem; font-weight: 800; }
+.oneway-pair .oneway-v { color: var(--primary-deep); font-size: .9rem; font-weight: 900; }
+.oneway-pair li.is-hard { border-color: #efcbc7; }
+.oneway-pair li.is-hard .oneway-v { color: #c8352f; }
+.oneway-note { margin: 0; color: var(--muted); font-size: .84rem; font-weight: 700; }
+
 .chain-formula {
   display: flex;
   align-items: center;

@@ -156,6 +156,8 @@ const els = {
   chainHashes: ["#chainHash1", "#chainHash2", "#chainHash3"].map(id => document.querySelector(id)),
   chainLink12: document.querySelector("#chainLink12"),
   chainLink23: document.querySelector("#chainLink23"),
+  chainRebuildRow: document.querySelector("#chainRebuildRow"),
+  rebuildChain: document.querySelector("#rebuildChain"),
   chainLink12Text: document.querySelector("#chainLink12Text"),
   chainLink23Text: document.querySelector("#chainLink23Text"),
   manualPowPreviousHash: document.querySelector("#manualPowPreviousHash"),
@@ -195,6 +197,8 @@ let toastTimer;
 let lastBlockHash = "";
 let defaultBlockHash = "";
 let chainBase = null;
+/* 과거 Block 을 바꾼 뒤 그 뒤를 다시 계산했는지. 거래를 다시 건드리면 풀린다 */
+let chainRebuilt = false;
 let miningSession = 0;
 let isMining = false;
 
@@ -318,14 +322,27 @@ async function renderChain() {
   const hash1 = await calculateBlockHash(block1);
   if (token !== chainRenderToken) return;
 
-  const hash2 = chainBase[1].hash;
-  const hash3 = chainBase[2].hash;
+  const block1Changed = amount !== CHAIN_TRANSACTIONS[0][2].amount;
+  /* 다시 계산을 눌렀으면 Block #2 · #3 의 Previous Hash 와 Hash 를 새로 구한다.
+     Hash 연결만 다시 맞추는 것이다. PoW 는 여기에 없다. */
+  const rebuilt = chainRebuilt && block1Changed;
+  let hash2 = chainBase[1].hash;
+  let hash3 = chainBase[2].hash;
+  let prev2 = chainBase[1].previousHash;
+  let prev3 = chainBase[2].previousHash;
+  if (rebuilt) {
+    prev2 = hash1;
+    hash2 = await calculateBlockHash({ transactions: CHAIN_TRANSACTIONS[1], previousHash: prev2, nonce: 0 });
+    if (token !== chainRenderToken) return;
+    prev3 = hash2;
+    hash3 = await calculateBlockHash({ transactions: CHAIN_TRANSACTIONS[2], previousHash: prev3, nonce: 0 });
+    if (token !== chainRenderToken) return;
+  }
   const hashes = [hash1, hash2, hash3];
-  const prevs = [chainBase[0].previousHash, chainBase[1].previousHash, chainBase[2].previousHash];
+  const prevs = [chainBase[0].previousHash, prev2, prev3];
   const link12 = hash1 === prevs[1];
   const link23 = hash2 === prevs[2];
   const wholeChainValid = link12 && link23;
-  const block1Changed = amount !== CHAIN_TRANSACTIONS[0][2].amount;
 
   els.chainPrevs.forEach((el, i) => {
     el.textContent = compactHash(prevs[i]);
@@ -342,23 +359,30 @@ async function renderChain() {
 
   els.chainBlocks[1].className = `chain-block ${link12 ? "ok" : "broken"}`;
   els.chainBadges[1].className = `chain-badge ${link12 ? "ok" : "broken"}`;
-  els.chainBadges[1].textContent = link12 ? "정상" : "연결 끊김";
+  els.chainBadges[1].textContent = rebuilt ? "다시 계산함" : (link12 ? "정상" : "연결 끊김");
 
   const block3ConnectedToWholeChain = link12 && link23;
   els.chainBlocks[2].className = `chain-block ${block3ConnectedToWholeChain ? "ok" : "downstream"}`;
   els.chainBadges[2].className = `chain-badge ${block3ConnectedToWholeChain ? "ok" : "downstream"}`;
-  els.chainBadges[2].textContent = block3ConnectedToWholeChain ? "정상" : "앞 연결 영향";
+  els.chainBadges[2].textContent = rebuilt ? "다시 계산함" : (block3ConnectedToWholeChain ? "정상" : "앞 연결 영향");
+
+  /* 버튼은 연결이 깨진 동안에만 보인다. 다시 계산한 뒤에는 숨긴다 */
+  els.chainRebuildRow.hidden = !(block1Changed && !rebuilt);
 
   els.chainLink12.className = `chain-link ${link12 ? "ok" : "broken"}`;
   els.chainLink12Text.textContent = link12 ? "일치" : "불일치";
   els.chainLink23.className = `chain-link ${link23 && link12 ? "ok" : "downstream"}`;
   els.chainLink23Text.textContent = link23 ? (link12 ? "일치" : "값은 일치 · 앞에서 끊김") : "불일치";
 
-  els.chainStatus.className = `chain-status ${wholeChainValid ? "valid" : "broken"}`;
+  els.chainStatus.className = `chain-status ${rebuilt ? "rebuilt" : (wholeChainValid ? "valid" : "broken")}`;
   const icon = els.chainStatus.querySelector(".chain-status-icon");
   const title = els.chainStatus.querySelector("strong");
   const copy = els.chainStatus.querySelector("p");
-  if (wholeChainValid) {
+  if (rebuilt) {
+    icon.textContent = "✓";
+    title.textContent = "연결은 다시 맞출 수 있습니다.";
+    copy.textContent = "대신 변경된 Block 이후의 기록을 모두 다시 계산해야 했습니다. Chain 은 변경을 불가능하게 만드는 것이 아니라, 과거를 바꾸면 그 이후도 다시 만들게 합니다.";
+  } else if (wholeChainValid) {
     icon.textContent = "✓";
     title.textContent = "정상 Chain입니다.";
     copy.textContent = "각 Block이 바로 앞 Block의 Hash를 정확히 기억하고 있습니다.";
@@ -694,13 +718,21 @@ els.resetBlock.addEventListener("click", () => {
   renderBlock();
   showToast("Block을 초기 상태로 되돌렸습니다.");
 });
-els.chainAmount1.addEventListener("input", renderChain);
+/* 거래를 다시 건드리면 ‘다시 계산함’ 상태를 풀고 깨진 Chain 부터 다시 보여준다 */
+els.chainAmount1.addEventListener("input", () => { chainRebuilt = false; renderChain(); });
 els.changeChainAmount.addEventListener("click", () => {
+  chainRebuilt = false;
   els.chainAmount1.value = normalizeAmount(els.chainAmount1) === 5000 ? "5001" : "5000";
   els.chainAmount1.focus();
   renderChain();
 });
+els.rebuildChain.addEventListener("click", async () => {
+  chainRebuilt = true;
+  await renderChain();
+  showToast("뒤 Block 을 모두 다시 계산했습니다.");
+});
 els.resetChain.addEventListener("click", () => {
+  chainRebuilt = false;
   els.chainAmount1.value = "5000";
   renderChain();
   showToast("Chain을 정상 상태로 되돌렸습니다.");
@@ -745,13 +777,13 @@ window.addEventListener("hashchange", () => {
 
    복귀 위치의 기준값은 URL parameter 다. sessionStorage 는 from 이
    빠졌을 때를 메우는 보조 수단으로만 쓰고, URL 값을 덮어쓰지 않는다.
-   허용 값은 L01~L35 뿐이며, 그 밖의 값은 무시한다(임의 URL 복귀 금지).
+   허용 값은 L01~L37 뿐이며, 그 밖의 값은 무시한다(임의 URL 복귀 금지).
    ============================================================ */
 
 /* 강의 화면 수. lecture/screens.js 에 화면을 추가하면 이 값만 올리면 된다.
    (예전에는 L01~L25 가 정규식에 박혀 있어 새 화면이 막혔다.
        화면 수가 바뀌면 아래 상수 하나만 고치면 된다) */
-const LECTURE_SCREEN_COUNT = 35;
+const LECTURE_SCREEN_COUNT = 37;
 const LECTURE_SCREEN_FORM = /^L(\d{2})$/;
 const LECTURE_PATH = "../lecture/index.html";
 const LECTURE_CONTEXT_KEY = "lecture:experience-context";

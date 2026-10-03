@@ -134,6 +134,16 @@
         </article>
       </section>
 
+      <!-- 한 방향성은 여기서 보여만 주고 끝내지 않는다. PoW 에서 다시 쓴다.
+           역산·brute force 같은 기능은 두지 않는다. 문장 한 줄이면 충분하다. -->
+      <aside class="oneway">
+        <ul class="oneway-pair">
+          <li><span class="oneway-k">입력 → Hash</span><strong class="oneway-v">쉽게 계산</strong></li>
+          <li class="is-hard"><span class="oneway-k">Hash → 원래 입력</span><strong class="oneway-v">현실적으로 어렵다</strong></li>
+        </ul>
+        <p class="oneway-note">이 한 방향성은 조금 뒤 PoW 에서 다시 사용합니다.</p>
+      </aside>
+
       <div class="next-step-row">
         <button class="primary-button" type="button" data-step="block">다음: Block 체험 <span aria-hidden="true">→</span></button>
       </div>
@@ -143,7 +153,7 @@
       <section class="tool-card block-tool" aria-labelledby="block-tool-title">
         <div class="tool-toolbar block-toolbar">
           <div>
-            <p class="section-kicker">여러 기록이 하나의 묶음이 되는 것을 확인하세요</p>
+            <p class="section-kicker">방금 Hash 체험을 여러 기록의 묶음으로 확장해 봅니다</p>
             <h2 id="block-tool-title">여러 거래 기록 + Block 정보 → Block Hash</h2>
           </div>
           <button id="resetBlock" class="secondary-button" type="button">초기화</button>
@@ -248,8 +258,8 @@
         </article>
         <article>
           <span class="lesson-number">03</span>
-          <h3>한 건만 바뀌어도 전체가 변화</h3>
-          <p>3번 거래를 5,000원에서 5,001원으로 바꾸면 Block Hash 전체가 달라집니다.</p>
+          <h3>Hash 체험의 확장</h3>
+          <p>거래 한 건이 달라지면 묶음 전체의 Hash 도 달라집니다. 아까 본 성질이 Block 에도 그대로 적용됩니다.</p>
         </article>
       </section>
 
@@ -361,6 +371,15 @@
         <div class="chain-instruction">
           <span class="instruction-number">1</span>
           <p><strong>Block #1의 거래를 1원만 바꿔보세요.</strong> Block #1의 Hash는 즉시 달라지지만, Block #2가 기억하고 있는 Previous Hash는 예전 값 그대로입니다.</p>
+        </div>
+
+        <!-- 연결이 깨진 뒤에만 나타난다. 과거를 바꾸는 방법을 가르치는 것이 아니라,
+             “그럼 뒤를 다시 계산하면?” 이라는 질문을 직접 보여주기 위한 자리다.
+             여기에는 PoW 계산을 넣지 않는다. 그 비용은 강의 본편(PoW)에서 다룬다. -->
+        <div class="chain-instruction chain-rebuild-row" id="chainRebuildRow" hidden>
+          <span class="instruction-number">2</span>
+          <p><strong>그럼 뒤 Block 을 다시 계산하면?</strong> 연결이 깨진 뒤의 Block 들을 새 Hash 에 맞춰 다시 계산해 봅니다.</p>
+          <button id="rebuildChain" class="secondary-button" type="button">뒤 Block 도 다시 계산해보기</button>
         </div>
       </section>
 
@@ -544,7 +563,7 @@
 
       <aside class="completion-note">
         <span aria-hidden="true">✓</span>
-        <div><strong>HASH → BLOCK → CHAIN → Proof of Work</strong><p>이제 네 단계를 직접 조작하며 블록체인의 핵심 구조를 한 흐름으로 체험했습니다.</p></div>
+        <div><strong>HASH → BLOCK → CHAIN → Proof of Work</strong><p>오늘 강의에서 다룰 네 가지 동작을 직접 조작해봤습니다. Distributed Ledger 와 Consensus 는 강의에서 이어집니다.</p></div>
       </aside>
     </section>
 
