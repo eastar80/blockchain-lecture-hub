@@ -265,8 +265,9 @@
   font-weight: 700;
 }
 
+/* 블록 = 파랑, 체인 = 주황. 제목에서 두 낱말이 각각 어느 쪽을 가리키는지 보이게 한다 */
 .accent-block { color: var(--primary); font-style: normal; }
-.accent-chain { color: var(--ink); font-style: normal; }
+.accent-chain { color: var(--warning); font-style: normal; }
 
 .quote-strong {
   color: var(--primary);

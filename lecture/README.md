@@ -162,7 +162,7 @@ lecture/qr/experience.svg  →  https://blockchain.mrdion.kim/experience/#hash
 | L34 | `blockchain-close` | 28 | 두 개의 노선도 | 오늘 만든 것은 블록체인의 ‘지하철 노선도’입니다 | both |  | 다음 |
 | L35 | `learning-to-building` | — | 에필로그 · 배우고, 해보고, 다시 배우기 | From Learning to Building | epilogue |  | 다음 |
 | L36 | `real-network` | — | 에필로그 · 배우고, 해보고, 다시 배우기 | 처음보다 뭐가 좀 보이시나요? | epilogue | ○ | 다음 |
-| L37 | `closing` | — | 에필로그 · 배우고, 해보고, 다시 배우기 | 완벽히 이해할 때까지 기다리지는 마세요. | epilogue |  | 강의 홈 / 처음부터 |
+| L37 | `closing` | — | 에필로그 · 배우고, 해보고, 다시 배우기 | 배우고, 해보고, 다시 이해합니다. | epilogue |  | 강의 홈 / 처음부터 |
 
 ## 원본 페이지 ↔ 화면 대응
 
