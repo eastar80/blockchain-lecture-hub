@@ -2,16 +2,18 @@
    lecture/screens.js — 강의 화면 콘텐츠 단일 출처
 
    원본: 블록체인_강의자료_v2.1 (28페이지)
-          이 저장소의 materials/lecture.pdf 는 이제 아래 34화면을 그대로 뽑은 PDF 다.
+          이 저장소의 materials/lecture.pdf 는 이제 아래 35화면을 그대로 뽑은 PDF 다.
           (수강생 배포용 겸 강사 백업) 원본 교재 PDF 는 커밋 3456109 에 남아 있다.
-   화면: L01 ~ L34
+   화면: L01 ~ L35
           원본 p14 / p16 / p17 / p20 은 가독성을 위해 2화면으로 나눴고,
-          L02(강사 포지셔닝)·L32~L34(에필로그)는 원본에 없는 신규 화면이다.
+          L02(강사 포지셔닝)·L03(들어본 말들)·L33~L35(에필로그)는 원본에 없는 신규 화면이다.
+          번호(number)는 아래 SCREENS 순서에서 자동으로 매긴다. 손으로 적지 않는다.
 
    각 화면 객체는 다음을 가진다.
      id         화면의 고정 ID. 번호가 바뀌어도 이 값은 바뀌지 않는다 ('pow-challenge')
                 체험 복귀·내부 이동은 전부 이 값을 기준으로 연결한다.
      number     화면에 표시하고 주소로 쓰는 번호 ('L14' → lecture/index.html#/L14)
+                파일 끝에서 순서대로 매긴다. 화면 객체에는 적지 않는다.
                 #/pow-challenge 로 들어와도 같은 화면이 열린다.
      sourcePage 원본 PDF 페이지 — 원본 대비 추적용 (신규 화면에는 없다)
      section    목차 Section ID
@@ -74,18 +76,19 @@ const LINES = [
 const TRANSFER_LABEL = '환승 · 공유된 장부 → 공유된 State';
 
 /* ------------------------------------------------------------
-   목차 Section — 34개를 한 번에 나열하지 않고 9개 Section 을 먼저 보여준다
+   목차 Section — 35개를 한 번에 나열하지 않고 9개 Section 을 먼저 보여준다
+   범위(from/to)는 파일 끝에서 화면에서 뽑는다
    ------------------------------------------------------------ */
 const SECTIONS = [
-  { id: 'A', label: '도입',                                    from: 'L01', to: 'L03' },
-  { id: 'B', label: '장부에 대한 믿음',                        from: 'L04', to: 'L05' },
-  { id: 'C', label: 'Hash → Block → Chain',                    from: 'L06', to: 'L10' },
-  { id: 'D', label: 'Distributed Ledger → Consensus',          from: 'L11', to: 'L13' },
-  { id: 'E', label: 'Proof of Work',                           from: 'L14', to: 'L19' },
-  { id: 'F', label: '첫 번째 노선 회수 · 환승',                from: 'L20', to: 'L21' },
-  { id: 'G', label: 'Ethereum · World Computer',               from: 'L22', to: 'L29' },
-  { id: 'H', label: '두 개의 노선도',                          from: 'L30', to: 'L31' },
-  { id: 'I', label: '에필로그 · 배우고, 해보고, 다시 배우기',   from: 'L32', to: 'L34' }
+  { id: 'A', label: '도입' },
+  { id: 'B', label: '장부에 대한 믿음' },
+  { id: 'C', label: 'Hash → Block → Chain' },
+  { id: 'D', label: 'Distributed Ledger → Consensus' },
+  { id: 'E', label: 'Proof of Work' },
+  { id: 'F', label: '첫 번째 노선 회수 · 환승' },
+  { id: 'G', label: 'Ethereum · World Computer' },
+  { id: 'H', label: '두 개의 노선도' },
+  { id: 'I', label: '에필로그 · 배우고, 해보고, 다시 배우기' }
 ];
 
 /* ------------------------------------------------------------
@@ -767,7 +770,7 @@ const subwayMap = () => `
   </div>`;
 
 /* ------------------------------------------------------------
-   34개 화면
+   35개 화면
    ------------------------------------------------------------ */
 /* ------------------------------------------------------------
    도입 · 에필로그 helper
@@ -873,6 +876,63 @@ const networkPreview = ({ tag, callouts = [], foot }) => `
     ${foot ? `<p class="np-foot">${foot}</p>` : ''}
   </figure>`;
 
+/**
+ * WordCloud — 강의를 시작하기 전에 ‘어디선가 들어본 말’을 한 화면에 띄워 둔다.
+ *
+ * 설명하는 화면이 아니다. 정렬하지 않고 연결선도 긋지 않는다.
+ * 머릿속에 떠다니는 조각처럼 보이는 것이 목적이라 자리는 백분율로 흩어 둔다.
+ * 무게는 네 단계뿐이다.
+ *   lead   오늘의 질문으로 이어질 말 — 크고 또렷하게
+ *   mid    오늘 직접 만들어 볼 말
+ *   faint  들어는 봤을 말 — 주변부에 작고 흐리게
+ *   ghost  오늘의 중심이 아닌 말 — 배경처럼
+ * 이미지가 아니라 글자로 그린다. 프로젝터에서 선명해야 하고 문구도 고칠 수 있어야 한다.
+ * x/y 는 화면(cloudfield) 안에서의 중심 위치다. 좁은 화면에서는 CSS 가 흐름 배치로 바꾼다.
+ */
+const FAMILIAR_WORDS = [
+  /* 오늘의 질문으로 이어지는 말 */
+  { size: 'lead',  tone: 'red',    x: 24, y: 63, main: '채굴', sub: 'Mining', note: '채굴은 수학문제를 푸는 것', hero: true },
+  { size: 'lead',  tone: 'purple', x: 64, y: 19, main: 'Ethereum', sub: '이더리움' },
+  { size: 'lead',  tone: 'purple', x: 87, y: 16, main: '이더리움은<br />컴퓨터다?' },
+  { size: 'lead',  tone: 'purple', x: 79, y: 38, main: 'World Computer', sub: '월드 컴퓨터' },
+  { size: 'lead',  tone: 'blue',   x: 77, y: 56, main: 'Smart Contract', sub: '스마트 계약' },
+  { size: 'lead',  tone: 'blue',   x: 80, y: 74, main: '계약이 자동으로<br />실행된다?' },
+
+  /* 오늘 직접 만들어 볼 말 */
+  { size: 'mid',   tone: 'blue',   x: 26, y: 20, main: 'Blockchain', sub: '블록체인' },
+  { size: 'mid',   tone: 'blue',   x: 40, y: 31, main: 'Block', sub: '블록' },
+  { size: 'mid',   tone: 'blue',   x: 52, y: 38, main: 'Chain', sub: '체인' },
+  { size: 'mid',   tone: 'green',  x: 43, y: 51, main: 'Hash', sub: '해시함수' },
+  { size: 'mid',   tone: 'red',    x:  9, y: 44, main: 'Proof of Work', sub: '(PoW)' },
+  { size: 'mid',   tone: 'blue',   x: 49, y: 67, main: 'Consensus', sub: '합의' },
+  { size: 'mid',   tone: 'blue',   x: 42, y: 81, main: 'Distributed Ledger', sub: '분산원장' },
+
+  /* 들어는 봤을 말 */
+  { size: 'faint', tone: 'amber',  x: 10, y: 25, main: 'Bitcoin', sub: '비트코인' },
+  { size: 'faint', tone: 'green',  x: 62, y: 81, main: 'DApp', sub: '탈중앙화 앱' },
+  { size: 'faint', x: 74, y:  6, main: '지갑' },
+  { size: 'faint', x:  7, y: 36, main: '탈중앙화' },
+  { size: 'faint', x: 58, y: 53, main: '위변조가 어렵다' },
+  { size: 'faint', x: 95, y: 52, main: '토큰' },
+  { size: 'faint', x:  9, y: 83, main: '여러 컴퓨터가<br />함께 기록한다' },
+  { size: 'faint', x: 27, y: 90, main: '중앙관리자가 없다' },
+
+  /* 오늘의 중심이 아닌 말. 배경으로만 둔다 */
+  { size: 'ghost', x: 70, y: 92, main: 'NFT' },
+  { size: 'ghost', x: 92, y: 90, main: 'STO' },
+  { size: 'ghost', x: 84, y: 94, main: 'Stablecoin' }
+];
+
+const wordCloud = items => `
+  <div class="cloudfield">
+    ${items.map(w => `
+      <span class="cw cw-${w.size}${w.tone ? ` cw-${w.tone}` : ''}${w.hero ? ' cw-hero' : ''}${w.tight ? ' cw-tight' : ''}" style="--x: ${w.x}%; --y: ${w.y}%;">
+        <b class="cw-main">${w.main}</b>
+        ${w.sub ? `<i class="cw-sub">${w.sub}</i>` : ''}
+        ${w.note ? `<i class="cw-note">${w.note}</i>` : ''}
+      </span>`).join('')}
+  </div>`;
+
 /** 오늘 쓴 체험도구를 작게 늘어놓는다 */
 const toolThumbs = (tag, items) => `
   <div class="thumbs">
@@ -908,7 +968,7 @@ const boundaryStack = ({ layers, edgeLabel, beyond }) => `
 const SCREENS = [
   /* ===== Section A. 도입 ===== */
   {
-    id: 'lecture-title', number: 'L01', sourcePage: 1, section: 'A', type: 'title', concept: 'intro',
+    id: 'lecture-title', sourcePage: 1, section: 'A', type: 'title', concept: 'intro',
     eyebrow: 'BLOCKCHAIN LECTURE',
     title: '블록체인은 왜<br /><em class="accent-block">‘블록</em><em class="accent-chain">체인’</em>일까?',
     body: [
@@ -928,7 +988,7 @@ const SCREENS = [
   {
     /* 신규 — 강사 포지셔닝. 원본 PDF 에는 없는 화면이다.
        L33(real-network)에서 같은 Dashboard 를 다시 꺼내 회수한다 */
-    id: 'why-me', number: 'L02', section: 'A', type: 'concept', concept: 'intro',
+    id: 'why-me', section: 'A', type: 'concept', concept: 'intro',
     eyebrow: 'WHY ME',
     title: '제가 오늘 이 이야기를 드리는 이유',
     body: [
@@ -951,7 +1011,18 @@ const SCREENS = [
     ].join('')
   },
   {
-    id: 'simplify-first', number: 'L03', sourcePage: 2, section: 'A', type: 'concept', concept: 'intro',
+    /* 신규 — 개념을 설명하는 화면이 아니다. 들어는 본 말들을 한 번 꺼내 보게 하는 도입 화면이다.
+       정의도 정답도 여기서 꺼내지 않는다. 바로 다음 화면에서 ‘단순하게 보자’로 넘어간다 */
+    id: 'familiar-words', section: 'A', type: 'concept', concept: 'intro',
+    eyebrow: 'FAMILIAR WORDS',
+    title: '어디선가 한 번쯤 들어본 이야기들 …',
+    body: [
+      wordCloud(FAMILIAR_WORDS),
+      sub('지금 다 아실 필요는 없습니다. ‘들어는 봤다’ 정도면 충분합니다.')
+    ].join('')
+  },
+  {
+    id: 'simplify-first', sourcePage: 2, section: 'A', type: 'concept', concept: 'intro',
     eyebrow: 'INTRO',
     title: '오늘은 조금 단순하게 설명하겠습니다',
     body: [
@@ -968,7 +1039,7 @@ const SCREENS = [
 
   /* ===== Section B. 장부에 대한 믿음 ===== */
   {
-    id: 'ledger-trust', number: 'L04', sourcePage: 3, section: 'B', type: 'question', concept: 'intro',
+    id: 'ledger-trust', sourcePage: 3, section: 'B', type: 'question', concept: 'intro',
     eyebrow: 'QUESTION',
     title: '장부에 대한 믿음은 어디에서 오는가?',
     kicker: '왜 은행 장부의 100만원은 믿을까?',
@@ -985,7 +1056,7 @@ const SCREENS = [
     ].join('')
   },
   {
-    id: 'no-central-authority', number: 'L05', sourcePage: 4, section: 'B', type: 'concept', concept: 'intro',
+    id: 'no-central-authority', sourcePage: 4, section: 'B', type: 'concept', concept: 'intro',
     eyebrow: 'ROADMAP',
     title: '“이게 공식 장부입니다”라고 말할 수 있는 신뢰있는 존재가 없다면?',
     body: [
@@ -1011,7 +1082,7 @@ const SCREENS = [
 
   /* ===== Section C. Hash → Block → Chain ===== */
   {
-    id: 'hash-question', number: 'L06', sourcePage: 5, section: 'C', type: 'experience-entry', concept: 'hash',
+    id: 'hash-question', sourcePage: 5, section: 'C', type: 'experience-entry', concept: 'hash',
     eyebrow: 'HASH',
     title: 'Hash — 기록의 지문',
     kicker: '첫 번째 실습 · 스마트폰으로 QR을 스캔해 직접 해시를 계산해 보세요',
@@ -1030,7 +1101,7 @@ const SCREENS = [
     experience: { kind: 'hash', returnTo: 'block', label: 'Hash 직접 체험하기' }
   },
   {
-    id: 'block', number: 'L07', sourcePage: 6, section: 'C', type: 'experience-entry', concept: 'block',
+    id: 'block', sourcePage: 6, section: 'C', type: 'experience-entry', concept: 'block',
     eyebrow: 'BLOCK',
     title: '왜 Block 일까?',
     /* Hash 체험 직후 복귀 화면 */
@@ -1050,7 +1121,7 @@ const SCREENS = [
     experience: { kind: 'block', returnTo: 'chain', label: 'Block 직접 체험하기' }
   },
   {
-    id: 'chain', number: 'L08', sourcePage: 7, section: 'C', type: 'concept', concept: 'chain',
+    id: 'chain', sourcePage: 7, section: 'C', type: 'concept', concept: 'chain',
     eyebrow: 'CHAIN',
     title: '왜 Chain 일까?',
     /* Block 체험 직후 복귀 화면 */
@@ -1066,7 +1137,7 @@ const SCREENS = [
     note: '다음 Block이 이전 Block의 Hash를 기억한다'
   },
   {
-    id: 'tamper', number: 'L09', sourcePage: 8, section: 'C', type: 'experience-entry', concept: 'chain',
+    id: 'tamper', sourcePage: 8, section: 'C', type: 'experience-entry', concept: 'chain',
     eyebrow: 'CHAIN',
     title: '하나를 바꾸면?',
     body: [
@@ -1094,7 +1165,7 @@ const SCREENS = [
     experience: { kind: 'chain', returnTo: 'centralized-chain', label: 'Chain 직접 체험하기' }
   },
   {
-    id: 'centralized-chain', number: 'L10', sourcePage: 9, section: 'C', type: 'question', concept: 'ledger',
+    id: 'centralized-chain', sourcePage: 9, section: 'C', type: 'question', concept: 'ledger',
     eyebrow: 'TRANSITION',
     title: '그런데 여기까지만이라면?',
     /* Chain 체험 직후 복귀 화면 */
@@ -1112,7 +1183,7 @@ const SCREENS = [
 
   /* ===== Section D. Distributed Ledger → Consensus ===== */
   {
-    id: 'distributed-vs-servers', number: 'L11', sourcePage: 10, section: 'D', type: 'concept', concept: 'ledger',
+    id: 'distributed-vs-servers', sourcePage: 10, section: 'D', type: 'concept', concept: 'ledger',
     eyebrow: 'DISTRIBUTED LEDGER',
     title: '서버가 여러 대면 분산원장일까?',
     body: [
@@ -1140,7 +1211,7 @@ const SCREENS = [
     ].join('')
   },
   {
-    id: 'consensus-question', number: 'L12', sourcePage: 11, section: 'D', type: 'question', concept: 'consensus',
+    id: 'consensus-question', sourcePage: 11, section: 'D', type: 'question', concept: 'consensus',
     eyebrow: 'CONSENSUS',
     title: '장부가 서로 다르면?',
     body: [
@@ -1155,7 +1226,7 @@ const SCREENS = [
     note: '한 참여자가 단독으로 정답을 선언하지 않는다면, 공통 규칙이 필요하다'
   },
   {
-    id: 'consensus-methods', number: 'L13', sourcePage: 12, section: 'D', type: 'concept', concept: 'consensus',
+    id: 'consensus-methods', sourcePage: 12, section: 'D', type: 'concept', concept: 'consensus',
     eyebrow: 'CONSENSUS',
     title: 'Consensus 에는 여러 방법이 있습니다',
     body: [
@@ -1177,7 +1248,7 @@ const SCREENS = [
 
   /* ===== Section E. Proof of Work ===== */
   {
-    id: 'pow-challenge', number: 'L14', sourcePage: 13, section: 'E', type: 'experience-entry', concept: 'pow',
+    id: 'pow-challenge', sourcePage: 13, section: 'E', type: 'experience-entry', concept: 'pow',
     eyebrow: 'PROOF OF WORK',
     title: '‘00’ 을 먼저 찾아라',
     body: [
@@ -1191,7 +1262,7 @@ const SCREENS = [
     experience: { kind: 'pow', returnTo: 'pow-interpret', label: 'PoW 직접 체험하기' }
   },
   {
-    id: 'pow-interpret', number: 'L15', sourcePage: 14, section: 'E', type: 'concept', concept: 'pow',
+    id: 'pow-interpret', sourcePage: 14, section: 'E', type: 'concept', concept: 'pow',
     eyebrow: 'PROOF OF WORK',
     title: '방금 ‘어려운 수학문제’를 풀었을까?',
     kicker: '채굴 = 어려운 수학문제를 푼다?',
@@ -1210,7 +1281,7 @@ const SCREENS = [
     ].join('')
   },
   {
-    id: 'pow-repeat', number: 'L16', sourcePage: 14, section: 'E', type: 'concept', concept: 'pow',
+    id: 'pow-repeat', sourcePage: 14, section: 'E', type: 'concept', concept: 'pow',
     eyebrow: 'PROOF OF WORK',
     title: '조건을 만족할 때까지 반복해서 시도한다',
     body: [
@@ -1227,7 +1298,7 @@ const SCREENS = [
     note: '실제 Bitcoin에서는 ‘00’의 개수가 아니라 Hash가 Target보다 작은지를 판단'
   },
   {
-    id: 'pow-proposal', number: 'L17', sourcePage: 15, section: 'E', type: 'concept', concept: 'pow',
+    id: 'pow-proposal', sourcePage: 15, section: 'E', type: 'concept', concept: 'pow',
     eyebrow: 'PROOF OF WORK',
     title: '그래서 먼저 찾으면 무엇을 하나?',
     kicker: '“00 을 찾았습니다. 그래서요?”',
@@ -1246,7 +1317,7 @@ const SCREENS = [
     note: 'PoW → 다음 Block을 ‘제안’할 기회와 연결'
   },
   {
-    id: 'pow-verification', number: 'L18', sourcePage: 16, section: 'E', type: 'concept', concept: 'pow',
+    id: 'pow-verification', sourcePage: 16, section: 'E', type: 'concept', concept: 'pow',
     eyebrow: 'PROOF OF WORK',
     title: '제안했다고 끝이 아니다',
     body: [
@@ -1278,7 +1349,7 @@ const SCREENS = [
     ].join('')
   },
   {
-    id: 'pow-ledger-commit', number: 'L19', sourcePage: 16, section: 'E', type: 'concept', concept: 'pow',
+    id: 'pow-ledger-commit', sourcePage: 16, section: 'E', type: 'concept', concept: 'pow',
     eyebrow: 'PROOF OF WORK',
     title: '제안 &nbsp;≠&nbsp; 인정',
     body: [
@@ -1297,7 +1368,7 @@ const SCREENS = [
 
   /* ===== Section F. 첫 번째 노선 회수 · 환승 ===== */
   {
-    id: 'ledger-line-recap', number: 'L20', sourcePage: 17, section: 'F', type: 'summary',
+    id: 'ledger-line-recap', sourcePage: 17, section: 'F', type: 'summary',
     concept: ['hash', 'block', 'chain', 'ledger', 'consensus', 'pow'],
     eyebrow: 'SUMMARY',
     title: '장부에 대한 믿음은 어디에서 올까?',
@@ -1321,7 +1392,7 @@ const SCREENS = [
   },
   {
     /* PDF p18 — Bitcoin 중심의 ‘공유된 장부’에서 ‘공유된 State’로 시야를 넓히는 환승 */
-    id: 'ethereum-transition', number: 'L21', sourcePage: 18, section: 'F', type: 'concept', line: 'transfer',
+    id: 'ethereum-transition', sourcePage: 18, section: 'F', type: 'concept', line: 'transfer',
     eyebrow: 'TRANSFER',
     title: '이 장부에는 송금 기록만 적어야 할까?',
     body: [
@@ -1346,7 +1417,7 @@ const SCREENS = [
   /* ===== Section G. Ethereum · World Computer ===== */
   {
     /* PDF p19 */
-    id: 'state-model', number: 'L22', sourcePage: 19, section: 'G', type: 'concept', line: 2, concept: 'state',
+    id: 'state-model', sourcePage: 19, section: 'G', type: 'concept', line: 2, concept: 'state',
     eyebrow: 'STATE',
     title: '컴퓨터가 하는 일을 아주 단순하게 보면',
     body: [
@@ -1369,7 +1440,7 @@ const SCREENS = [
   },
   {
     /* PDF p20 — Ethereum 파트의 메인 체험. 설명하기 전에 먼저 실행한다 */
-    id: 'state-experience', number: 'L23', sourcePage: 20, section: 'G', type: 'experience-entry', line: 2, concept: 'program',
+    id: 'state-experience', sourcePage: 20, section: 'G', type: 'experience-entry', line: 2, concept: 'program',
     eyebrow: 'EXPERIENCE',
     title: '실습 ③ &nbsp;디지털 티켓 판매기',
     body: [
@@ -1394,7 +1465,7 @@ const SCREENS = [
   },
   {
     /* PDF p21 — 체험 직후 복귀 화면. 단순 Before/After 가 아니라 실행 과정을 해석한다 */
-    id: 'state-interpret', number: 'L24', sourcePage: 21, section: 'G', type: 'concept', line: 2, concept: 'transition',
+    id: 'state-interpret', sourcePage: 21, section: 'G', type: 'concept', line: 2, concept: 'transition',
     eyebrow: 'STATE TRANSITION',
     title: '방금 무엇이 실행되었을까?',
     bridge: {
@@ -1423,7 +1494,7 @@ const SCREENS = [
   },
   {
     /* PDF p22 — Consensus 가 State 값을 직접 투표로 정하는 것처럼 보이지 않게 한다 */
-    id: 'multi-node-execution', number: 'L25', sourcePage: 22, section: 'G', type: 'concept', line: 2, concept: 'verify',
+    id: 'multi-node-execution', sourcePage: 22, section: 'G', type: 'concept', line: 2, concept: 'verify',
     eyebrow: 'NODES',
     title: '한 컴퓨터에서 여러 노드로',
     body: [
@@ -1463,7 +1534,7 @@ const SCREENS = [
   },
   {
     /* PDF p23 — World Computer 를 먼저 정의하지 않고 체험 결과에서 회수한다 */
-    id: 'world-computer', number: 'L26', sourcePage: 23, section: 'G', type: 'concept', line: 2, concept: 'world',
+    id: 'world-computer', sourcePage: 23, section: 'G', type: 'concept', line: 2, concept: 'world',
     eyebrow: 'WORLD COMPUTER',
     title: '그래서 World Computer',
     body: [
@@ -1481,7 +1552,7 @@ const SCREENS = [
   },
   {
     /* PDF p25 — 새 개념을 정의하는 것이 아니라 방금 실행한 그 프로그램에 이름을 붙인다 */
-    id: 'smart-contract-name', number: 'L27', sourcePage: 25, section: 'G', type: 'concept', line: 2, concept: 'contract',
+    id: 'smart-contract-name', sourcePage: 25, section: 'G', type: 'concept', line: 2, concept: 'contract',
     eyebrow: 'SMART CONTRACT',
     title: '방금 본 것이 Smart Contract 입니다',
     body: [
@@ -1502,7 +1573,7 @@ const SCREENS = [
   },
   {
     /* PDF p26 — 학생이 본 티켓 구매 화면에서 출발한다 */
-    id: 'dapp-reveal', number: 'L28', sourcePage: 26, section: 'G', type: 'concept', line: 2, concept: 'dapp',
+    id: 'dapp-reveal', sourcePage: 26, section: 'G', type: 'concept', line: 2, concept: 'dapp',
     eyebrow: 'DAPP',
     title: '그렇다면 DApp 은?',
     body: [
@@ -1540,7 +1611,7 @@ const SCREENS = [
   {
     /* PDF p24 자리 — 그러나 EVM 을 설명하는 화면이 아니라 오늘 강의의 경계선을 긋는 화면이다.
        Opcode / Stack / PUSH·ADD 예시는 강의 범위 밖이라 전부 뺐다 */
-    id: 'evm-boundary', number: 'L29', sourcePage: 24, section: 'G', type: 'concept', line: 2, concept: 'evm',
+    id: 'evm-boundary', sourcePage: 24, section: 'G', type: 'concept', line: 2, concept: 'evm',
     eyebrow: 'EVM · ETHEREUM VIRTUAL MACHINE',
     title: '여기서 지도를 조금 더 확대하면…',
     body: [
@@ -1564,7 +1635,7 @@ const SCREENS = [
   /* ===== Section H. 두 개의 노선도 ===== */
   {
     /* PDF p27 — 하나의 직선으로 보이면 안 된다. 두 Line 과 환승역 */
-    id: 'two-lines-map', number: 'L30', sourcePage: 27, section: 'H', type: 'summary', line: 'both',
+    id: 'two-lines-map', sourcePage: 27, section: 'H', type: 'summary', line: 'both',
     eyebrow: 'TWO LINES',
     title: '오늘 만든 두 개의 블록체인 노선도',
     body: [
@@ -1607,7 +1678,7 @@ const SCREENS = [
   },
   {
     /* PDF p28 */
-    id: 'blockchain-close', number: 'L31', sourcePage: 28, section: 'H', type: 'summary', line: 'both',
+    id: 'blockchain-close', sourcePage: 28, section: 'H', type: 'summary', line: 'both',
     eyebrow: 'CLOSING',
     title: '오늘 만든 것은 블록체인의 ‘지하철 노선도’입니다',
     body: [
@@ -1624,7 +1695,7 @@ const SCREENS = [
   /* ===== Section I. 에필로그 — 배우고, 해보고, 다시 배우기 ===== */
   {
     /* 신규 — 블록체인 강의는 앞 화면에서 한 번 끝났다. 여기서부터는 에필로그다 */
-    id: 'learning-to-building', number: 'L32', section: 'I', type: 'concept', line: 'epilogue',
+    id: 'learning-to-building', section: 'I', type: 'concept', line: 'epilogue',
     eyebrow: 'FROM LEARNING TO BUILDING',
     title: 'From Learning to Building',
     kicker: '배우는 것과 해보는 것 사이',
@@ -1644,7 +1715,7 @@ const SCREENS = [
   {
     /* 신규 — L02 에서 보여준 그 화면을 강의 끝에서 다시 본다.
        강사용 [실제 Network 보기] 는 Presenter 쪽에서 붙인다. 화면에는 강사용 control 을 두지 않는다 */
-    id: 'real-network', number: 'L33', section: 'I', type: 'question', line: 'epilogue',
+    id: 'real-network', section: 'I', type: 'question', line: 'epilogue',
     eyebrow: 'REAL NETWORK',
     title: '처음보다 뭐가 좀 보이시나요?',
     bridge: { tag: '처음 화면', text: '강의를 시작할 때 보여드린 그 분산원장 화면입니다.' },
@@ -1668,7 +1739,7 @@ const SCREENS = [
   },
   {
     /* 신규 — 마지막 메시지. 요소를 더 넣지 않는다 */
-    id: 'closing', number: 'L34', section: 'I', type: 'title', line: 'epilogue',
+    id: 'closing', section: 'I', type: 'title', line: 'epilogue',
     eyebrow: 'LAST MESSAGE',
     title: '완벽히 이해할 때까지<br />기다리지는 마세요.',
     body: [
@@ -1678,3 +1749,17 @@ const SCREENS = [
     closing: true
   }
 ];
+
+/* 화면 번호는 순서에서 나온다. 중간에 화면을 끼워 넣어도 번호가 저절로 맞는다.
+   stable id 는 번호와 무관하므로 체험 복귀·Presenter 연결은 흔들리지 않는다.
+   화면에 적어 두던 number 를 손으로 고치다 어긋나는 일을 없애려고 여기서 한 번에 매긴다. */
+SCREENS.forEach((screen, i) => {
+  screen.number = `L${String(i + 1).padStart(2, '0')}`;
+});
+
+/* Section 범위도 화면에서 뽑는다. 손으로 적어두면 화면이 늘 때마다 어긋난다 */
+SECTIONS.forEach(section => {
+  const inSection = SCREENS.filter(s => s.section === section.id);
+  section.from = inSection[0].number;
+  section.to = inSection[inSection.length - 1].number;
+});

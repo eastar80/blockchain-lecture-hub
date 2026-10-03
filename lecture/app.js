@@ -2,7 +2,7 @@
    lecture/app.js — 강의 화면 Router / Renderer / Navigation
 
    라우팅 원칙
-   - 현재 화면은 URL 이 단일 출처다.  lecture/index.html#/L13
+   - 현재 화면은 URL 이 단일 출처다.  lecture/index.html#/L14
    - 화면 이동은 전부 location.hash 변경으로만 일어난다.
      따라서 주소창과 화면이 어긋날 수 없다.
    - 새로고침 / URL 직접 접속 / QR 접속 모두 같은 경로로 들어온다.
@@ -15,10 +15,10 @@
 
    id      'pow-challenge' — 화면의 고정 ID. 번호가 바뀌어도 그대로다.
            체험 복귀, 내부 이동은 전부 이 값으로 연결한다.
-   number  'L14' — 화면에 표시하고 주소로 쓰는 번호.
+   number  'L15' — 화면에 표시하고 주소로 쓰는 번호.
 
-   주소는 지금까지처럼 #/L14 로 유지한다. 이미 나간 링크와 QR 이 그대로 살아 있어야 한다.
-   #/pow-challenge 로 들어와도 같은 화면을 열고 주소만 #/L14 로 맞춘다.
+   주소는 지금까지처럼 #/L15 로 유지한다. 이미 나간 링크와 QR 이 그대로 살아 있어야 한다.
+   #/pow-challenge 로 들어와도 같은 화면을 열고 주소만 #/L15 로 맞춘다.
    ------------------------------------------------------------ */
 const SCREEN_INDEX = new Map();
 SCREENS.forEach((s, i) => {
@@ -125,7 +125,7 @@ function goByOffset(offset) {
 function experienceUrl(screen) {
   const { kind, returnTo, module: moduleName } = screen.experience;
   /* 화면 데이터는 고정 ID 로 적어 두고, 체험도구에 넘길 때만 번호로 바꾼다.
-     체험도구의 ?from= / ?return= 형식(L14)은 그대로 유지한다. */
+     체험도구의 ?from= / ?return= 형식(L15)은 그대로 유지한다. */
   const from = screen.number;
   const back = toScreenNumber(returnTo) || FIRST_ID;
   /* Ethereum 체험은 기존 4단계 도구의 STEP 5 가 아니라 별도 모듈이다 */
@@ -160,7 +160,7 @@ function renderProgress(screen) {
   const active = new Set(Array.isArray(screen.concept) ? screen.concept : [screen.concept]);
   const allOn = screen.concept === 'all';
 
-  /* 에필로그(L32~L34)는 어느 노선에도 속하지 않는다. 역 이름을 늘어놓지 않는다 */
+  /* 에필로그(L33~L35)는 어느 노선에도 속하지 않는다. 역 이름을 늘어놓지 않는다 */
   if (where === 'epilogue') {
     els.progress.innerHTML = `<ol class="p-list intro">
       <li class="p-stop p-intro on" aria-current="step">EPILOGUE</li>
@@ -224,7 +224,7 @@ function renderStage(screen) {
   if (screen.body) parts.push(`<div class="stage-body">${screen.body}</div>`);
 
   /* 체험 진입 — 강의 화면에서 버튼을 눌러 바로 들어간다. 강사용 경로다.
-     학생용 QR 은 L06 화면 본문에 한 번만 둔다(screens.js 의 studentQr). */
+     학생용 QR 은 L07 화면 본문에 한 번만 둔다(screens.js 의 studentQr). */
   if (screen.experience) {
     const url = experienceUrl(screen);
     parts.push(`
@@ -236,7 +236,7 @@ function renderStage(screen) {
       </div>`);
   }
 
-  /* 체험 예고(L12) 처럼 다음 화면으로 넘기는 Action */
+  /* 체험 예고(L13) 처럼 다음 화면으로 넘기는 Action */
   if (screen.advance) {
     parts.push(`
       <div class="cta-zone cta-zone-simple">
@@ -415,7 +415,7 @@ document.addEventListener('keydown', event => {
 
 window.addEventListener('hashchange', () => {
   const id = screenIdFromHash();
-  /* 고정 ID(#/pow-challenge)로 들어왔으면 주소를 번호(#/L14)로 정리한다.
+  /* 고정 ID(#/pow-challenge)로 들어왔으면 주소를 번호(#/L15)로 정리한다.
      이미 번호면 goTo 가 render 만 한다 — 기록이 두 번 쌓이지 않는다. */
   goTo(id || FIRST_ID, { replace: true });   // 잘못된 ID → 기본 화면
 });
