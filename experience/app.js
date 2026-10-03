@@ -108,8 +108,22 @@ const POW_TRANSACTIONS = Object.freeze([
   { from: "민수", to: "철수", amount: 3000 }
 ]);
 
+/* Nonce 는 10진 문자열로 다룬다. 학생이 2^53 을 넘는 수를 넣어도 Number 로 바꾸는 순간
+   값이 조용히 달라지기 때문이다. JSON 에는 지금까지처럼 숫자 그대로 들어가야 하므로
+   (안전 범위 Nonce 의 Hash 가 전과 같아야 한다) 마지막 자리만 직접 붙인다. */
+function nonceDigits(nonce) {
+  const digits = String(nonce ?? "").replace(/\D/g, "").replace(/^0+(?=\d)/, "");
+  return digits === "" ? "0" : digits;
+}
+
+/* 세 자리마다 쉼표. 큰 수라서 toLocaleString 을 쓸 수 없다 */
+function groupDigits(digits) {
+  return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 function serializeBlock({ transactions, previousHash, nonce }) {
-  return JSON.stringify({ transactions, previousHash, nonce });
+  const head = JSON.stringify({ transactions, previousHash });
+  return `${head.slice(0, -1)},"nonce":${nonceDigits(nonce)}}`;
 }
 
 async function calculateBlockHash(block) {
@@ -415,15 +429,17 @@ function getManualPowDifficulty() {
   return Number.parseInt(checked?.value || "1", 10);
 }
 
+/* 상한을 두지 않는다. 한 사람이 찾은 Nonce 를 다른 사람이 그대로 넣어볼 수 있어야 한다.
+   숫자가 아닌 글자와 앞자리 0 만 정리하고, 값은 문자열 그대로 돌려준다 */
 function normalizeManualNonce() {
   if (!els.manualNonce) return null;
-  const digitsOnly = els.manualNonce.value.replace(/\D/g, "");
-  if (digitsOnly !== els.manualNonce.value) {
-    els.manualNonce.value = digitsOnly;
+  const digits = nonceDigits(els.manualNonce.value);
+  if (els.manualNonce.value.replace(/\D/g, "") === "") {
+    if (els.manualNonce.value !== "") els.manualNonce.value = "";
+    return null;
   }
-  if (digitsOnly === "") return null;
-  const value = Number.parseInt(digitsOnly, 10);
-  return Math.min(10000, Math.max(0, value));
+  if (digits !== els.manualNonce.value) els.manualNonce.value = digits;
+  return digits;
 }
 
 function setManualPowStatus(kind, icon, title, copy) {
@@ -454,9 +470,6 @@ function renderManualPow() {
     return;
   }
 
-  if (String(nonce) !== els.manualNonce.value && els.manualNonce.value !== "") {
-    els.manualNonce.value = String(nonce);
-  }
   const hash = calculatePowHashSync(nonce);
   const success = hash.startsWith(prefix);
   els.manualPowHash.textContent = hash;
@@ -472,7 +485,7 @@ function renderManualPow() {
       "success",
       "✓",
       "찾았습니다!",
-      `Nonce ${nonce.toLocaleString("ko-KR")}에서 Hash가 ${prefix}으로 시작합니다.${difficulty === 1 ? " 너무 쉬웠다면 00 난이도로 올려보세요." : ""}`
+      `Nonce ${groupDigits(nonce)}에서 Hash가 ${prefix}으로 시작합니다.${difficulty === 1 ? " 너무 쉬웠다면 00 난이도로 올려보세요." : ""}`
     );
   } else {
     setManualPowStatus("idle", "→", "다른 Nonce를 넣어보세요.", `현재 Hash는 ${prefix}으로 시작하지 않습니다.`);
