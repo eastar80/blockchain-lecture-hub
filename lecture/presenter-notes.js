@@ -10,7 +10,7 @@
    지금 강의 화면(lecture/index.html)은 이 파일을 불러오지 않는다.
    다음 단계의 Presenter View 가 붙을 때 그대로 쓰면 된다.
 
-   목표 시간 합계 4965초 (약 83분) + Network Demo 120초
+   목표 시간 합계 4985초 (약 83분) + Network Demo 120초
    ============================================================ */
 
 const PRESENTER_NOTES = {
@@ -178,15 +178,16 @@ const PRESENTER_NOTES = {
     caution: "‘Node들이 State 값을 직접 합의한다’고 말하지 않는다.\n‘같은 EVM 규칙’ 대신 ‘같은 실행 규칙’으로 말한다."
   },
   'world-computer': {
-    targetSeconds: 120,
-    script: "Program이 있고,\nInput을 받고,\n실제로 실행해서 State를 바꾸고,\n여러 Node가 그 결과를 공통된 규칙으로 검증합니다.\n\n그래서 Ethereum을 World Computer라고 표현합니다.\n\n물론 전 세계 컴퓨터가 하나의 거대한 CPU처럼 병렬 계산한다는 뜻은 아닙니다.\n\n오늘은\n프로그램과 State를 여러 참여자가 공통된 규칙으로 검증하며 이어가는\n프로그래밍 가능한 분산 상태 시스템\n정도로 이해하겠습니다.",
-    cue: "여기까지가 Ethereum 핵심 개념 설명이다. 이후에는 새 개념을 깊게 확장하지 않는다.",
-    caution: "‘모든 노드가 언제나 모든 프로그램을 똑같이 실행한다’는 식의 과도한 단순화는 피한다."
+    targetSeconds: 150,
+    script: "Program이 있고,\nInput을 받고,\n실제로 실행해서 State를 바꾸고,\n여러 Node가 그 결과를 공통된 규칙으로 검증합니다.\n\n그래서 Ethereum을 World Computer라고 표현합니다.\n\n물론 전 세계의 컴퓨터가\n하나의 거대한 CPU처럼 병렬 계산한다는 뜻은 아닙니다.\n\n오늘은\n프로그램과 State를 여러 참여자가 공통된 규칙으로 검증하며 이어가는\n프로그래밍 가능한 분산 상태 시스템\n정도로 이해하겠습니다.\n\n그런데 여기서 하나 남은 게 있습니다.\n\n제가 지금까지는 일부러 계속 Program이라고만 불렀습니다.\n\n아까 티켓 판매기에서\n우리는 실제로 하나의 Program을 실행했습니다.\n\nInput을 넣었고,\nProgram이 현재 State를 읽고,\n조건에 따라 State를 바꾸는 것도 직접 확인했습니다.\n\nEthereum에서는 이렇게 Ethereum 위에서 실행되는 프로그램을\nSmart Contract라고 부릅니다.\n\n그러니까 지금 새로운 기술을 하나 더 배우는 게 아닙니다.\n\n우리가 방금까지 직접 실행해 본 것에\n이제 이름을 붙이는 겁니다.",
+    cue: "마지막 문장 직후 바로 다음 화면(smart-contract-name)으로 넘긴다.\n여기까지가 Ethereum 핵심 개념 설명이다. 이후에는 새 개념을 깊게 확장하지 않는다.",
+    caution: "이 화면에서 Smart Contract 의 세부 정의를 넓히지 않는다.\n‘계약’, ‘자동 계약’, 법률 계약 이야기로 들어가지 않는다.\n다음 화면에 있는 티켓 판매 규칙을 여기서 하나씩 다시 설명하지 않는다.\n역할은 이름을 처음 공개하는 데까지다.\n‘모든 노드가 언제나 모든 프로그램을 똑같이 실행한다’는 식의 과도한 단순화도 피한다."
   },
   'smart-contract-name': {
-    targetSeconds: 60,
-    script: "이제 새로운 개념을 하나 더 배우는 것이 아닙니다.\n\n아까부터 우리가 직접 실행해왔던 프로그램을 다시 보겠습니다.\n결제금액을 확인했고,\n남은 티켓을 확인했고,\n조건을 만족하면 State를 바꿨습니다.\n\n먼저 실행해봤고 State가 어떻게 달라지는지도 확인했습니다.\n\n이제 우리가 방금 했던 것에 이름을 붙이는 겁니다.\n\nEthereum 위에서 실행되는 이런 프로그램을 Smart Contract라고 부릅니다.\nSmart Contract는 방금 우리가 실행했던 바로 그 프로그램입니다.",
-    cue: "티켓 판매 규칙을 다시 보여준 뒤 Smart Contract 라벨을 공개한다."
+    targetSeconds: 50,
+    script: "바로 이겁니다.\n\n지금 화면에 보이는 것은\n아까 여러분이 직접 실행해본 그 티켓 판매 Program입니다.\n\n앞 화면에서 이름을 붙였죠.\n\nEthereum 위에서 실행되는 이런 Program을\nSmart Contract라고 부릅니다.\n\n새로운 무언가가 갑자기 하나 더 등장한 것이 아니라,\n우리가 이미 실행해본 것의 이름을 알게 된 것입니다.\n\n오늘은 Smart Contract를 이 정도로 기억하시면 충분합니다.",
+    cue: "화면의 ‘아까 실행했던 티켓 판매 프로그램 → Smart Contract’ 흐름을 한 번만 짚는다.\n규칙 내용(결제금액 · 재고 · State 변화)은 다시 읽지 않는다.\n바로 다음 DApp 화면으로 넘어간다.",
+    caution: "앞 화면과 겹치는 설명을 하지 않는다 — Input → Program → State Transition 구조,\n티켓 판매 규칙 상세, World Computer 정의, Smart Contract 의 법률적 의미.\n이 화면의 역할은 확인과 명명이다."
   },
   'dapp-reveal': {
     targetSeconds: 60,

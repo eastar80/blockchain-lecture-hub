@@ -1155,7 +1155,9 @@ const SCREENS = [
   {
     id: 'block', sourcePage: 6, section: 'C', type: 'experience-entry', concept: 'block',
     eyebrow: 'BLOCK',
-    title: '왜 Block 일까?',
+    /* 이 화면은 Why 가 아니라 What 이다. Block 을 깊게 논증하지 않고
+       Hash 체험을 여러 기록의 묶음으로 넓히는 데서 멈춘다. Why 는 다음 Chain 화면이 맡는다 */
+    title: 'Block이란 무엇일까?',
     /* Hash 체험 직후 복귀 화면 */
     bridge: { tag: '방금 한 일', text: '하나의 입력에 Hash 를 만들었습니다. 이번에는 여러 기록을 하나의 묶음으로 다뤄봅니다.' },
     body: [

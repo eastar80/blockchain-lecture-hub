@@ -88,7 +88,7 @@ experience/index.html?from=L07&return=L09#hash
 | 진입 화면 | 체험 | 복귀 화면 |
 |---|---|---|
 | L07 `hash-question` Hash — 기록의 지문 | `hash` | L08 `hash-meaning` |
-| L09 `block` 왜 Block 일까? | `block` | L10 `chain` |
+| L09 `block` Block이란 무엇일까? | `block` | L10 `chain` |
 | L11 `tamper` 하나를 바꾸면? | `chain` | L12 `centralized-chain` |
 | L16 `pow-challenge` ‘00’ 을 먼저 찾아라 | `pow` | L17 `pow-interpret` |
 | L26 `state-experience` 실습 ③ 디지털 티켓 판매기 | `world-computer` (별도 모듈) | L27 `state-interpret` |
@@ -134,7 +134,7 @@ lecture/qr/experience.svg  →  https://blockchain.mrdion.kim/experience/#hash
 | L06 | `no-central-authority` | 4 | 장부에 대한 믿음 | “이게 공식 장부입니다”라고 말할 수 있는 신뢰있는 존재가 없다면? | intro |  | 다음 |
 | L07 | `hash-question` | 5 | Hash → Block → Chain | Hash — 기록의 지문 | 1 |  | **hash 체험** → hash-meaning 복귀 |
 | L08 | `hash-meaning` | — | Hash → Block → Chain | 방금 Hash에서 무엇을 본 걸까? | 1 | ○ | 다음 |
-| L09 | `block` | 6 | Hash → Block → Chain | 왜 Block 일까? | 1 | ○ | **block 체험** → chain 복귀 |
+| L09 | `block` | 6 | Hash → Block → Chain | Block이란 무엇일까? | 1 | ○ | **block 체험** → chain 복귀 |
 | L10 | `chain` | 7 | Hash → Block → Chain | 왜 Chain 일까? | 1 | ○ | 다음 |
 | L11 | `tamper` | 8 | Hash → Block → Chain | 하나를 바꾸면? | 1 |  | **chain 체험** → centralized-chain 복귀 |
 | L12 | `centralized-chain` | 9 | Hash → Block → Chain | 그런데 여기까지만이라면? | 1 | ○ | 다음 |
