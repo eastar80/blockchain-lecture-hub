@@ -210,31 +210,37 @@ World Computer → Smart Contract → DApp 을 먼저 지나고 마지막에 EVM
 | helper | 쓰는 곳 | 표현하는 관계 |
 |---|---|---|
 | `conclusion` | 원본 하단 결론 | 결론을 작은 note 가 아니라 본문급으로 |
-| `bridge`(화면 필드) | L09 · L10 · L12 · L17 · L27 · L36 | 체험 직후 `방금 한 일` 회수 |
-| `recall` | L04 · L18 · L21 · L32 | 앞 화면 맥락 회수 |
-| `nextHint` | L20 · L23 | 다음 화면 질문 예고 |
-| `converge` | L17 | 두 갈래 → 하나의 결과 |
+| `bridge`(화면 필드) | L08 · L09 · L10 · L12 · L17 · L27 · L36 | 체험 직후 `방금 한 일` 회수 |
+| `recall` | L18 · L21 · L22 · L32 | 앞 화면 맥락 회수 |
+| `nextHint` | L08 · L20 | 다음 화면 질문 예고 |
+| `wordCloud` | L01 | 들어는 본 말들이 떠 있는 모양 — 설명하지 않는다 |
+| `observations` | L08 | 체험에서 본 것 네 칸 |
 | `loopFlow` | L18 | 조건을 만족할 때까지 되돌아가는 반복 |
+| `miniContrast` | L17 | 찾기 ↔ 검증처럼 짧은 두 칸 대비 |
 | `causalFlow` + `checkList` | L20 | 입력 → 검사 → 결과 |
 | `ledgerCopies` | L21 | 같은 Block 이 각자의 장부에 |
-| `routeWithRoles` | L06 · L23 · L33 | 개념을 잇는 노선 + 각 역의 역할 |
+| `rewriteRace` | L22 | 과거를 다시 쓰는 쪽 ↔ 계속 앞으로 가는 쪽 |
+| `routeWithRoles` | L23 | 개념을 잇는 노선 + 각 역의 역할 |
 | `treeOrg` / `meshOrg` / `orgCompare` | L13 | 중앙 트리 ↔ 분산 네트워크 |
 | `gather` | L09 | 흩어진 거래가 Block 안으로 |
 | `branchTree` | L15 | 상위 개념 → 하위 방식 |
-| `sharedNodes` | L06 · L25 | 노드들이 같은 것을 공유 |
 | `changeTrail` | L11 | 변경이 어디까지 번지는가 |
 | `mapCompare` | L04 | 같은 역을 실제 지도 ↔ 노선도로 두 번 그려 대비 |
 | `simplifyExample` | L04 | ‘단순화란 무엇인가’를 여는 예시와 되묻는 질문 |
 | `closingMessage` | L34 | 키워드 나열과 당부를 한 흐름으로 |
-| `presenterCard` | L02 | 누가 이 이야기를 하는가 |
-| `networkPreview` | L02 · L36 | 실제 분산원장 화면 — 처음에 보여주고 마지막에 회수 |
+| `presenterCard` | L03 | 누가 이 이야기를 하는가 |
+| `networkPreview` | L03 · L36 | 실제 분산원장 화면 — 처음에 보여주고 마지막에 회수 |
+| `numberedCards` | L06 | 중앙 관리자가 없을 때 생기는 세 가지 문제 |
 | `toolThumbs` | L35 | 오늘 쓴 체험도구를 한눈에 |
 | `cycleFlow` | L35 | 배운다 → 해본다 → 막힌다 → 다시 배운다 |
 | `boundaryStack` | L32 | 층을 쌓다가 오늘 강의의 경계에서 멈춘다 |
 
-`networkPreview` 는 실제 Dashboard(`repo.mrdion.kim` · Phase 2 Repo Settlement Dashboard)의 구성을
+`converge` 와 `sharedNodes` 는 정의만 남아 있고 지금은 쓰는 화면이 없습니다.
+
+`networkPreview` 는 실제 Dashboard(`dlt.mrdion.kim/lecture` · LIVE DISTRIBUTED LEDGER)의 구성을
 그대로 옮겨 그립니다. 캡처 이미지가 아니라 화면으로 그리는 이유는 프로젝터에서 글자가 살아 있어야 하기 때문입니다.
-표시 값(거래 수·최근 거래 줄)은 `screens.js` 의 `NETWORK_SNAPSHOT` 한 곳에 있고, 고치면 L02·L36 에 함께 반영됩니다.
+표시 값(Block Height · 최근 블록 다섯 개)은 `screens.js` 의 `NETWORK_SNAPSHOT` 한 곳에 있고,
+고치면 L03·L36 에 함께 반영됩니다. 블록의 `parent` 는 앞 블록 `hash` 에서 계산하므로 따로 적지 않습니다.
 
 ## Presenter View — 강사용 제어화면
 
