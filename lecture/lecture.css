@@ -4081,3 +4081,558 @@ html[data-preview] .skip-link { display: none; }
   .cta-zone { padding: 8px 14px; }
   .stage-note { padding-top: 5px; }
 }
+
+/* ============================================================
+   프로젝터 가독성 레이어 — 교실 뒤쪽에서 읽히는 화면 (LECTURE-03-07)
+
+   실제 강의 피드백: 화면에 빈 공간이 많은데도 핵심 글씨와 도식이 작다.
+   원인은 두 가지였다.
+     1) 본문 폭이 1280px 로 묶여 1920 화면에서 좌우 640px 를 버린다.
+     2) 카드·도식 문구의 clamp 상한이 16~20px 라 제목만 크고 내용이 작다.
+
+   그래서 일괄 배율 대신
+     - 넓은 화면에서 본문 폭을 넓혀 공간을 되찾고
+     - 계층별 타입 토큰을 두어 '읽혀야 하는 것'만 한 단계씩 올린다.
+   화면별 미세 조정은 맨 아래 html[data-screen-id] 블록에서 한다.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   계층별 타입 토큰
+
+   vh 계수는 vw 계수의 1.78배(16:9)로 맞춰 둔다.
+   그러면 정확히 16:9 인 화면에서는 두 항이 같아 가로 기준으로 커지고,
+   16:9 보다 납작한 화면(1920×900 등)에서만 vh 항이 먼저 걸려 세로를 지킨다.
+   상한(max)은 1920 에서 걸리게 두어 1366 과의 격차를 좁힌다.
+   ------------------------------------------------------------ */
+.lecture-body {
+  --pj-title:   clamp(1.9rem, min(3.3vw, 5.87vh), 3.4rem);    /* 화면 제목       54 / 45px */
+  --pj-key:     clamp(1.4rem, min(2.3vw, 4.09vh), 2.4rem);    /* 핵심 결론       38 / 31px */
+  --pj-lead:    clamp(1.3rem, min(2.1vw, 3.74vh), 2.15rem);   /* 선행 문장       34 / 29px */
+  --pj-card:    clamp(1.1rem, min(1.72vw, 3.06vh), 1.88rem);  /* 카드·도식 주문구 30 / 23px */
+  --pj-card-sm: clamp(.98rem, min(1.42vw, 2.53vh), 1.56rem);  /* 카드 내부 보조   25 / 19px */
+  --pj-sub:     clamp(.92rem, min(1.33vw, 2.37vh), 1.36rem);  /* 보조 설명       22 / 18px */
+  --pj-meta:    clamp(.78rem, min(1.05vw, 1.87vh), 1.06rem);  /* 태그·메타       17 / 14px */
+}
+
+/* ------------------------------------------------------------
+   되찾은 가로 — 1500px 이상에서만 넓힌다.
+   1366 은 이미 폭을 다 쓰고 있어 건드리지 않는다.
+   ------------------------------------------------------------ */
+@media (min-width: 1500px) {
+  .lecture-main,
+  .lecture-nav-inner { width: min(1660px, calc(100% - 96px)); }
+  .lecture-header-inner { width: min(1660px, calc(100% - 96px)); }
+}
+
+/* 되찾은 세로 — 머리말/꼬리말은 강사용 길잡이지 강의 내용이 아니다 */
+@media (min-width: 1200px) {
+  .lecture-main { padding: 16px 0 18px; }
+  .lecture-header-inner { min-height: 46px; padding: 5px 0; }
+  .lecture-nav-inner { padding: 7px 0; }
+}
+
+/* ------------------------------------------------------------
+   공통 계층 재지정
+   ------------------------------------------------------------ */
+.stage-title { font-size: var(--pj-title); }
+.type-title .stage-title { font-size: clamp(2.2rem, min(4.7vw, 8.37vh), 4.3rem); }
+
+.s-lead { font-size: var(--pj-lead); }
+.s-key { font-size: var(--pj-key); }
+.s-conclusion-text { font-size: var(--pj-key); }
+.s-question { font-size: clamp(1.7rem, min(3.9vw, 6.94vh), 3.6rem); }
+
+.stage-kicker { font-size: var(--pj-card); font-weight: 800; color: var(--ink); }
+.s-sub { font-size: var(--pj-sub); }
+.s-title-sub { font-size: var(--pj-sub); }
+.stage-note { font-size: var(--pj-sub); }
+.bridge-text { font-size: var(--pj-sub); }
+.recall-text { font-size: var(--pj-sub); }
+.cta-hint { font-size: var(--pj-sub); }
+.next-hint { font-size: var(--pj-sub); }
+.joined-hint { font-size: var(--pj-meta); }
+
+.stage-eyebrow,
+.bridge-tag,
+.recall-tag,
+.joined-tag { font-size: var(--pj-meta); }
+
+/* 카드·도식 주문구 — 이번 Audit 의 핵심 구간 */
+.blk-name,
+.num-question,
+.obs-head,
+.route-roles-name,
+.node-name,
+.race-name,
+.stack-title,
+.cycle-step,
+.trail-text,
+.mesh-node,
+.flow-text,
+.duo-title,
+.branch-name,
+.ledger-name,
+.loop-step,
+.line-question,
+.thumb-name,
+.tree-leaf-name,
+.hash-in,
+.org-foot,
+.map-title,
+.runtable-call,
+.ips-call,
+.transition-line { font-size: var(--pj-card); }
+
+.num-row .num-question { font-size: var(--pj-card); }
+
+/* 카드 내부 보조 — 주문구보다 한 단계 아래지만 뒤에서 읽히는 선 */
+.blk-prev,
+.blk-hash,
+.num-answer,
+.obs-note,
+.route-roles-role,
+.node-state,
+.race-note,
+.stack-desc,
+.trail-value,
+.ledger-add,
+.ledger-old,
+.mc-v,
+.flow-desc,
+.node-note,
+.thumb-desc,
+.tree-leaf-note,
+.runtable-why,
+.runtable-result,
+.duo-tag,
+.map-note,
+.branch-owner,
+.hash-out,
+.rule-kw,
+.statebox-tag,
+.ips-tag,
+.stateflow-tag,
+.causal-tag,
+.line-badge,
+.race-tag,
+.org-tag,
+.map-tag,
+.mc-k,
+.blk-frame-label { font-size: var(--pj-card-sm); }
+
+.num-row .num-answer { font-size: var(--pj-card-sm); }
+
+/* 화살표·연결자도 함께 커져야 도식이 따로 놀지 않는다 */
+.blk-link,
+.flow-arrow,
+.causal-arrow,
+.trail-arrow,
+.branch-arrow,
+.duo-mid,
+.arrow { font-size: var(--pj-card); }
+
+/* 뱃지·번호는 글자가 커진 만큼 지름도 키운다 */
+.num-badge {
+  width: clamp(30px, 2.6vh, 42px);
+  height: clamp(30px, 2.6vh, 42px);
+  font-size: var(--pj-card-sm);
+}
+.obs-num { font-size: var(--pj-card); }
+.trail-order,
+.runorder-num,
+.runtable-num { font-size: var(--pj-card-sm); }
+
+/* ------------------------------------------------------------
+   기존 강조 변형(-lg, duo-ledger)은 이번 기준에서 base 보다 작아졌다.
+   '강조'라는 원래 의도대로 base 위 한 단계로 다시 맞춘다.
+   ------------------------------------------------------------ */
+.blk-lg .blk-name { font-size: var(--pj-lead); }
+.blk-lg .blk-prev,
+.blk-lg .blk-hash { font-size: var(--pj-card); }
+.blk-lg .blk-tx { font-size: var(--pj-card-sm); }
+.blk-lg .blk-link { font-size: var(--pj-lead); }
+
+.stack-lg .stack-title { font-size: var(--pj-lead); }
+.stack-lg .stack-desc { font-size: var(--pj-card-sm); }
+
+.duo-ledger .duo-tag { font-size: var(--pj-card); }
+.duo-ledger .duo-title { font-size: var(--pj-card-sm); }
+.duo-ledger .duo-line { font-size: clamp(1.6rem, min(3.1vw, 5.52vh), 3rem); }
+
+.statebox-row dt { font-size: var(--pj-card-sm); }
+.statebox-row dd { font-size: var(--pj-card); }
+.closing-text { font-size: var(--pj-key); }
+.simplify-statement { font-size: var(--pj-key); }
+.simplify-ask { font-size: var(--pj-key); }
+.target-desc { font-size: var(--pj-card); }
+.target-badge { font-size: clamp(2rem, min(4.2vw, 7.48vh), 4rem); }
+
+/* ============================================================
+   화면별 조정 — html[data-screen-id]
+
+   A : 구도를 그대로 두고 읽혀야 하는 것만 한 단계
+   B : 남는 공간을 도식이 가져가도록 세로까지 채운다
+   C : 주인공을 올리고 보조를 내려 위계를 다시 잡는다
+   ============================================================ */
+
+/* 이 블록은 프로젝터 화면 전용 튜닝이다.
+   모바일(세로 스크롤 허용)은 이번 Audit 범위가 아니므로 적용하지 않는다. */
+@media (min-width: 900px) {
+
+  /* ------------------------------------------------------------
+     공통 장치 — 도식이 남는 세로를 받아 가운데에 자리잡게 한다
+     ------------------------------------------------------------ */
+  .pj-grow { flex: 1 1 auto; min-height: 0; }
+  .pj-grow.num-list,
+  .pj-grow.blk-row { align-content: center; }
+
+  /* ===== A. L01 familiar-words — 구도·여백·톤은 그대로, 읽혀야 하는 단어만 ===== */
+  html[data-screen-id="familiar-words"] .cw-hero .cw-main { font-size: clamp(2.2rem, min(4.3vw, 7.65vh), 4rem); }
+  html[data-screen-id="familiar-words"] .cw-hero .cw-sub  { font-size: clamp(1rem, min(1.7vw, 3.03vh), 1.5rem); }
+  html[data-screen-id="familiar-words"] .cw-lead .cw-main { font-size: clamp(1.6rem, min(3vw, 5.34vh), 2.95rem); }
+  html[data-screen-id="familiar-words"] .cw-lead .cw-sub  { font-size: clamp(.9rem, min(1.35vw, 2.4vh), 1.2rem); }
+  html[data-screen-id="familiar-words"] .cw-lead .cw-note { font-size: clamp(.95rem, min(1.5vw, 2.67vh), 1.32rem); }
+  html[data-screen-id="familiar-words"] .cw-mid .cw-main  { font-size: clamp(1.1rem, min(1.9vw, 3.38vh), 1.82rem); }
+  html[data-screen-id="familiar-words"] .cw-mid .cw-sub   { font-size: clamp(.8rem, min(1.2vw, 2.14vh), 1.04rem); }
+  /* faint / ghost 는 '들어는 봤다' 를 만드는 배경이므로 키우지 않는다 */
+
+  /* ===== A. L03 why-me — 직책과 세 포인트만. Dashboard 세부값은 인상이 목적 ===== */
+  html[data-screen-id="why-me"] .presenter-name { font-size: var(--pj-lead); }
+  html[data-screen-id="why-me"] .presenter-role { font-size: var(--pj-card); }
+  /* 세 포인트는 이 화면에서 읽혀야 하는 내용이다. strong/span 각각에 걸어야 적용된다 */
+  html[data-screen-id="why-me"] .presenter-points strong { font-size: var(--pj-card-sm); }
+  html[data-screen-id="why-me"] .presenter-points span { font-size: var(--pj-sub); }
+  /* 본문이 넓어졌으므로 왼쪽 칸도 넓힌다. 직책이 단어 중간에서 끊기지 않게 */
+  @media (min-width: 1500px) {
+    html[data-screen-id="why-me"] .presenter { grid-template-columns: minmax(300px, 400px) 1fr; }
+  }
+  html[data-screen-id="why-me"] .np-shot { gap: 7px; }
+  html[data-screen-id="why-me"] .np-block { padding-block: 4px; }
+
+  /* ===== A. L04 simplify-first — 두 패널 제목만 한 단계, 역 이름은 그대로 ===== */
+  html[data-screen-id="simplify-first"] .map-title { font-size: var(--pj-card); }
+  html[data-screen-id="simplify-first"] .map-note { font-size: var(--pj-sub); }
+  html[data-screen-id="simplify-first"] .stage-body { gap: 12px; }
+
+  /* ===== A. L37 closing — 미니멀 구도 유지, 세 문장만 한 단계 ===== */
+  html[data-screen-id="closing"] .s-lead,
+  html[data-screen-id="closing"] .s-conclusion-text { font-size: clamp(1.5rem, min(2.75vw, 4.9vh), 2.85rem); }
+
+  /* ===== B. L02 lecture-title — 도식과 하단 질문을 적극적으로 ===== */
+  html[data-screen-id="lecture-title"] .s-title-sub { font-size: var(--pj-key); color: var(--ink); }
+  html[data-screen-id="lecture-title"] .stage-body { gap: clamp(14px, 3vh, 34px); }
+  html[data-screen-id="lecture-title"] .blk { padding: clamp(22px, 4.4vh, 52px) clamp(18px, 1.6vw, 26px); }
+  html[data-screen-id="lecture-title"] .blk-name { font-size: var(--pj-lead); }
+  html[data-screen-id="lecture-title"] .blk-hash { font-size: var(--pj-card); }
+
+  /* ===== B. L05 ledger-trust — 두 장부 카드가 화면을 크게 차지한다 ===== */
+  html[data-screen-id="ledger-trust"] .duo-ledger .duo-title { padding-top: clamp(20px, 3.6vh, 44px); }
+  html[data-screen-id="ledger-trust"] .duo-ledger .duo-line { padding-bottom: clamp(22px, 4vh, 48px); }
+
+  /* ===== B. L06 no-central-authority — 세 카드가 화면의 주인공 ===== */
+  html[data-screen-id="no-central-authority"] .num-row .num-item {
+    align-content: center;
+    padding: clamp(20px, 4.2vh, 52px) clamp(20px, 2vw, 36px);
+    gap: clamp(12px, 2vh, 22px);
+  }
+  html[data-screen-id="no-central-authority"] .num-row .num-question { font-size: var(--pj-lead); }
+  html[data-screen-id="no-central-authority"] .num-row .num-answer { font-size: var(--pj-card); }
+
+  /* ===== B. L08 hash-meaning — 4개 observation 을 화면 전체에 ===== */
+  html[data-screen-id="hash-meaning"] .obs { flex: 1 1 auto; min-height: 0; max-height: 62vh; align-content: center; }
+  html[data-screen-id="hash-meaning"] .obs-item { justify-content: center; padding: clamp(14px, 2.6vh, 30px) clamp(16px, 1.6vw, 28px); }
+  html[data-screen-id="hash-meaning"] .obs-head { font-size: var(--pj-lead); }
+
+  /* ===== B. L10 chain — 세 Block 과 연결이 먼저, 거래 상세는 보조 ===== */
+  html[data-screen-id="chain"] .blk { padding: clamp(20px, 3.8vh, 46px) clamp(20px, 1.8vw, 30px); }
+
+  /* ===== B. L12 centralized-chain — Bank Server frame 과 마지막 질문 ===== */
+  html[data-screen-id="centralized-chain"] .blk-framed { padding: clamp(20px, 3.4vh, 40px); }
+  html[data-screen-id="centralized-chain"] .blk { padding: clamp(20px, 3.6vh, 44px) clamp(20px, 1.8vw, 30px); }
+  html[data-screen-id="centralized-chain"] .blk-frame-label { font-size: var(--pj-card); }
+
+  /* ===== B. L14 consensus-question — 매우 단순한 비교. 카드와 숫자를 크게 ===== */
+  html[data-screen-id="consensus-question"] .duo-ledger .duo-title { padding-top: clamp(20px, 3.6vh, 44px); }
+  html[data-screen-id="consensus-question"] .duo-ledger .duo-line { padding-bottom: clamp(22px, 4vh, 48px); }
+
+  /* ===== B. L16 pow-challenge — 목표가 멀리서 즉시 보여야 한다 ===== */
+  html[data-screen-id="pow-challenge"] .target-badge { font-size: clamp(2.4rem, min(5vw, 8.9vh), 5rem); }
+  html[data-screen-id="pow-challenge"] .candidate-list li { font-size: var(--pj-card-sm); }
+
+  /* ===== B. L17 pow-interpret — 두 비교 카드와 마지막 질문 ===== */
+  html[data-screen-id="pow-interpret"] .duo-card { padding-block: clamp(18px, 3.2vh, 38px); }
+  html[data-screen-id="pow-interpret"] .duo-line { font-size: var(--pj-lead); }
+
+  /* ===== B. L19 pow-proposal — 성공 Node 와 새 Block ===== */
+  html[data-screen-id="pow-proposal"] .node { padding-block: clamp(16px, 2.8vh, 34px); }
+  html[data-screen-id="pow-proposal"] .blk-name { font-size: var(--pj-lead); }
+
+  /* ===== B. L25 state-model — Mental Model 네 구성요소가 화면의 핵심 ===== */
+  html[data-screen-id="state-model"] .stateflow { flex: 1 1 auto; max-height: 50vh; align-items: center; }
+  html[data-screen-id="state-model"] .statebox-tag,
+  html[data-screen-id="state-model"] .stateflow-tag { font-size: var(--pj-card); }
+  html[data-screen-id="state-model"] .statebox-row dd { font-size: var(--pj-lead); }
+  html[data-screen-id="state-model"] .stateflow-input { font-size: var(--pj-card); }
+
+  /* ===== B. L29 world-computer — 5단계 flow 와 World Computer ===== */
+  html[data-screen-id="world-computer"] .flow { flex: 1 1 auto; max-height: 40vh; align-items: center; }
+  html[data-screen-id="world-computer"] .flow-text { font-size: var(--pj-lead); }
+
+  /* ===== B. L30 smart-contract-name — 명명 장면. Smart Contract 가 가장 크게 ===== */
+  html[data-screen-id="smart-contract-name"] .flow { flex: 1 1 auto; max-height: 36vh; align-items: center; }
+  html[data-screen-id="smart-contract-name"] .flow-text { font-size: var(--pj-lead); }
+  html[data-screen-id="smart-contract-name"] .rule-kw { font-size: var(--pj-card); }
+
+  /* ===== B. L34 blockchain-close — lead / 질문 / 결론을 훨씬 크게, tag cloud 는 보조 ===== */
+  html[data-screen-id="blockchain-close"] .s-lead { font-size: var(--pj-key); }
+  html[data-screen-id="blockchain-close"] .s-conclusion-text { font-size: clamp(1.5rem, min(2.75vw, 4.9vh), 2.85rem); }
+
+  /* ------------------------------------------------------------
+     C — 우선순위 재배치
+     정보가 많아 일괄 확대하면 화면이 깨진다.
+     주인공을 올리고 보조를 내려 세로를 주인공에게 넘긴다.
+     ------------------------------------------------------------ */
+
+  /* ===== C. L07 hash-question — 체험 진입과 핵심 두 문장이 먼저 ===== */
+  html[data-screen-id="hash-question"] .hash-in { font-size: var(--pj-lead); }
+  html[data-screen-id="hash-question"] .hash-out { font-size: var(--pj-card); }
+  html[data-screen-id="hash-question"] .qr-title { font-size: var(--pj-card); }
+  html[data-screen-id="hash-question"] .qr-line { font-size: var(--pj-card-sm); }
+  html[data-screen-id="hash-question"] .qr-image { width: clamp(132px, 21vh, 200px); }
+  html[data-screen-id="hash-question"] .stage-note,
+  html[data-screen-id="hash-question"] .cta-hint { font-size: var(--pj-meta); }
+  html[data-screen-id="hash-question"] .stage-body { gap: clamp(8px, 1.4vh, 16px); }
+
+  /* ===== C. L09 block — ‘흩어진 기록 → BLOCK’ 이라는 공간 변화가 먼저 ===== */
+  html[data-screen-id="block"] .gather-block-name { font-size: clamp(1.5rem, min(2.75vw, 4.9vh), 2.85rem); }
+  html[data-screen-id="block"] .gather-hash { font-size: var(--pj-card); }
+  html[data-screen-id="block"] .gather-action { font-size: var(--pj-lead); }
+  html[data-screen-id="block"] .gather-tag { font-size: var(--pj-card-sm); }
+  html[data-screen-id="block"] .gather-tickets li,
+  html[data-screen-id="block"] .gather-inside li { font-size: var(--pj-sub); }
+  html[data-screen-id="block"] .gather-block { padding: clamp(16px, 3vh, 34px) clamp(18px, 1.8vw, 30px); }
+
+  /* ===== C. L11 tamper — 변경 전/후와 mismatch 가 먼저, 거래 상세는 보조 ===== */
+  html[data-screen-id="tamper"] .trail-text { font-size: var(--pj-lead); }
+  html[data-screen-id="tamper"] .trail-value { font-size: var(--pj-card); }
+  html[data-screen-id="tamper"] .blk-tx { font-size: var(--pj-sub); }
+
+  /* ===== C. L13 distributed-vs-servers — 은행 / 기관 A~D / 결론이 먼저 ===== */
+  html[data-screen-id="distributed-vs-servers"] .mesh-node { font-size: var(--pj-lead); }
+  html[data-screen-id="distributed-vs-servers"] .tree-root-name { font-size: var(--pj-lead); }
+  html[data-screen-id="distributed-vs-servers"] .tree-leaf-note { font-size: var(--pj-sub); }
+
+  /* ===== C. L15 consensus-methods — Branch 구조가 먼저, PoW 를 가장 강하게 ===== */
+  html[data-screen-id="consensus-methods"] .branch-name { font-size: var(--pj-lead); }
+  html[data-screen-id="consensus-methods"] .branch-item:has(.branch-flag) .branch-name { font-size: clamp(1.5rem, min(2.75vw, 4.9vh), 2.85rem); }
+  html[data-screen-id="consensus-methods"] .branch-owner { font-size: var(--pj-card); }
+
+  /* ===== C. L18 pow-repeat — LoopFlow 가 가장 먼저, recall/sub 는 한 단계 아래 ===== */
+  html[data-screen-id="pow-repeat"] .loop-step,
+  html[data-screen-id="pow-repeat"] .loop-decide-q { font-size: var(--pj-lead); }
+  html[data-screen-id="pow-repeat"] .mc-k { font-size: var(--pj-card-sm); }
+  html[data-screen-id="pow-repeat"] .mc-v { font-size: var(--pj-card); }
+  html[data-screen-id="pow-repeat"] .recall-text,
+  html[data-screen-id="pow-repeat"] .s-sub { font-size: var(--pj-meta); }
+
+  /* ===== C. L20 pow-verification — 체크 항목 3개가 뒤에서도 읽혀야 한다 ===== */
+  html[data-screen-id="pow-verification"] .check-list li { font-size: var(--pj-card); }
+  html[data-screen-id="pow-verification"] .node-name { font-size: var(--pj-lead); }
+  html[data-screen-id="pow-verification"] .blk-prev,
+  html[data-screen-id="pow-verification"] .blk-hash { font-size: var(--pj-sub); }
+  html[data-screen-id="pow-verification"] .next-hint { font-size: var(--pj-meta); }
+
+  /* ===== C. L21 pow-ledger-commit — flow 와 결론이 먼저, recall 은 보조 ===== */
+  html[data-screen-id="pow-ledger-commit"] .flow-text { font-size: var(--pj-lead); }
+  html[data-screen-id="pow-ledger-commit"] .ledger-name { font-size: var(--pj-lead); }
+  html[data-screen-id="pow-ledger-commit"] .ledger-add { font-size: var(--pj-card); }
+  html[data-screen-id="pow-ledger-commit"] .ledger-old { font-size: var(--pj-sub); }
+  html[data-screen-id="pow-ledger-commit"] .recall-text { font-size: var(--pj-meta); }
+
+  /* ===== C. L22 pow-chain-security — 두 Race 행을 크게 ===== */
+  html[data-screen-id="pow-chain-security"] .race { flex: 1 1 auto; max-height: 58vh; align-content: center; }
+  html[data-screen-id="pow-chain-security"] .race-name { font-size: var(--pj-lead); }
+  html[data-screen-id="pow-chain-security"] .race-note { font-size: var(--pj-card); }
+  html[data-screen-id="pow-chain-security"] .race-tag { font-size: var(--pj-card); }
+
+  /* ===== C. L23 ledger-line-recap — 여섯 개념 이름은 반드시 크게 ===== */
+  html[data-screen-id="ledger-line-recap"] .route-roles-name { font-size: var(--pj-lead); }
+  html[data-screen-id="ledger-line-recap"] .route-roles-role { font-size: var(--pj-sub); }
+  /* 띠를 늘리면 테두리 안이 빈다. 내용 크기대로 두고 여백은 위아래로 고르게 */
+  html[data-screen-id="ledger-line-recap"] .route-roles { padding-block: clamp(16px, 3vh, 36px); }
+
+  /* ===== C. L24 ethereum-transition — 환승의 의미가 먼저, IF/THEN 조건 확대 ===== */
+  html[data-screen-id="ethereum-transition"] .transfer-from,
+  html[data-screen-id="ethereum-transition"] .transfer-to { font-size: var(--pj-lead); }
+  html[data-screen-id="ethereum-transition"] .transfer-arrow { font-size: var(--pj-lead); }
+  html[data-screen-id="ethereum-transition"] .rule-kw { font-size: var(--pj-card); }
+  html[data-screen-id="ethereum-transition"] .rule-lines { font-size: var(--pj-card); }
+
+  /* ===== C. L26 state-experience — 3패널 구조 유지, 각 패널 핵심만 ===== */
+  html[data-screen-id="state-experience"] .ips-tag { font-size: var(--pj-card); }
+  html[data-screen-id="state-experience"] .ips-call { font-size: var(--pj-lead); }
+  html[data-screen-id="state-experience"] .rule-kw { font-size: var(--pj-card); }
+  html[data-screen-id="state-experience"] .runorder li { font-size: var(--pj-card-sm); }
+  html[data-screen-id="state-experience"] .cta-hint { font-size: var(--pj-meta); }
+
+  /* ===== C. L27 state-interpret — 상단 causal flow 가 먼저, 표는 결과 글자를 ===== */
+  html[data-screen-id="state-interpret"] .causal-tag { font-size: var(--pj-card); }
+  html[data-screen-id="state-interpret"] .runtable-call,
+  html[data-screen-id="state-interpret"] .runtable-result { font-size: var(--pj-card); }
+  html[data-screen-id="state-interpret"] .runtable-why { font-size: var(--pj-sub); }
+  html[data-screen-id="state-interpret"] .bridge-text,
+  html[data-screen-id="state-interpret"] .stage-note { font-size: var(--pj-meta); }
+
+  /* ===== C. L28 multi-node-execution — 네 단계 번호/제목이 뒤에서 바로 ===== */
+  html[data-screen-id="multi-node-execution"] .causal-tag { font-size: var(--pj-lead); }
+  html[data-screen-id="multi-node-execution"] .transition-line { font-size: var(--pj-card); }
+  html[data-screen-id="multi-node-execution"] .statebox-row dd { font-size: var(--pj-card); }
+  html[data-screen-id="multi-node-execution"] .node-name { font-size: var(--pj-lead); }
+  html[data-screen-id="multi-node-execution"] .node-note { font-size: var(--pj-sub); }
+
+  /* ===== C. L31 dapp-reveal — Stack 네 단계와 DApp 이 먼저 ===== */
+  html[data-screen-id="dapp-reveal"] .stack-title { font-size: var(--pj-lead); }
+  html[data-screen-id="dapp-reveal"] .stack-desc { font-size: var(--pj-card-sm); }
+  html[data-screen-id="dapp-reveal"] .stack { flex: 1 1 auto; max-height: 56vh; justify-content: center; }
+
+  /* ===== C. L32 evm-boundary — 경계 설정 화면임이 시각적으로 분명해야 한다 ===== */
+  html[data-screen-id="evm-boundary"] .stack-title { font-size: var(--pj-lead); }
+  html[data-screen-id="evm-boundary"] .boundary-beyond { font-size: var(--pj-card); }
+  html[data-screen-id="evm-boundary"] .recall-text,
+  html[data-screen-id="evm-boundary"] .s-sub { font-size: var(--pj-meta); }
+
+  /* ===== C. L33 two-lines-map — 노선·역 이름이 1순위, 역할 설명이 2순위 ===== */
+  html[data-screen-id="two-lines-map"] .line-badge { font-size: var(--pj-card); }
+  html[data-screen-id="two-lines-map"] .line-question { font-size: var(--pj-card); }
+  html[data-screen-id="two-lines-map"] .route-roles-name { font-size: var(--pj-card); }
+  html[data-screen-id="two-lines-map"] .route-roles-role { font-size: var(--pj-meta); }
+  html[data-screen-id="two-lines-map"] .line-transfer-title { font-size: var(--pj-lead); }
+  html[data-screen-id="two-lines-map"] .line-transfer-note,
+  html[data-screen-id="two-lines-map"] .line-transfer-warn { font-size: var(--pj-sub); }
+  html[data-screen-id="two-lines-map"] .stage-note { font-size: var(--pj-meta); }
+  html[data-screen-id="two-lines-map"] .stage-body { gap: clamp(8px, 1.4vh, 16px); }
+
+  /* ===== C. L35 learning-to-building — Cycle 과 마지막 두 문장이 주인공 ===== */
+  html[data-screen-id="learning-to-building"] .cycle-step { font-size: var(--pj-lead); }
+  html[data-screen-id="learning-to-building"] .thumb-name { font-size: var(--pj-sub); }
+  html[data-screen-id="learning-to-building"] .thumb-desc { font-size: var(--pj-meta); }
+
+  /* ===== C. L36 real-network — BLOCK HEIGHT 와 callout 3개가 주인공 ===== */
+  html[data-screen-id="real-network"] .np-height-v { font-size: clamp(2.2rem, min(4vw, 7.12vh), 3.8rem); }
+  html[data-screen-id="real-network"] .np-height-k { font-size: var(--pj-card-sm); }
+  html[data-screen-id="real-network"] .np-callouts strong { font-size: var(--pj-lead); }
+  html[data-screen-id="real-network"] .np-callouts span { font-size: var(--pj-card); }
+  html[data-screen-id="real-network"] .np-callouts li { gap: 4px; }
+}
+
+/* ============================================================
+   세로가 짧은 프로젝터 (1366×768, 1280×720)
+
+   적극적 확대는 1080 의 세로를 전제로 한다. 768 에서는 그 전제가 없다.
+   공통 계층은 그대로 두고, 위로 올린 계층만 한 단계 되돌린다.
+   ============================================================ */
+@media (min-width: 900px) and (max-height: 950px) {
+  .lecture-body {
+    --pj-title:   clamp(1.8rem, min(3.3vw, 5.35vh), 3.4rem);
+    --pj-key:     clamp(1.35rem, min(2.3vw, 3.72vh), 2.4rem);
+    --pj-lead:    clamp(1.25rem, min(2.1vw, 3.4vh), 2.15rem);
+    --pj-card:    clamp(1.05rem, min(1.72vw, 2.78vh), 1.88rem);
+    --pj-card-sm: clamp(.95rem, min(1.42vw, 2.3vh), 1.56rem);
+    --pj-sub:     clamp(.9rem, min(1.33vw, 2.16vh), 1.36rem);
+    --pj-meta:    clamp(.76rem, min(1.05vw, 1.7vh), 1.06rem);
+  }
+
+  .stage-inner { gap: 11px; }
+  .stage-body { gap: 11px; }
+
+  /* 세로를 쓰는 per-screen 여유값들은 짧은 화면에서 먼저 줄인다 */
+  html[data-screen-id="no-central-authority"] .num-row .num-item { padding: 16px 20px; }
+  html[data-screen-id="hash-meaning"] .obs-item { padding: 12px 18px; }
+  html[data-screen-id="chain"] .blk,
+  html[data-screen-id="centralized-chain"] .blk,
+  html[data-screen-id="lecture-title"] .blk { padding: 14px 18px; }
+  html[data-screen-id="block"] .gather-block { padding: 14px 18px; }
+
+  /* QR 확대는 1080 전제였다. 768 에서는 원래 크기로 둔다 */
+  html[data-screen-id="hash-question"] .qr-image { width: clamp(96px, 15vh, 128px); }
+  html[data-screen-id="hash-question"] .hash-in { font-size: var(--pj-card); }
+  html[data-screen-id="hash-question"] .qr-title { font-size: var(--pj-card-sm); }
+  html[data-screen-id="hash-question"] .qr-line { font-size: var(--pj-meta); }
+
+  /* 고밀도 화면 — 올린 계층을 base 로 되돌려 한 화면을 지킨다 */
+  html[data-screen-id="why-me"] .presenter-points strong { font-size: var(--pj-sub); }
+  html[data-screen-id="why-me"] .presenter-points span { font-size: var(--pj-meta); }
+  html[data-screen-id="why-me"] .presenter-name { font-size: var(--pj-card); }
+  html[data-screen-id="block"] .gather-block-name { font-size: var(--pj-lead); }
+  html[data-screen-id="tamper"] .trail-text { font-size: var(--pj-card); }
+  html[data-screen-id="pow-repeat"] .loop-step,
+  html[data-screen-id="pow-repeat"] .loop-decide-q { font-size: var(--pj-card); }
+  html[data-screen-id="pow-verification"] .node-name { font-size: var(--pj-card); }
+  html[data-screen-id="pow-verification"] .check-list li { font-size: var(--pj-card-sm); }
+  html[data-screen-id="state-interpret"] .runtable-call,
+  html[data-screen-id="state-interpret"] .runtable-result { font-size: var(--pj-card-sm); }
+  /* causal flow 의 단계 이름은 이 두 화면의 1순위다. 짧은 화면에서도 보조로 내리지 않는다 */
+  html[data-screen-id="dapp-reveal"] .stack-title { font-size: var(--pj-card); }
+  html[data-screen-id="evm-boundary"] .stack-title { font-size: var(--pj-card); }
+  html[data-screen-id="two-lines-map"] .line-transfer-title { font-size: var(--pj-card); }
+  html[data-screen-id="real-network"] .np-callouts strong { font-size: var(--pj-card); }
+  html[data-screen-id="real-network"] .np-callouts span { font-size: var(--pj-card-sm); }
+  html[data-screen-id="simplify-first"] .map-title { font-size: var(--pj-card-sm); }
+
+  /* L03 — Dashboard 미리보기는 '복잡한 화면'이라는 인상이 목적이다.
+     짧은 화면에서는 줄간격만 좁혀 한 화면을 지킨다 */
+  html[data-screen-id="why-me"] .np-shot { gap: 4px; }
+  html[data-screen-id="why-me"] .np-block { padding-block: 2px; }
+  html[data-screen-id="why-me"] .np-page { padding: 10px 14px; }
+  html[data-screen-id="why-me"] .presenter-role { font-size: var(--pj-card-sm); }
+
+  html[data-screen-id="hash-question"] .stage-body { gap: 7px; }
+  html[data-screen-id="hash-question"] .qr-join { gap: 12px; padding: 7px 12px; }
+  html[data-screen-id="hash-question"] .s-lead { font-size: var(--pj-card); }
+
+  html[data-screen-id="block"] .gather { gap: 10px; }
+  html[data-screen-id="block"] .gather-tickets li,
+  html[data-screen-id="block"] .gather-inside li { font-size: var(--pj-meta); }
+
+  /* L03 은 세 포인트 + 강사 소개 + Dashboard 로 이번 강의 중 가장 조밀하다.
+     세부값(Hash/Parent)은 읽을 필요가 없는 영역이므로 여기서 더 줄인다 */
+  html[data-screen-id="why-me"] .np-block-n,
+  html[data-screen-id="why-me"] .np-block-h,
+  html[data-screen-id="why-me"] .np-block-p { font-size: .68rem; }
+  html[data-screen-id="why-me"] .np-latest dt,
+  html[data-screen-id="why-me"] .np-latest dd { font-size: .7rem; }
+  html[data-screen-id="why-me"] .np-height-v { font-size: 1.7rem; }
+  html[data-screen-id="why-me"] .presenter { padding-block: 8px; }
+  html[data-screen-id="why-me"] .np { gap: 6px; }
+
+}
+
+/* 지도는 본문 폭을 따라 커지므로 세로가 짧으면 먼저 넘친다.
+   폭이 아니라 높이로 묶는다. 800px 이하는 기존 33vh 제한이 더 좁으므로 건드리지 않는다 */
+@media (min-width: 900px) and (max-height: 950px) and (min-height: 801px) {
+  .map-svg { max-height: 38vh; }
+}
+
+/* 720p — 한 단계 더 내린다. 제목과 결론은 지키고 도식 보조만 줄인다 */
+@media (min-width: 900px) and (max-height: 760px) {
+  .lecture-body {
+    --pj-lead:    clamp(1.2rem, min(2.1vw, 3.2vh), 2.15rem);
+    --pj-card:    clamp(1rem, min(1.72vw, 2.62vh), 1.88rem);
+    --pj-card-sm: clamp(.9rem, min(1.42vw, 2.16vh), 1.56rem);
+    --pj-sub:     clamp(.86rem, min(1.33vw, 2.03vh), 1.36rem);
+  }
+  .stage-inner,
+  .stage-body { gap: 9px; }
+  html[data-screen-id="simplify-first"] .map-title { font-size: var(--pj-sub); }
+  html[data-screen-id="block"] .gather-block { padding: 11px 15px; }
+  html[data-screen-id="pow-repeat"] .loop-step,
+  html[data-screen-id="pow-repeat"] .loop-decide-q { font-size: var(--pj-card-sm); }
+  html[data-screen-id="evm-boundary"] .stack-title { font-size: var(--pj-card-sm); }
+  html[data-screen-id="pow-verification"] .check-list li { font-size: var(--pj-sub); }
+  html[data-screen-id="state-interpret"] .runtable-call,
+  html[data-screen-id="state-interpret"] .runtable-result { font-size: var(--pj-sub); }
+}
+
+/* 글자가 커지면서 L27 표의 1fr 칸이 좁은 화면에서 줄어들지 못해 넘쳤다.
+   grid 의 1fr 은 최소값이 auto 라 내용보다 작아지지 않는다. 0 으로 풀어 준다 */
+.runtable-row { grid-template-columns: auto auto minmax(0, 1fr) auto; }
